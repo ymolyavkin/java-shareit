@@ -16,28 +16,6 @@ import java.time.LocalDateTime;
 @RestController
 @RequestMapping("/items")
 public class ItemController {
-    public static void main(String[] args) {
-        Item item = new Item.Builder()
-                .id(0L)
-                .name("Name")
-                .description("descr")
-                .available(true)
-                .owner("owner")
-                .request("request")
-                .build();
-        User booker = new User("Name", "email@mail.ru");
 
-        Booking booking = new Booking.Builder()
-                .id(0L)
-                .start(LocalDateTime.now())
-                .end(LocalDateTime.now())
-                .item(item)
-                .booker(booker)
-                .status(Status.WAITING)
-                .build();
 
-        ItemRequest itemRequest = new ItemRequest("description", booker, LocalDateTime.now());
-
-        System.out.println();
-    }
 }

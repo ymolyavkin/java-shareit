@@ -2,6 +2,7 @@ package ru.practicum.shareit.item.model;
 
 import lombok.Getter;
 import lombok.Setter;
+import ru.practicum.shareit.request.ItemRequest;
 
 import javax.validation.constraints.NotBlank;
 import java.util.Objects;
@@ -16,9 +17,9 @@ public class Item {
     @NotBlank(message = "Название вещи не может быть пустым.")
     private String name;
     private String description;
-    private boolean available;
+    private boolean isAvailable;
     private String owner;
-    private String request;
+    private ItemRequest request;
 
     public static class Builder {
         private final Item newItem;
@@ -42,8 +43,8 @@ public class Item {
             return this;
         }
 
-        public Builder available(boolean available) {
-            newItem.setAvailable(available);
+        public Builder isAvailable(boolean isAavailable) {
+            newItem.setAvailable(isAavailable);
             return this;
         }
 
@@ -52,7 +53,7 @@ public class Item {
             return this;
         }
 
-        public Builder request(String request) {
+        public Builder request(ItemRequest request) {
             newItem.setRequest(request);
             return this;
         }
@@ -81,7 +82,7 @@ public class Item {
                 "id=" + id +
                 ", name='" + name + '\'' +
                 ", description='" + description + '\'' +
-                ", available=" + available +
+                ", available=" + isAvailable +
                 ", owner='" + owner + '\'' +
                 ", request='" + request + '\'' +
                 '}';
