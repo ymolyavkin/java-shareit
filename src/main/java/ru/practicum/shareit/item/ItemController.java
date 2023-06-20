@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.RestController;
 import ru.practicum.shareit.booking.Booking;
 import ru.practicum.shareit.booking.Status;
 import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareit.request.ItemRequest;
 import ru.practicum.shareit.user.User;
 
 import java.time.LocalDateTime;
@@ -34,6 +35,9 @@ public class ItemController {
                 .booker(booker)
                 .status(Status.WAITING)
                 .build();
+
+        ItemRequest itemRequest = new ItemRequest("description", booker, LocalDateTime.now());
+
         System.out.println();
     }
 }

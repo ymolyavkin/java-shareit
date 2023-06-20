@@ -5,7 +5,9 @@ import lombok.Setter;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.User;
 
+import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 /**
  * TODO Sprint add-bookings.
@@ -14,7 +16,9 @@ import java.time.LocalDateTime;
 @Setter
 public class Booking {
     private long id;
+    @NotNull
     private LocalDateTime start;
+    @NotNull
     private LocalDateTime end;
     private Item item;
     private User booker;
@@ -31,10 +35,12 @@ public class Booking {
             newBooking.setId(id);
             return this;
         }
+
         public Booking.Builder start(LocalDateTime start) {
             newBooking.setStart(start);
             return this;
         }
+
         public Booking.Builder end(LocalDateTime end) {
             newBooking.setEnd(end);
             return this;
@@ -58,5 +64,29 @@ public class Booking {
         public Booking build() {
             return newBooking;
         }
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Booking booking = (Booking) o;
+        return id == booking.id && start.equals(booking.start) && end.equals(booking.end);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, start, end);
+    }
+    @Override
+    public String toString() {
+        return "Booking{" +
+                "id=" + id +
+                ", start=" + start +
+                ", end=" + end +
+                ", item=" + item +
+                ", booker=" + booker +
+                ", status=" + status +
+                '}';
     }
 }

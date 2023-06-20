@@ -27,7 +27,7 @@ public class Item {
             newItem = new Item();
         }
 
-        public Builder id(Long id) {
+        public Builder id(long id) {
             newItem.setId(id);
             return this;
         }
