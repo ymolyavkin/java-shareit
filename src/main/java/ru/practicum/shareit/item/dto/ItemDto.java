@@ -16,7 +16,7 @@ public class ItemDto {
     private boolean available;
     private String owner;
     private Long itemRequestId;
-    private ItemRequest request;
+   // private ItemRequest request;
     public static class Builder {
         private final ItemDto newItemDto;
 
@@ -49,8 +49,8 @@ public class ItemDto {
             return this;
         }
 
-        public ItemDto.Builder request(Long itemRequest) {
-            newItemDto.setItemRequestId(request.getId());
+        public ItemDto.Builder request(Long itemRequestId) {
+            newItemDto.setItemRequestId(itemRequestId);
             return this;
         }
 
