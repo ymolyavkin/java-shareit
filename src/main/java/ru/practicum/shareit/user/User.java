@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Pattern;
 import java.util.Objects;
 
 /**
@@ -15,7 +16,7 @@ public class User {
     private long id;
     @NotBlank
     private  final String name;
-    @NotBlank
+    @Pattern(regexp = "^.+@.+\\..+$", message = "Некорректный адрес электронной почты")
     private  final String email;
 
     public User(String name, String email) {
