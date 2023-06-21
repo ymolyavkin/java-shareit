@@ -14,12 +14,9 @@ public class UserStorageImpl implements UserStorage {
     private long id;
     private Map<Long, User> users;
 
-    private boolean emailAlreadyExists(User user) {
-        if (user.getEmail() == null || user.getEmail().isBlank()) {
-            return false;
-        }
-        for (User userValue : users.values()) {
-            if (user.getEmail().equals(userValue.getEmail()) && user.getId() != userValue.getId()) {
+    private boolean emailAlreadyExists(String email, Long skipId) {
+        for (User user : users.values()) {
+            if (user.getId() != skipId && user.getEmail().equals(email)) {
                 return true;
             }
         }
@@ -37,7 +34,7 @@ public class UserStorageImpl implements UserStorage {
 
     @Override
     public User addUser(User user) {
-        if (emailAlreadyExists(user)) {
+        if (emailAlreadyExists(user.getEmail(), 0L)) {
             throw new AlreadyExistsException("Пользователь с таким адресом электронной почты уже существует");
         } else {
             long id = generateId();
@@ -62,7 +59,7 @@ public class UserStorageImpl implements UserStorage {
 
     @Override
     public User updateUser(User updatedUser, Long userId) {
-        if (emailAlreadyExists(updatedUser)) {
+        if (emailAlreadyExists(updatedUser.getEmail(), userId)) {
             throw new AlreadyExistsException("Пользователь с таким адресом электронной почты уже существует");
         }
 
