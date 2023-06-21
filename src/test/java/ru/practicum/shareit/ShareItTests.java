@@ -9,7 +9,7 @@ import ru.practicum.shareit.booking.Status;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.request.ItemRequest;
-import ru.practicum.shareit.user.User;
+import ru.practicum.shareit.user.model.User;
 
 import java.time.LocalDateTime;
 
@@ -42,14 +42,14 @@ class ShareItTests {
 				.booker(booker)
 				.status(Status.WAITING)
 				.build();
-
+		Long itemRequestId = item.getRequest().getId();
 		ItemDto itemDto = new ItemDto.Builder()
 				.id(0L)
 				.name("Name")
 				.description("descr")
 				.isAvailable(true)
 				.owner("owner")
-				.request(request)
+				.request(itemRequestId)
 				.build();
 
 		System.out.println();

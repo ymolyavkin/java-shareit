@@ -1,4 +1,4 @@
-package ru.practicum.shareit.user;
+package ru.practicum.shareit.user.model;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -16,6 +16,7 @@ public class User {
     private long id;
     @NotBlank
     private  final String name;
+    @NotBlank(message = "адрес электронной почты не должен быть пустым")
     @Pattern(regexp = "^.+@.+\\..+$", message = "Некорректный адрес электронной почты")
     private  final String email;
 
