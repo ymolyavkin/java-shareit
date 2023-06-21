@@ -15,6 +15,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class UserController {
     private final UserService userService;
+
     @GetMapping
     public List<User> getUsers() {
         return userService.getUsers();
@@ -22,7 +23,12 @@ public class UserController {
 
     @PostMapping(consumes = "application/json")
     public User addUser(@Valid @RequestBody User user) {
-        log.info("Получена сущность User");
         return userService.addUser(user);
+    }
+
+    @PatchMapping(value = "/{id}", consumes = "application/json")
+    public User updateUser(@RequestBody User user,
+                           @PathVariable Long id) {
+        return userService.updateUser(user, id);
     }
 }

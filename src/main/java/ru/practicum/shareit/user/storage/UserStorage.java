@@ -11,4 +11,6 @@ public interface UserStorage {
     Optional<User> getUserById(Long id);
 
     User addUser(User user);
+
+    User updateUser(User user, Long userId);
 }
