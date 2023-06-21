@@ -77,4 +77,14 @@ public class UserStorageImpl implements UserStorage {
         }
         return updatedUser;
     }
+
+    @Override
+    public void deleteUserById(long userId) {
+        if (users.containsKey(userId)) {
+            users.remove(userId);
+            log.info("Пользователь с ID = {} удален.", userId);
+        } else {
+            log.info("Пользователь с ID = {} не существует.", userId);
+        }
+    }
 }

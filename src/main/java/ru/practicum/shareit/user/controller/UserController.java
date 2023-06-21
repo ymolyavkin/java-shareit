@@ -8,6 +8,7 @@ import ru.practicum.shareit.user.service.UserService;
 
 import javax.validation.Valid;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping(value = "/users")
@@ -21,6 +22,11 @@ public class UserController {
         return userService.getUsers();
     }
 
+    @GetMapping("/{id}")
+    public Optional<User> getUserById(@PathVariable Long id) {
+        return userService.getUserById(id);
+    }
+
     @PostMapping(consumes = "application/json")
     public User addUser(@Valid @RequestBody User user) {
         return userService.addUser(user);
@@ -30,5 +36,9 @@ public class UserController {
     public User updateUser(@RequestBody User user,
                            @PathVariable Long id) {
         return userService.updateUser(user, id);
+    }
+    @DeleteMapping(value = "/{id}")
+    public void deleteUserById(@PathVariable("id") long id) {
+        userService.deleteUserById(id);
     }
 }
