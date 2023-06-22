@@ -25,7 +25,7 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public Item updateItem(Item item, Long id) {
-        return itemStorage.updateItem(item, id);
+    public Item updateItem(Item item, Long itemId, Long userId) {
+        return itemStorage.updateItem(item, itemId, userId);
     }
 }

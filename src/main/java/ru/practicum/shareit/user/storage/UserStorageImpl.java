@@ -62,7 +62,6 @@ public class UserStorageImpl implements UserStorage {
         if (emailAlreadyExists(updatedUser.getEmail(), userId)) {
             throw new AlreadyExistsException("Пользователь с таким адресом электронной почты уже существует");
         }
-
         if (users.containsKey(userId)) {
             User user = users.get(userId);
             if (updatedUser.getName() != null && !updatedUser.getName().isBlank() && !updatedUser.getName().equals(user.getName())) {
@@ -82,9 +81,9 @@ public class UserStorageImpl implements UserStorage {
     public void deleteUserById(long userId) {
         if (users.containsKey(userId)) {
             users.remove(userId);
-            log.info("Пользователь с ID = {} удален.", userId);
+            log.info("Пользователь с id = {} удален.", userId);
         } else {
-            log.info("Пользователь с ID = {} не существует.", userId);
+            log.info("Пользователь с id = {} не существует.", userId);
         }
     }
 }

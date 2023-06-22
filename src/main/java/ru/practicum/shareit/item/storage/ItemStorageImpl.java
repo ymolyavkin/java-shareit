@@ -55,9 +55,33 @@ public class ItemStorageImpl implements ItemStorage {
     }
 
     @Override
-    public Item updateItem(Item item, Long id) {
-        System.out.println();
-        return null;
+    public Item updateItem(Item updatedItem, Long itemId, Long userId) {
+        Optional<User> user = userStorage.getUserById(userId);
+        if (user.isEmpty()) {
+            throw new NotFoundException("Пользователь c id " + userId + " не найден");
+        }
+        if (items.containsKey(itemId)) {
+            Item item = items.get(itemId);
+            if (!item.getOwner().equals(String.valueOf(userId))) {
+                throw new NotFoundException("Указан другой владелец");
+            }
+          //  item.setOwner(String.valueOf(userId));
+            if (updatedItem.getName() != null && !updatedItem.getName().isBlank() && !updatedItem.getName().equals(item.getName())) {
+                item.setName(updatedItem.getName());
+            }
+            if (updatedItem.getDescription() != null &&
+                    !updatedItem.getDescription().isBlank() &&
+                    !updatedItem.getDescription().equals(item.getDescription())) {
+                item.setDescription(updatedItem.getDescription());
+            }
+            if (updatedItem.getAvailable() != null && updatedItem.getAvailable() != item.getAvailable()) {
+                item.setAvailable(updatedItem.getAvailable());
+            }
+            updatedItem = item;
+        } else {
+            throw new NotFoundException("Вещь не найдена");
+        }
+        return updatedItem;
     }
 
     @Override

@@ -7,7 +7,7 @@ import ru.practicum.shareit.exception.NoneXSharerUserIdException;
 import ru.practicum.shareit.item.dto.ItemMapper;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.service.ItemService;
-import ru.practicum.shareit.user.model.User;
+import ru.practicum.shareit.utility.Converter;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -37,10 +37,17 @@ public class ItemController {
         return itemService.addItem(item);
     }
 
-    @PatchMapping(value = "/{id}", consumes = "application/json")
-    public Item updateItem(@Valid @RequestBody Item item,
-                           @PathVariable Long id) {
-        return itemService.updateItem(item, id);
+    @PatchMapping(value = "/{itemId}", consumes = "application/json")
+    public Item updateItem(@RequestHeader Map<String, String> headers,
+                           @RequestBody Item item,
+                           @PathVariable Long itemId) {
+        Long userId;
+        if (headers.containsKey("x-sharer-user-id")) {
+           userId = Converter.stringToLong(headers.get("x-sharer-user-id"));
+        } else {
+            throw new NoneXSharerUserIdException("Не указан владелец вещи");
+        }
+        return itemService.updateItem(item, itemId, userId);
     }
    /* @GetMapping("/{id}")
     public item getitem(@PathVariable Long id) {

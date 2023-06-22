@@ -9,5 +9,5 @@ public interface ItemService {
 
     Item addItem(Item item);
 
-    Item updateItem(Item item, Long id);
+    Item updateItem(Item item, Long itemId, Long userId);
 }
