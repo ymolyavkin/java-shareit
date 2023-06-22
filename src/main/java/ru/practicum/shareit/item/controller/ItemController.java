@@ -6,7 +6,8 @@ import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.exception.NoneXSharerUserIdException;
 import ru.practicum.shareit.item.dto.ItemMapper;
 import ru.practicum.shareit.item.model.Item;
-import ru.practicum.shareit.item.service.ItemServiceImpl;
+import ru.practicum.shareit.item.service.ItemService;
+import ru.practicum.shareit.user.model.User;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -19,11 +20,11 @@ import java.util.Map;
 @RequestMapping("/items")
 public class ItemController {
     private final ItemMapper itemMapper;
-    private final ItemServiceImpl itemServiceImpl;
+    private final ItemService itemService;
 
     @GetMapping
     public List<Item> getItems() {
-        return itemServiceImpl.getItems();
+        return itemService.getItems();
     }
 
     @PostMapping
@@ -31,16 +32,16 @@ public class ItemController {
         if (headers.containsKey("x-sharer-user-id")) {
             item.setOwner(headers.get("x-sharer-user-id"));
         } else {
-           throw new NoneXSharerUserIdException("Не указан владелец вещи");
+            throw new NoneXSharerUserIdException("Не указан владелец вещи");
         }
-        return itemServiceImpl.addItem(item);
+        return itemService.addItem(item);
     }
 
-    @PutMapping
-    public Item updateitem(@Valid @RequestBody Item item) {
-        return itemServiceImpl.updateItem(item);
+    @PatchMapping(value = "/{id}", consumes = "application/json")
+    public Item updateItem(@Valid @RequestBody Item item,
+                           @PathVariable Long id) {
+        return itemService.updateItem(item, id);
     }
-
    /* @GetMapping("/{id}")
     public item getitem(@PathVariable Long id) {
         return itemServiceImpl.getitem(id);

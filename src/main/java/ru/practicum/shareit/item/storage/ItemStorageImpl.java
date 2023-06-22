@@ -55,7 +55,8 @@ public class ItemStorageImpl implements ItemStorage {
     }
 
     @Override
-    public Item updateItem(Item item) {
+    public Item updateItem(Item item, Long id) {
+        System.out.println();
         return null;
     }
 

@@ -14,7 +14,7 @@ public interface ItemStorage {
 
     Item addItem(Item item);
 
-    Item updateItem(Item item);
+    Item updateItem(Item item, Long id);
 
     void deleteItemById(long itemId);
 }
