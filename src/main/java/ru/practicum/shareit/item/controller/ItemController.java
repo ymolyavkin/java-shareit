@@ -3,12 +3,14 @@ package ru.practicum.shareit.item.controller;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
+import ru.practicum.shareit.exception.NoneXSharerUserIdException;
 import ru.practicum.shareit.item.dto.ItemMapper;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.service.ItemServiceImpl;
 
 import javax.validation.Valid;
 import java.util.List;
+import java.util.Map;
 
 
 @Slf4j
@@ -25,14 +27,17 @@ public class ItemController {
     }
 
     @PostMapping
-    public Item addItem(@Valid @RequestBody Item item) {
-        log.info("Получена сущность item");
+    public Item addItem(@RequestHeader Map<String, String> headers, @Valid @RequestBody Item item) {
+        if (headers.containsKey("x-sharer-user-id")) {
+            item.setOwner(headers.get("x-sharer-user-id"));
+        } else {
+           throw new NoneXSharerUserIdException("Не указан владелец вещи");
+        }
         return itemServiceImpl.addItem(item);
     }
 
     @PutMapping
     public Item updateitem(@Valid @RequestBody Item item) {
-        log.info("Получена сущность item");
         return itemServiceImpl.updateItem(item);
     }
 

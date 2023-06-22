@@ -5,19 +5,19 @@ import lombok.Setter;
 import ru.practicum.shareit.request.ItemRequest;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.util.Objects;
 
-/**
- * TODO Sprint add-controllers.
- */
 @Getter
 @Setter
 public class Item {
     private long id;
     @NotBlank(message = "Название вещи не может быть пустым.")
     private String name;
+    @NotBlank(message = "Описание вещи не может быть пустым.")
     private String description;
-    private boolean isAvailable;
+    @NotNull(message = "Доступность вещи для аренды должна быть указана.")
+    private Boolean available;
     private String owner;
     private ItemRequest request;
 
@@ -43,7 +43,7 @@ public class Item {
             return this;
         }
 
-        public Builder isAvailable(boolean isAavailable) {
+        public Builder isAvailable(Boolean isAavailable) {
             newItem.setAvailable(isAavailable);
             return this;
         }
@@ -82,7 +82,7 @@ public class Item {
                 "id=" + id +
                 ", name='" + name + '\'' +
                 ", description='" + description + '\'' +
-                ", available=" + isAvailable +
+                ", available=" + available +
                 ", owner='" + owner + '\'' +
                 ", request='" + request + '\'' +
                 '}';
