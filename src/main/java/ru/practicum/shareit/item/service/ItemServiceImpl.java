@@ -7,6 +7,7 @@ import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.storage.ItemStorage;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Slf4j
@@ -27,5 +28,10 @@ public class ItemServiceImpl implements ItemService {
     @Override
     public Item updateItem(Item item, Long itemId, Long userId) {
         return itemStorage.updateItem(item, itemId, userId);
+    }
+
+    @Override
+    public Optional<Item> getItemById(Long id) {
+        return itemStorage.getItemById(id);
     }
 }

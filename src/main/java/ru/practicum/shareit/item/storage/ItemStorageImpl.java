@@ -65,7 +65,6 @@ public class ItemStorageImpl implements ItemStorage {
             if (!item.getOwner().equals(String.valueOf(userId))) {
                 throw new NotFoundException("Указан другой владелец");
             }
-          //  item.setOwner(String.valueOf(userId));
             if (updatedItem.getName() != null && !updatedItem.getName().isBlank() && !updatedItem.getName().equals(item.getName())) {
                 item.setName(updatedItem.getName());
             }
@@ -82,6 +81,15 @@ public class ItemStorageImpl implements ItemStorage {
             throw new NotFoundException("Вещь не найдена");
         }
         return updatedItem;
+    }
+
+    @Override
+    public Item getItemById(long itemId) {
+        if (items.containsKey(itemId)) {
+            return items.get(itemId);
+        } else {
+            throw new NotFoundException("Вещь c id " + id + " не найдена");
+        }
     }
 
     @Override

@@ -12,6 +12,7 @@ import ru.practicum.shareit.utility.Converter;
 import javax.validation.Valid;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 
 @Slf4j
@@ -49,12 +50,12 @@ public class ItemController {
         }
         return itemService.updateItem(item, itemId, userId);
     }
-   /* @GetMapping("/{id}")
-    public item getitem(@PathVariable Long id) {
-        return itemServiceImpl.getitem(id);
+    @GetMapping("/{id}")
+    public Optional<Item> getItemById(@PathVariable Long id) {
+        return itemService.getItemById(id);
     }
 
-    @PutMapping("/{id}/like/{userId}")
+  /*  @PutMapping("/{id}/like/{userId}")
     public void addLike(@PathVariable Long id, @PathVariable Long userId) {
         itemServiceImpl.addLike(id, userId);
     }
