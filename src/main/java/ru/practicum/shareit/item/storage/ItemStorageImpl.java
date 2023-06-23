@@ -79,6 +79,9 @@ public class ItemStorageImpl implements ItemStorage {
                 item.setDescription(updatedItem.getDescription());
             }
             if (updatedItem.getAvailable() != null && updatedItem.getAvailable() != item.getAvailable()) {
+                if (item.getAvailable() && !updatedItem.getAvailable()) {
+                    item.incrementNumberOfTimesToRent();
+                }
                 item.setAvailable(updatedItem.getAvailable());
             }
             updatedItem = item;

@@ -20,6 +20,7 @@ public class Item {
     private Boolean available;
     private Long ownerId;
     private ItemRequest request;
+    private int numberOfTimesToRent;
 
     public static class Builder {
         private final Item newItem;
@@ -58,9 +59,18 @@ public class Item {
             return this;
         }
 
+        public Builder numberOfTimesToRent(int numberOfTimesToRent) {
+            newItem.setNumberOfTimesToRent(0);
+            return this;
+        }
+
         public Item build() {
             return newItem;
         }
+    }
+
+    public void incrementNumberOfTimesToRent() {
+        numberOfTimesToRent++;
     }
 
     @Override
