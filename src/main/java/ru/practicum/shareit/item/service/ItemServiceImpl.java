@@ -19,6 +19,10 @@ public class ItemServiceImpl implements ItemService {
     public List<Item> getItems() {
         return itemStorage.getItems();
     }
+    @Override
+    public List<Item> getItems(Long userId) {
+        return itemStorage.getItems(userId);
+    }
 
     @Override
     public Item addItem(Item item) {

@@ -9,6 +9,7 @@ import ru.practicum.shareit.user.storage.UserStorage;
 import ru.practicum.shareit.utility.Converter;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Repository
@@ -33,6 +34,11 @@ public class ItemStorageImpl implements ItemStorage {
     }
 
     @Override
+    public List<Item> getItems(Long userId) {
+        return items.values().stream().filter(item -> item.getOwnerId().equals(userId)).collect(Collectors.toList());
+    }
+
+    @Override
     public Optional<Item> getItemById(Long id) {
         if (items.containsKey(id)) {
             return Optional.of(items.get(id));
@@ -42,7 +48,7 @@ public class ItemStorageImpl implements ItemStorage {
 
     @Override
     public Item addItem(Item item) {
-        Long userId = Converter.stringToLong(item.getOwner());
+        Long userId = item.getOwnerId();
         Optional<User> user = userStorage.getUserById(userId);
         if (user.isEmpty()) {
             throw new NotFoundException("Пользователь c id " + userId + " не найден");
@@ -62,7 +68,7 @@ public class ItemStorageImpl implements ItemStorage {
         }
         if (items.containsKey(itemId)) {
             Item item = items.get(itemId);
-            if (!item.getOwner().equals(String.valueOf(userId))) {
+            if (!item.getOwnerId().equals(userId)) {
                 throw new NotFoundException("Указан другой владелец");
             }
             if (updatedItem.getName() != null && !updatedItem.getName().isBlank() && !updatedItem.getName().equals(item.getName())) {

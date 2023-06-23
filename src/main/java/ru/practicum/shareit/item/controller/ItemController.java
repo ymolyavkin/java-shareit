@@ -24,14 +24,19 @@ public class ItemController {
     private final ItemService itemService;
 
     @GetMapping
-    public List<Item> getItems() {
-        return itemService.getItems();
+    public List<Item> getItems(@RequestHeader Map<String, String> headers) {
+        if (headers.containsKey("x-sharer-user-id")) {
+            Long userId = Converter.stringToLong(headers.get("x-sharer-user-id"));
+            return itemService.getItems(userId);
+        } else {
+            return itemService.getItems();
+        }
     }
 
     @PostMapping
     public Item addItem(@RequestHeader Map<String, String> headers, @Valid @RequestBody Item item) {
         if (headers.containsKey("x-sharer-user-id")) {
-            item.setOwner(headers.get("x-sharer-user-id"));
+            item.setOwnerId(Converter.stringToLong(headers.get("x-sharer-user-id")));
         } else {
             throw new NoneXSharerUserIdException("Не указан владелец вещи");
         }
@@ -54,46 +59,4 @@ public class ItemController {
     public Optional<Item> getItemById(@PathVariable Long id) {
         return itemService.getItemById(id);
     }
-
-  /*  @PutMapping("/{id}/like/{userId}")
-    public void addLike(@PathVariable Long id, @PathVariable Long userId) {
-        itemServiceImpl.addLike(id, userId);
-    }
-
-    @DeleteMapping("/{id}/like/{userId}")
-    public void removeLike(@PathVariable Long id, @PathVariable Long userId) {
-        itemServiceImpl.removeLike(id, userId);
-    }
-
-    @GetMapping("/popular")
-    public List<item> getMostPopulars(@RequestParam(defaultValue = "10", required = false) @Min(1) Long count,
-                                      @RequestParam(required = false) @Min(1) Integer genreId,
-                                      @RequestParam(required = false) @Min(1895) String year) {
-        return itemServiceImpl.getTopitems(count, genreId, year);
-    }
-
-    @GetMapping("/search")
-    public List<item> getitemsWithQueryByTitleAndDirector(
-            @RequestParam @NotBlank String query,
-            @RequestParam List<String> by) {
-        return itemServiceImpl.getitemsWithQueryByTitleAndDirector(query, by);
-    }
-
-    @GetMapping("/director/{directorId}")
-    public List<item> getSorteditemsByDirector(@PathVariable("directorId") Long directorId,
-                                               @RequestParam("sortBy") String sort) {
-        return itemServiceImpl.getitemsByDirectorSortedBy(directorId, sort);
-    }
-
-    @GetMapping("/common")
-    public List<item> getCommonitems(@RequestParam(name = "userId") long userId,
-                                     @RequestParam(name = "friendId") long friendId) {
-        return itemServiceImpl.getCommonitems(userId, friendId);
-    }
-
-    @DeleteMapping("{itemId}")
-    public void deleteitem(@PathVariable("itemId") long itemId) {
-        itemServiceImpl.deleteitemById(itemId);
-    }
-*/
 }

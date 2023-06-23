@@ -10,6 +10,8 @@ import java.util.Optional;
 public interface ItemStorage {
     List<Item> getItems();
 
+    List<Item> getItems(Long userId);
+
     Optional<Item> getItemById(Long id);
 
     Item addItem(Item item);

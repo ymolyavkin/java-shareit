@@ -18,7 +18,7 @@ public class Item {
     private String description;
     @NotNull(message = "Доступность вещи для аренды должна быть указана.")
     private Boolean available;
-    private String owner;
+    private Long ownerId;
     private ItemRequest request;
 
     public static class Builder {
@@ -48,8 +48,8 @@ public class Item {
             return this;
         }
 
-        public Builder owner(String owner) {
-            newItem.setOwner(owner);
+        public Builder ownerId(Long ownerId) {
+            newItem.setOwnerId(ownerId);
             return this;
         }
 
@@ -83,7 +83,7 @@ public class Item {
                 ", name='" + name + '\'' +
                 ", description='" + description + '\'' +
                 ", available=" + available +
-                ", owner='" + owner + '\'' +
+                ", owner='" + ownerId + '\'' +
                 ", request='" + request + '\'' +
                 '}';
     }
