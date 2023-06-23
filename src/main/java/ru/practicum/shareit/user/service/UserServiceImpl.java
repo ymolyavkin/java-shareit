@@ -29,10 +29,12 @@ public class UserServiceImpl implements UserService {
     public User updateUser(User user, Long userId) {
         return userStorage.updateUser(user, userId);
     }
+
     @Override
     public Optional<User> getUserById(Long id) {
         return userStorage.getUserById(id);
     }
+
     @Override
     public void deleteUserById(Long id) {
         userStorage.deleteUserById(id);

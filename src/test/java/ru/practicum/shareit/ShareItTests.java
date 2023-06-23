@@ -15,48 +15,44 @@ import java.time.LocalDateTime;
 
 @SpringBootTest
 class ShareItTests {
+    @Test
+    void contextLoads() {
+    }
 
-	@Test
-	void contextLoads() {
+    @BeforeEach
+    void setUp() {
+        User requestor = new User("Name Requestor", "email@yandex.ru");
+        ItemRequest request = new ItemRequest("description", requestor, LocalDateTime.now());
+        Item item = new Item.Builder()
+                .id(1L)
+                .name("Name")
+                .description("descr")
+                .isAvailable(true)
+                .ownerId(1L)
+                .request(request)
+                .build();
+        User booker = new User("Name", "email@mail.ru");
 
-	}
-	@BeforeEach
-	void setUp() {
-		User requestor = new User("Name Requestor", "email@yandex.ru");
-		ItemRequest request= new ItemRequest("description", requestor, LocalDateTime.now());
-		Item item = new Item.Builder()
-				.id(0L)
-				.name("Name")
-				.description("descr")
-				.isAvailable(true)
-				.owner("owner")
-				.request(request)
-				.build();
-		User booker = new User("Name", "email@mail.ru");
+        Booking booking = new Booking.Builder()
+                .id(0L)
+                .start(LocalDateTime.now())
+                .end(LocalDateTime.now())
+                .item(item)
+                .booker(booker)
+                .status(Status.WAITING)
+                .build();
+        Long itemRequestId = item.getRequest().getId();
+        ItemDto itemDto = new ItemDto.Builder()
+                .id(0L)
+                .name("Name")
+                .description("descr")
+                .isAvailable(true)
+                .owner("owner")
+                .build();
+    }
 
-		Booking booking = new Booking.Builder()
-				.id(0L)
-				.start(LocalDateTime.now())
-				.end(LocalDateTime.now())
-				.item(item)
-				.booker(booker)
-				.status(Status.WAITING)
-				.build();
-		Long itemRequestId = item.getRequest().getId();
-		ItemDto itemDto = new ItemDto.Builder()
-				.id(0L)
-				.name("Name")
-				.description("descr")
-				.isAvailable(true)
-				.owner("owner")
-				.request(itemRequestId)
-				.build();
-
-		System.out.println();
-	}
-
-	@AfterEach
-	void tearDown() {
-	}
+    @AfterEach
+    void tearDown() {
+    }
 
 }

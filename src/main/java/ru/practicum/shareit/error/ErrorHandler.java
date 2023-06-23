@@ -36,7 +36,7 @@ public class ErrorHandler {
                 "error", e.getMessage()
         );
     }
-    //@ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR).
+
     @ExceptionHandler({NoneXSharerUserIdException.class})
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public Map<String, String> handleNoneXSharerUserId(final RuntimeException e) {
