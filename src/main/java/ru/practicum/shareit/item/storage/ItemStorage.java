@@ -21,4 +21,6 @@ public interface ItemStorage {
     void deleteItemById(long id);
 
     Item getItemById(long itemId);
+
+    List<Item> searchItems(String keyword);
 }

@@ -38,4 +38,9 @@ public class ItemServiceImpl implements ItemService {
     public Optional<Item> getItemById(Long id) {
         return itemStorage.getItemById(id);
     }
+
+    @Override
+    public List<Item> searchItems(String keyword) {
+        return itemStorage.searchItems(keyword);
+    }
 }

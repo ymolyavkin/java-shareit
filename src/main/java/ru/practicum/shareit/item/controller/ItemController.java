@@ -10,6 +10,8 @@ import ru.practicum.shareit.item.service.ItemService;
 import ru.practicum.shareit.utility.Converter;
 
 import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -49,14 +51,23 @@ public class ItemController {
                            @PathVariable Long itemId) {
         Long userId;
         if (headers.containsKey("x-sharer-user-id")) {
-           userId = Converter.stringToLong(headers.get("x-sharer-user-id"));
+            userId = Converter.stringToLong(headers.get("x-sharer-user-id"));
         } else {
             throw new NoneXSharerUserIdException("Не указан владелец вещи");
         }
         return itemService.updateItem(item, itemId, userId);
     }
+
     @GetMapping("/{id}")
     public Optional<Item> getItemById(@PathVariable Long id) {
         return itemService.getItemById(id);
+    }
+
+    @GetMapping("/search")
+    public List<Item> searchItems(@RequestParam String text) {
+        if(text.isBlank()) {
+            return new ArrayList<>(0);
+        }
+        return itemService.searchItems(text);
     }
 }

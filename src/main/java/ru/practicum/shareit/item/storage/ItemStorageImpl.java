@@ -6,7 +6,6 @@ import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.storage.UserStorage;
-import ru.practicum.shareit.utility.Converter;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -69,7 +68,7 @@ public class ItemStorageImpl implements ItemStorage {
         if (items.containsKey(itemId)) {
             Item item = items.get(itemId);
             if (!item.getOwnerId().equals(userId)) {
-                throw new NotFoundException("Указан другой владелец");
+                throw new NotFoundException("Редактировать вещь может только её владелец");
             }
             if (updatedItem.getName() != null && !updatedItem.getName().isBlank() && !updatedItem.getName().equals(item.getName())) {
                 item.setName(updatedItem.getName());
@@ -96,6 +95,16 @@ public class ItemStorageImpl implements ItemStorage {
         } else {
             throw new NotFoundException("Вещь c id " + id + " не найдена");
         }
+    }
+
+    @Override
+    public List<Item> searchItems(String keyword) {
+        return items.values()
+                .stream()
+                .filter(item -> item.getAvailable()
+                        && (item.getName().toLowerCase().contains(keyword.toLowerCase())
+                        || item.getDescription().toLowerCase().contains(keyword.toLowerCase())))
+                .collect(Collectors.toList());
     }
 
     @Override

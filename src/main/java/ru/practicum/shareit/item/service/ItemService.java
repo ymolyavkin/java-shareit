@@ -14,4 +14,6 @@ public interface ItemService {
     Item updateItem(Item item, Long itemId, Long userId);
 
     Optional<Item> getItemById(Long id);
+
+    List<Item> searchItems(String keyword);
 }
