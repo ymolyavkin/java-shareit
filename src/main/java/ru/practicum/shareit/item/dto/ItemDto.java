@@ -2,11 +2,7 @@ package ru.practicum.shareit.item.dto;
 
 import lombok.Getter;
 import lombok.Setter;
-import ru.practicum.shareit.request.ItemRequest;
 
-/**
- * TODO Sprint add-controllers.
- */
 @Getter
 @Setter
 public class ItemDto {
@@ -15,8 +11,8 @@ public class ItemDto {
     private String description;
     private boolean available;
     private String owner;
-    private Long itemRequestId;
-   // private ItemRequest request;
+    private int numberOfTimesToRent;
+
     public static class Builder {
         private final ItemDto newItemDto;
 
@@ -49,8 +45,8 @@ public class ItemDto {
             return this;
         }
 
-        public ItemDto.Builder request(Long itemRequestId) {
-            newItemDto.setItemRequestId(itemRequestId);
+        public ItemDto.Builder numberOfTimesToRent(int numberOfTimesToRent) {
+            newItemDto.setNumberOfTimesToRent(numberOfTimesToRent);
             return this;
         }
 

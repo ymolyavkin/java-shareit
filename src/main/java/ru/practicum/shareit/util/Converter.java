@@ -1,4 +1,4 @@
-package ru.practicum.shareit.utility;
+package ru.practicum.shareit.util;
 
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
@@ -12,6 +12,6 @@ public class Converter {
         if (matcher.find()) {
             number = matcher.group(1);
         }
-        return Long.valueOf(number);
+        return Long.parseLong(number);
     }
 }

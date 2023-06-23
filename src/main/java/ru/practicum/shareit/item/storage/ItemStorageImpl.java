@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
 @Repository
 public class ItemStorageImpl implements ItemStorage {
     private long id;
-    private Map<Long, Item> items;
+    private final Map<Long, Item> items;
     private final UserStorage userStorage;
 
     public ItemStorageImpl(UserStorage userStorage) {
@@ -29,7 +29,7 @@ public class ItemStorageImpl implements ItemStorage {
 
     @Override
     public List<Item> getItems() {
-        return new ArrayList<Item>(items.values());
+        return new ArrayList<>(items.values());
     }
 
     @Override
@@ -112,6 +112,11 @@ public class ItemStorageImpl implements ItemStorage {
 
     @Override
     public void deleteItemById(long itemId) {
-
+        if (items.containsKey(itemId)) {
+            items.remove(itemId);
+            log.info("Вещь с id = {} удалена.", itemId);
+        } else {
+            log.info("Вещь с id = {} не существует.", itemId);
+        }
     }
 }
