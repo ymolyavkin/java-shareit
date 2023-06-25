@@ -17,5 +17,5 @@ public class IncomingItemDto {
     private String description;
     @NotNull(message = "Доступность вещи для аренды должна быть указана.")
     private Boolean available;
-    private String ownerId;
+    private Long ownerId;
 }

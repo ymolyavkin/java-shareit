@@ -8,7 +8,6 @@ import ru.practicum.shareit.item.dto.IncomingItemDto;
 import ru.practicum.shareit.item.dto.ItemMapper;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.storage.ItemStorage;
-import ru.practicum.shareit.util.Converter;
 
 import java.util.List;
 import java.util.Optional;
@@ -31,7 +30,7 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public Item addItem(IncomingItemDto incomingItemDto) {
-        if (incomingItemDto.getOwnerId().isBlank()) {
+        if (incomingItemDto.getOwnerId().equals(-1)) {
             throw new NoneXSharerUserIdException("Не указан владелец вещи");
         }
         return itemStorage.addItem(ItemMapper.toItem(incomingItemDto));

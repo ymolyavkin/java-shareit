@@ -2,6 +2,7 @@ package ru.practicum.shareit.item.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.bind.UnsatisfiedServletRequestParameterException;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.exception.NoneXSharerUserIdException;
 import ru.practicum.shareit.item.dto.IncomingItemDto;
@@ -17,6 +18,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import static ru.practicum.shareit.util.Constants.USER_ID_FROM_REQUEST;
+
 
 @Slf4j
 @RequiredArgsConstructor
@@ -26,9 +29,8 @@ public class ItemController {
     private final ItemService itemService;
 
     @GetMapping
-    public List<ItemDto> getItems(@RequestHeader Map<String, String> headers) {
-        if (headers.containsKey("x-sharer-user-id")) {
-            Long userId = Converter.stringToLong(headers.get("x-sharer-user-id"));
+    public List<ItemDto> getItems(@RequestHeader(value = USER_ID_FROM_REQUEST, defaultValue = "-1") Long userId) {
+        if (!userId.equals(-1L)) {
             return itemService.getItems(userId)
                     .stream()
                     .map(ItemMapper::toItemDto)
@@ -41,20 +43,22 @@ public class ItemController {
         }
     }
 
+    @ExceptionHandler(UnsatisfiedServletRequestParameterException.class)
     @PostMapping
-    public Item addItem(@RequestHeader Map<String, String> headers, @Valid @RequestBody IncomingItemDto incomingItemDto) {
-        incomingItemDto.setOwnerId(headers.get("x-sharer-user-id"));
+    public Item addItem(@RequestHeader(value = USER_ID_FROM_REQUEST, defaultValue = "-1") Long userId,
+                        @Valid @RequestBody IncomingItemDto incomingItemDto) {
+        if (userId.equals(-1L)) {
+            throw new NoneXSharerUserIdException("Не указан владелец вещи");
+        }
+        incomingItemDto.setOwnerId(userId);
         return itemService.addItem(incomingItemDto);
     }
 
     @PatchMapping(value = "/{itemId}", consumes = "application/json")
-    public Item updateItem(@RequestHeader Map<String, String> headers,
+    public Item updateItem(@RequestHeader(value = USER_ID_FROM_REQUEST, defaultValue = "-1") Long userId,
                            @RequestBody Item item,
                            @PathVariable Long itemId) {
-        long userId;
-        if (headers.containsKey("x-sharer-user-id")) {
-            userId = Converter.stringToLong(headers.get("x-sharer-user-id"));
-        } else {
+        if (userId.equals(-1L)) {
             throw new NoneXSharerUserIdException("Не указан владелец вещи");
         }
         return itemService.updateItem(item, itemId, userId);

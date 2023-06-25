@@ -25,7 +25,7 @@ public class ItemMapper {
                 .name(incomingItemDto.getName())
                 .description(incomingItemDto.getDescription())
                 .isAvailable(incomingItemDto.getAvailable())
-                .ownerId(Converter.stringToLong(incomingItemDto.getOwnerId()))
+                .ownerId(incomingItemDto.getOwnerId())
                 .build();
     }
 }
