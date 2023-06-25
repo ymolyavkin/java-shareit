@@ -8,9 +8,6 @@ import javax.validation.constraints.NotBlank;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
-/**
- * TODO Sprint add-item-requests.
- */
 @Getter
 @Setter
 public class ItemRequest {
