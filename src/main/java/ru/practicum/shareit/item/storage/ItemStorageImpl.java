@@ -8,23 +8,24 @@ import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.storage.UserStorage;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 
 @Slf4j
 @Repository
 public class ItemStorageImpl implements ItemStorage {
-    private long id;
+    private AtomicLong id;
     private final Map<Long, Item> items;
     private final UserStorage userStorage;
 
     public ItemStorageImpl(UserStorage userStorage) {
-        id = 1;
+        id = new AtomicLong(1);
         items = new HashMap<>();
         this.userStorage = userStorage;
     }
 
     private long generateId() {
-        return id++;
+        return id.getAndIncrement();
     }
 
     @Override

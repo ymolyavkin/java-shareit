@@ -28,6 +28,7 @@ public class ItemController {
 
     @GetMapping
     public List<ItemDto> getItems(@RequestHeader(value = USER_ID_FROM_REQUEST, defaultValue = "-1") Long userId) {
+        log.info("Получен запрос на выдачу вещей пользователя с id = {}", userId);
         if (!userId.equals(-1L)) {
             return itemService.getItems(userId)
                     .stream()
@@ -45,6 +46,7 @@ public class ItemController {
     @PostMapping
     public Item addItem(@RequestHeader(value = USER_ID_FROM_REQUEST, defaultValue = "-1") Long userId,
                         @Valid @RequestBody IncomingItemDto incomingItemDto) {
+        log.info("Получен запрос на добавление вещи пользователя с id = {}", userId);
         if (userId.equals(-1L)) {
             throw new NoneXSharerUserIdException("Не указан владелец вещи");
         }
@@ -56,6 +58,7 @@ public class ItemController {
     public Item updateItem(@RequestHeader(value = USER_ID_FROM_REQUEST, defaultValue = "-1") Long userId,
                            @RequestBody Item item,
                            @PathVariable Long itemId) {
+        log.info("Получен запрос на обновление вещи пользователя с id = {}", userId);
         if (userId.equals(-1L)) {
             throw new NoneXSharerUserIdException("Не указан владелец вещи");
         }
@@ -64,13 +67,14 @@ public class ItemController {
 
     @GetMapping("/{id}")
     public ItemDto getItemById(@PathVariable Long id) {
+        log.info("Получен запрос на выдачу вещи с id = {}", id);
         Item item = itemService.getItemById(id).get();
         return ItemMapper.toItemDto(item);
     }
 
-
     @GetMapping("/search")
     public List<Item> searchItems(@RequestParam String text) {
+        log.info("Получен запрос на поиск вещей по ключевому слову \'{}\'", text);
         if (text.isBlank()) {
             return new ArrayList<>(0);
         }

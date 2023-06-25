@@ -9,11 +9,3 @@ public class UserEmailConstraintValidator implements ConstraintValidator<UserEma
         return email == null;
     }
 }
-/*
-ConstraintValidator<UserLoginConstraint, String>
-@Override
-    public boolean isValid(String login, ConstraintValidatorContext constraintValidatorContext) {
-        return login == null || !login.contains(" ");
-    }
-}
- */

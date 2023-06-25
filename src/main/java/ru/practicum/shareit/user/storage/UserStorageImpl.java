@@ -7,11 +7,12 @@ import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.user.model.User;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicLong;
 
 @Slf4j
 @Repository
 public class UserStorageImpl implements UserStorage {
-    private long id;
+    private AtomicLong id;
     private Map<Long, User> users;
 
     private boolean emailAlreadyExists(String email, Long skipId) {
@@ -24,12 +25,12 @@ public class UserStorageImpl implements UserStorage {
     }
 
     public UserStorageImpl() {
-        id = 1;
+        id = new AtomicLong(1);
         users = new HashMap<>();
     }
 
     private long generateId() {
-        return id++;
+        return id.getAndIncrement();
     }
 
     @Override

@@ -47,7 +47,7 @@ class ShareItTests {
                 .name("Name")
                 .description("descr")
                 .isAvailable(true)
-                .owner("owner")
+                .owner(0L)
                 .build();
     }
 

@@ -3,7 +3,6 @@ package ru.practicum.shareit.item.dto;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 import ru.practicum.shareit.item.model.Item;
-import ru.practicum.shareit.util.Converter;
 
 @Slf4j
 @UtilityClass
