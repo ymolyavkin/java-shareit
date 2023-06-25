@@ -1,34 +1,32 @@
 package ru.practicum.shareit.item.dto;
 
-import lombok.RequiredArgsConstructor;
+import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
-import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.item.model.Item;
-import ru.practicum.shareit.user.model.User;
-import ru.practicum.shareit.user.storage.UserStorage;
+import ru.practicum.shareit.util.Converter;
 
-import java.util.Optional;
-
-@Service
 @Slf4j
-@RequiredArgsConstructor
+@UtilityClass
 public class ItemMapper {
-    private final UserStorage userStorage;
 
-    public ItemDto toItemDto(Item item) {
-        Long userId = item.getOwnerId();
-        Optional<User> owner = userStorage.getUserById(userId);
-        if (owner.isPresent()) {
-            String ownerName = owner.get().getName();
-            return new ItemDto.Builder()
-                    .id(item.getId())
-                    .name(item.getName())
-                    .description(item.getDescription())
-                    .isAvailable(item.getAvailable())
-                    .owner(ownerName)
-                    .numberOfTimesToRent(item.getNumberOfTimesToRent())
-                    .build();
-        } else throw new NotFoundException("Пользователь c id " + userId + " не найден");
+    public static ItemDto toItemDto(Item item) {
+        return new ItemDto.Builder()
+                .id(item.getId())
+                .name(item.getName())
+                .description(item.getDescription())
+                .isAvailable(item.getAvailable())
+                .owner(item.getOwnerId())
+                .numberOfTimesToRent(item.getNumberOfTimesToRent())
+                .build();
+    }
+
+    public static Item toItem(IncomingItemDto incomingItemDto) {
+        return new Item.Builder()
+                .name(incomingItemDto.getName())
+                .description(incomingItemDto.getDescription())
+                .isAvailable(incomingItemDto.getAvailable())
+                .ownerId(Converter.stringToLong(incomingItemDto.getOwnerId()))
+                .build();
     }
 }
+

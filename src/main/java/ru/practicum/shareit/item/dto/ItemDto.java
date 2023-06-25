@@ -10,7 +10,7 @@ public class ItemDto {
     private String name;
     private String description;
     private boolean available;
-    private String owner;
+    private Long owner;
     private int numberOfTimesToRent;
 
     public static class Builder {
@@ -40,7 +40,7 @@ public class ItemDto {
             return this;
         }
 
-        public ItemDto.Builder owner(String owner) {
+        public ItemDto.Builder owner(Long owner) {
             newItemDto.setOwner(owner);
             return this;
         }

@@ -3,8 +3,12 @@ package ru.practicum.shareit.item.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import ru.practicum.shareit.exception.NoneXSharerUserIdException;
+import ru.practicum.shareit.item.dto.IncomingItemDto;
+import ru.practicum.shareit.item.dto.ItemMapper;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.storage.ItemStorage;
+import ru.practicum.shareit.util.Converter;
 
 import java.util.List;
 import java.util.Optional;
@@ -26,8 +30,11 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public Item addItem(Item item) {
-        return itemStorage.addItem(item);
+    public Item addItem(IncomingItemDto incomingItemDto) {
+        if (incomingItemDto.getOwnerId().isBlank()) {
+            throw new NoneXSharerUserIdException("Не указан владелец вещи");
+        }
+        return itemStorage.addItem(ItemMapper.toItem(incomingItemDto));
     }
 
     @Override

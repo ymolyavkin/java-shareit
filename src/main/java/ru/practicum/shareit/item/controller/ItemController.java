@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.exception.NoneXSharerUserIdException;
+import ru.practicum.shareit.item.dto.IncomingItemDto;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.ItemMapper;
 import ru.practicum.shareit.item.model.Item;
@@ -23,7 +24,6 @@ import java.util.stream.Collectors;
 @RequestMapping("/items")
 public class ItemController {
     private final ItemService itemService;
-    private final ItemMapper itemMapper;
 
     @GetMapping
     public List<ItemDto> getItems(@RequestHeader Map<String, String> headers) {
@@ -31,24 +31,20 @@ public class ItemController {
             Long userId = Converter.stringToLong(headers.get("x-sharer-user-id"));
             return itemService.getItems(userId)
                     .stream()
-                    .map(itemMapper::toItemDto)
+                    .map(ItemMapper::toItemDto)
                     .collect(Collectors.toList());
         } else {
             return itemService.getItems()
                     .stream()
-                    .map(itemMapper::toItemDto)
+                    .map(ItemMapper::toItemDto)
                     .collect(Collectors.toList());
         }
     }
 
     @PostMapping
-    public Item addItem(@RequestHeader Map<String, String> headers, @Valid @RequestBody Item item) {
-        if (headers.containsKey("x-sharer-user-id")) {
-            item.setOwnerId(Converter.stringToLong(headers.get("x-sharer-user-id")));
-        } else {
-            throw new NoneXSharerUserIdException("Не указан владелец вещи");
-        }
-        return itemService.addItem(item);
+    public Item addItem(@RequestHeader Map<String, String> headers, @Valid @RequestBody IncomingItemDto incomingItemDto) {
+        incomingItemDto.setOwnerId(headers.get("x-sharer-user-id"));
+        return itemService.addItem(incomingItemDto);
     }
 
     @PatchMapping(value = "/{itemId}", consumes = "application/json")
@@ -67,7 +63,7 @@ public class ItemController {
     @GetMapping("/{id}")
     public ItemDto getItemById(@PathVariable Long id) {
         Item item = itemService.getItemById(id).get();
-        return itemMapper.toItemDto(item);
+        return ItemMapper.toItemDto(item);
     }
 
 
