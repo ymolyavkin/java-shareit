@@ -20,10 +20,10 @@ public class ItemMapper {
     }
 
     public static Item toItem(IncomingItemDto incomingItemDto) {
-        return new Item.Builder()
+        return Item.builder()
                 .name(incomingItemDto.getName())
                 .description(incomingItemDto.getDescription())
-                .isAvailable(incomingItemDto.getAvailable())
+                .available(incomingItemDto.getAvailable())
                 .ownerId(incomingItemDto.getOwnerId())
                 .build();
     }
