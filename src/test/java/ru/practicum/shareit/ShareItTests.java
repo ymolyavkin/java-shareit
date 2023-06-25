@@ -42,12 +42,12 @@ class ShareItTests {
                 .status(Status.WAITING)
                 .build();
         Long itemRequestId = item.getRequest().getId();
-        ItemDto itemDto = new ItemDto.Builder()
+        ItemDto itemDto = ItemDto.builder()
                 .id(0L)
                 .name("Name")
                 .description("descr")
                 .isAvailable(true)
-                .owner(0L)
+                .ownerId(0L)
                 .build();
     }
 

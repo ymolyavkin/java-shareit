@@ -9,12 +9,12 @@ import ru.practicum.shareit.item.model.Item;
 public class ItemMapper {
 
     public static ItemDto toItemDto(Item item) {
-        return new ItemDto.Builder()
+        return ItemDto.builder()
                 .id(item.getId())
                 .name(item.getName())
                 .description(item.getDescription())
                 .isAvailable(item.getAvailable())
-                .owner(item.getOwnerId())
+                .ownerId(item.getOwnerId())
                 .numberOfTimesToRent(item.getNumberOfTimesToRent())
                 .build();
     }
