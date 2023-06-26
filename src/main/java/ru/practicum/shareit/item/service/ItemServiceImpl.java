@@ -30,7 +30,7 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public Item addItem(IncomingItemDto incomingItemDto) {
-        if (incomingItemDto.getOwnerId().equals(-1)) {
+        if (incomingItemDto.getOwnerId().equals(-1L)) {
             throw new NoneXSharerUserIdException("Не указан владелец вещи");
         }
         return itemStorage.addItem(ItemMapper.toItem(incomingItemDto));
