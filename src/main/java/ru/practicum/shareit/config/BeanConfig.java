@@ -10,6 +10,6 @@ import java.sql.SQLException;
 public class BeanConfig {
     @Bean(initMethod = "start", destroyMethod = "stop")
     public Server inMemoryH2DatabaseaServer() throws SQLException {
-        return Server.createTcpServer("-tcp", "-tcpAllowOthers", "-tcpPort", "8090");
+        return Server.createTcpServer("-tcp", "-tcpAllowOthers", "-tcpPort", "9090");
     }
 }
