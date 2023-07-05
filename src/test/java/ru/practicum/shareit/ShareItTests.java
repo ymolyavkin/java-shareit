@@ -23,14 +23,13 @@ class ShareItTests {
     void setUp() {
         User requestor = new User("Name Requestor", "email@yandex.ru");
         ItemRequest request = new ItemRequest("description", requestor.getId(), LocalDateTime.now());
-        Item item = Item.builder()
-                .id(1L)
-                .name("Name")
-                .description("descr")
-                .available(true)
-                .ownerId(1L)
-                .requestId(1)
-                .build();
+        Item item = new Item();
+       item.setId(1L);
+        item.setName("Name");
+        item.setDescription("descr");
+        item.setAvailable(true);
+        item.setOwnerId(1L);
+        item.setRequestId(1);
         User booker = new User("Name", "email@mail.ru");
 
         Booking booking = new Booking.Builder()

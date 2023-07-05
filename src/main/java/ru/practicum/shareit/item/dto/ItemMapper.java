@@ -20,12 +20,13 @@ public class ItemMapper {
     }
 
     public static Item toItem(IncomingItemDto incomingItemDto) {
-        return Item.builder()
-                .name(incomingItemDto.getName())
-                .description(incomingItemDto.getDescription())
-                .available(incomingItemDto.getAvailable())
-                .ownerId(incomingItemDto.getOwnerId())
-                .build();
+        Item item = new Item();
+       item.setName(incomingItemDto.getName());
+       item.setDescription(incomingItemDto.getDescription());
+      item.setAvailable(incomingItemDto.getAvailable());
+      item.setOwnerId(incomingItemDto.getOwnerId());
+
+      return item;
     }
 }
 

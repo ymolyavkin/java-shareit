@@ -9,10 +9,10 @@ import java.util.List;
 import java.util.Optional;
 
 public interface ItemRepository extends JpaRepository<Item, Long> {
-    List<Item> findByUserId(long userId);
+   // List<Item> findByUserId(long userId);
 
-    Optional<Item> findByUserIdAndUrl(long userId, String url);
+  //  Optional<Item> findByUserIdAndUrl(long userId, String url);
 
 
-    void deleteByUserIdAndId(long userId, long itemId);
+  //  void deleteByUserIdAndId(long userId, long itemId);
 }

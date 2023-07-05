@@ -8,7 +8,7 @@ import javax.persistence.Table;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.util.Objects;
-@Builder
+
 @Entity
 @Table(name = "items")
 @Data
