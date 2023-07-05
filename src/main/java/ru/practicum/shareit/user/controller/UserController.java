@@ -3,6 +3,7 @@ package ru.practicum.shareit.user.controller;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
+import ru.practicum.shareit.user.dto.IncomingUserDto;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.service.UserService;
 
@@ -30,9 +31,9 @@ public class UserController {
     }
 
     @PostMapping(consumes = "application/json")
-    public User addUser(@Valid @RequestBody User user) {
+    public User addUser(@Valid @RequestBody IncomingUserDto incomingUserDto) {
         log.info("Получен запрос на добавление пользователя");
-        return userService.addUser(user);
+        return userService.addUser(incomingUserDto);
     }
 
     @PatchMapping(value = "/{id}", consumes = "application/json")

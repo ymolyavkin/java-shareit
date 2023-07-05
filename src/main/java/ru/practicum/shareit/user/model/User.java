@@ -1,15 +1,23 @@
 package ru.practicum.shareit.user.model;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
 import java.util.Objects;
 
 @Getter
 @Setter
+@NoArgsConstructor
+@Entity
+@Table(name="users", schema = "public")
 public class User {
+    @Id
     private long id;
     @NotBlank
     private String name;
@@ -42,5 +50,13 @@ public class User {
                 ", name='" + name + '\'' +
                 ", email='" + email + '\'' +
                 '}';
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public Long getId() {
+        return id;
     }
 }

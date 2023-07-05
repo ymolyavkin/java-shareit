@@ -22,14 +22,14 @@ class ShareItTests {
     @BeforeEach
     void setUp() {
         User requestor = new User("Name Requestor", "email@yandex.ru");
-        ItemRequest request = new ItemRequest("description", requestor, LocalDateTime.now());
+        ItemRequest request = new ItemRequest("description", requestor.getId(), LocalDateTime.now());
         Item item = Item.builder()
                 .id(1L)
                 .name("Name")
                 .description("descr")
                 .available(true)
                 .ownerId(1L)
-                .request(request)
+                .requestId(1)
                 .build();
         User booker = new User("Name", "email@mail.ru");
 
@@ -41,7 +41,7 @@ class ShareItTests {
                 .booker(booker)
                 .status(Status.WAITING)
                 .build();
-        Long itemRequestId = item.getRequest().getId();
+       // Long itemRequestId = item.getRequestId().getId();
         ItemDto itemDto = ItemDto.builder()
                 .id(0L)
                 .name("Name")

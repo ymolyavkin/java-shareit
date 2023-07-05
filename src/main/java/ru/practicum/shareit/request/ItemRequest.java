@@ -1,25 +1,34 @@
 package ru.practicum.shareit.request;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 import ru.practicum.shareit.user.model.User;
 
+import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
+@Entity
 @Getter
 @Setter
+@ToString
+@NoArgsConstructor
+@Table(name = "item_request")
 public class ItemRequest {
-    private long id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
     @NotBlank
-    private final String description;
-    private final User requestor;
-    private final LocalDateTime created;
+    private String description;
+    private Long requestorId;
+    private LocalDateTime created;
 
-    public ItemRequest(String description, User requestor, LocalDateTime created) {
+    public ItemRequest(String description, Long requestorId, LocalDateTime created) {
         this.description = description;
-        this.requestor = requestor;
+        this.requestorId = requestorId;
         this.created = created;
     }
 
@@ -41,8 +50,16 @@ public class ItemRequest {
         return "ItemRequest{" +
                 "id=" + id +
                 ", description='" + description + '\'' +
-                ", requestor=" + requestor +
+                ", requestor=" + requestorId +
                 ", created=" + created +
                 '}';
     }
+
+/*    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public Long getId() {
+        return id;
+    }*/
 }

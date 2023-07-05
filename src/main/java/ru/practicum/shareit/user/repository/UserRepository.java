@@ -5,7 +5,6 @@ import ru.practicum.shareit.user.model.User;
 
 import java.util.List;
 
-//public interface UserRepository extends JpaRepository<User, Long> {
-public interface UserRepository {
+public interface UserRepository extends JpaRepository<User, Long> {
     List<User> findByEmailContainingIgnoreCase(String emailSearch);
 }
