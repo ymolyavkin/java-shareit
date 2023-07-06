@@ -1,13 +1,14 @@
 package ru.practicum.shareit.item.service;
 
+import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.item.dto.IncomingItemDto;
+import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.model.Item;
 
 import java.util.List;
-import java.util.Optional;
 
 public interface ItemService {
-    List<Item> getItems();
+   /* List<Item> getItems();
 
     List<Item> getItems(Long userId);
 
@@ -15,7 +16,15 @@ public interface ItemService {
 
     Item updateItem(Item item, Long itemId, Long userId);
 
-    Optional<Item> getItemById(Long id);
+    Item getItemById(Long id);
 
-    List<Item> searchItems(String keyword);
+    List<Item> searchItems(String keyword);*/
+
+    List<Item> getAll();
+
+
+    Item getItemById(Long id);
+
+    @Transactional
+    ItemDto saveItem(IncomingItemDto incomingItemDto);
 }

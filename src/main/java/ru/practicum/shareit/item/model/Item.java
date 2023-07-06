@@ -2,9 +2,7 @@ package ru.practicum.shareit.item.model;
 
 import lombok.*;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.util.Objects;
@@ -14,6 +12,7 @@ import java.util.Objects;
 @Data
 public class Item {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @NotBlank(message = "Название вещи не может быть пустым.")
     private String name;

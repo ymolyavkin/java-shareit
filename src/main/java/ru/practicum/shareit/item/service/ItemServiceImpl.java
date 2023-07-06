@@ -1,25 +1,37 @@
 package ru.practicum.shareit.item.service;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.practicum.shareit.exception.NoneXSharerUserIdException;
 import ru.practicum.shareit.item.dto.IncomingItemDto;
+import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.ItemMapper;
 import ru.practicum.shareit.item.model.Item;
-import ru.practicum.shareit.item.storage.ItemStorage;
+import ru.practicum.shareit.item.repository.ItemRepository;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class ItemServiceImpl implements ItemService {
-    private final ItemStorage itemStorage;
-
+ //   private final ItemStorage itemStorage;
+    private final ItemRepository itemRepository;
     @Override
+    public List<Item> getAll() {
+        return itemRepository.findAll();
+    }
+    @Override
+    public Item getItemById(Long id) {
+        return itemRepository.getReferenceById(id);
+    }
+    @Transactional
+    @Override
+    public ItemDto saveItem(IncomingItemDto incomingItemDto) {
+        Item item = itemRepository.save(ItemMapper.toItem(incomingItemDto));
+        return ItemMapper.toItemDto(item);
+    }
+   /* @Override
     public List<Item> getItems() {
         return itemStorage.getItems();
     }
@@ -50,5 +62,5 @@ public class ItemServiceImpl implements ItemService {
     @Override
     public List<Item> searchItems(String keyword) {
         return itemStorage.searchItems(keyword);
-    }
+    }*/
 }

@@ -13,7 +13,7 @@ public interface UserService {
     List<User> getUsers();
     @Transactional
     User addUser(IncomingUserDto incomingUserDto);
-
+    List<UserDto> getAllUsers();
     /*  @Override
       public User addUser(IncomingUserDto incomingUserDto) {
           return userStorage.addUser(ser);

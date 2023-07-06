@@ -4,9 +4,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
 import java.util.Objects;
@@ -18,6 +16,7 @@ import java.util.Objects;
 @Table(name="users", schema = "public")
 public class User {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
     @NotBlank
     private String name;

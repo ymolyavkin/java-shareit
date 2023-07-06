@@ -29,17 +29,7 @@ public class ItemController {
     @GetMapping
     public List<ItemDto> getItems(@RequestHeader(value = USER_ID_FROM_REQUEST, defaultValue = "-1") Long userId) {
         log.info("Получен запрос на выдачу вещей пользователя с id = {}", userId);
-        if (!userId.equals(-1L)) {
-            return itemService.getItems(userId)
-                    .stream()
-                    .map(ItemMapper::toItemDto)
-                    .collect(Collectors.toList());
-        } else {
-            return itemService.getItems()
-                    .stream()
-                    .map(ItemMapper::toItemDto)
-                    .collect(Collectors.toList());
-        }
+     return  null;
     }
 
     @ExceptionHandler(UnsatisfiedServletRequestParameterException.class)
@@ -51,7 +41,8 @@ public class ItemController {
             throw new NoneXSharerUserIdException("Не указан владелец вещи");
         }
         incomingItemDto.setOwnerId(userId);
-        return itemService.addItem(incomingItemDto);
+       // return itemService.addItem(incomingItemDto);
+       return null;
     }
 
     @PatchMapping(value = "/{itemId}", consumes = "application/json")
@@ -62,13 +53,14 @@ public class ItemController {
         if (userId.equals(-1L)) {
             throw new NoneXSharerUserIdException("Не указан владелец вещи");
         }
-        return itemService.updateItem(item, itemId, userId);
+       // return itemService.updateItem(item, itemId, userId);
+        return null;
     }
 
     @GetMapping("/{id}")
     public ItemDto getItemById(@PathVariable Long id) {
         log.info("Получен запрос на выдачу вещи с id = {}", id);
-        Item item = itemService.getItemById(id).get();
+        Item item = itemService.getItemById(id);
         return ItemMapper.toItemDto(item);
     }
 
@@ -78,6 +70,7 @@ public class ItemController {
         if (text.isBlank()) {
             return new ArrayList<>(0);
         }
-        return itemService.searchItems(text);
+        //return itemService.searchItems(text);
+        return null;
     }
 }
