@@ -1,5 +1,6 @@
 package ru.practicum.shareit.error;
 
+import org.hibernate.exception.JDBCConnectionException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -8,6 +9,7 @@ import ru.practicum.shareit.exception.AlreadyExistsException;
 import ru.practicum.shareit.exception.NoneXSharerUserIdException;
 import ru.practicum.shareit.exception.NotFoundException;
 
+import javax.validation.ConstraintViolationException;
 import javax.validation.ValidationException;
 import java.util.Map;
 
@@ -44,4 +46,20 @@ public class ErrorHandler {
                 "error", e.getMessage()
         );
     }
+    @ExceptionHandler({ConstraintViolationException.class})
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public Map<String, String> handleConstraintViolationException(final RuntimeException e) {
+        return Map.of(
+                "error", e.getMessage()
+        );
+    }
+
+    @ExceptionHandler({JDBCConnectionException.class})
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public Map<String, String> handleJDBCConnectionException(final RuntimeException e) {
+        return Map.of(
+                "error", e.getMessage()
+        );
+    }
+
 }
