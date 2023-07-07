@@ -1,5 +1,6 @@
 package ru.practicum.shareit.error;
 
+import lombok.extern.slf4j.Slf4j;
 import org.hibernate.exception.JDBCConnectionException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -13,11 +14,13 @@ import javax.validation.ConstraintViolationException;
 import javax.validation.ValidationException;
 import java.util.Map;
 
+@Slf4j
 @RestControllerAdvice
 public class ErrorHandler {
     @ExceptionHandler({NotFoundException.class})
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public Map<String, String> handleNotFound(final RuntimeException e) {
+        log.debug("Статус ошибки 404 Not found");
         return Map.of(
                 "error", e.getMessage()
         );
@@ -49,6 +52,7 @@ public class ErrorHandler {
     @ExceptionHandler({ConstraintViolationException.class})
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public Map<String, String> handleConstraintViolationException(final RuntimeException e) {
+        log.debug("Нарушение ограничения таблицы БД. Статус ошибки 500 INTERNAL_SERVER_ERROR.");
         return Map.of(
                 "error", e.getMessage()
         );
@@ -57,8 +61,9 @@ public class ErrorHandler {
     @ExceptionHandler({JDBCConnectionException.class})
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public Map<String, String> handleJDBCConnectionException(final RuntimeException e) {
+        log.debug("Нарушение БД. Статус ошибки 500 INTERNAL_SERVER_ERROR");
         return Map.of(
-                "error", e.getMessage()
+                "error", "Нарушение БД. Статус ошибки 500 INTERNAL_SERVER_ERROR"
         );
     }
 

@@ -1,33 +1,30 @@
 package ru.practicum.shareit.user.model;
 
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
 import java.util.Objects;
 
+@Entity
 @Getter
 @Setter
 @NoArgsConstructor
-@Entity
-@Table(name="users", schema = "public")
+@AllArgsConstructor
+@RequiredArgsConstructor
+@Table(name = "users", schema = "public")
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
     @NotBlank
+    @NonNull
     private String name;
+    @NonNull
     @NotBlank(message = "адрес электронной почты не должен быть пустым")
     @Pattern(regexp = "^.+@.+\\..+$", message = "Некорректный адрес электронной почты")
     private String email;
-
-    public User(String name, String email) {
-        this.name = name;
-        this.email = email;
-    }
 
     @Override
     public boolean equals(Object o) {

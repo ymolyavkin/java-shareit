@@ -6,10 +6,13 @@ import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.util.Objects;
-
+@Builder
+@AllArgsConstructor
 @Entity
+@Getter
+@Setter
+@NoArgsConstructor
 @Table(name = "items")
-@Data
 public class Item {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -23,9 +26,6 @@ public class Item {
     private Long ownerId;
     private Integer requestId;
     private int numberOfTimesToRent;
-
-    public Item() {
-    }
 
     public void incrementNumberOfTimesToRent() {
         numberOfTimesToRent++;
@@ -54,13 +54,5 @@ public class Item {
                 ", owner='" + ownerId + '\'' +
                 ", request='" + requestId + '\'' +
                 '}';
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public Long getId() {
-        return id;
     }
 }

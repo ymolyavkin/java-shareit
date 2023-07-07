@@ -11,7 +11,8 @@ CREATE TABLE IF NOT EXISTS items (
     description VARCHAR(512) NOT NULL,
     available BOOLEAN NOT NULL,
     owner_id BIGINT NOT NULL,
-    request VARCHAR(255) ,
+    request VARCHAR(255),
+    number_of_times_to_rent INTEGER DEFAULT 0,
     CONSTRAINT pk_item PRIMARY KEY (id),
     CONSTRAINT FK_USER_ID FOREIGN KEY(owner_id) REFERENCES users(id)
     );
