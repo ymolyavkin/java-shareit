@@ -17,13 +17,15 @@ import java.util.Objects;
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
     @NotBlank
     @NonNull
+    @Column(name="name", length=255, nullable=false)
     private String name;
     @NonNull
     @NotBlank(message = "адрес электронной почты не должен быть пустым")
     @Pattern(regexp = "^.+@.+\\..+$", message = "Некорректный адрес электронной почты")
+    @Column(name="email", length=512, nullable=false, unique=true)
     private String email;
 
     @Override
@@ -46,13 +48,5 @@ public class User {
                 ", name='" + name + '\'' +
                 ", email='" + email + '\'' +
                 '}';
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public Long getId() {
-        return id;
     }
 }

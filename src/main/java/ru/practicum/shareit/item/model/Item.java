@@ -1,11 +1,13 @@
 package ru.practicum.shareit.item.model;
 
 import lombok.*;
+import ru.practicum.shareit.user.model.User;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.util.Objects;
+
 @Builder
 @AllArgsConstructor
 @Entity
@@ -23,12 +25,28 @@ public class Item {
     private String description;
     @NotNull(message = "Доступность вещи для аренды должна быть указана.")
     private Boolean available;
-    private Long ownerId;
+    //  private Long ownerId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    // исключаем все поля с отложенной загрузкой из метода toString,
+    // чтобы не было случайных обращений к базе данных, например при выводе в лог.
+    //  @ToString.Exclude
+    @JoinColumn(name = "owner_id")
+    private User owner;
+    @ToString.Exclude
     private Integer requestId;
+    @Column(name = "number_of_times_to_rent")
     private int numberOfTimesToRent;
 
     public void incrementNumberOfTimesToRent() {
         numberOfTimesToRent++;
+    }
+
+    public Long getOwnerId() {
+        return owner.getId();
+    }
+
+    public void setOwnerId(Long id) {
+        owner.setId(id);
     }
 
     @Override
@@ -51,7 +69,7 @@ public class Item {
                 ", name='" + name + '\'' +
                 ", description='" + description + '\'' +
                 ", available=" + available +
-                ", owner='" + ownerId + '\'' +
+                ", owner='" + owner.getId() + '\'' +
                 ", request='" + requestId + '\'' +
                 '}';
     }

@@ -35,7 +35,8 @@ public class ItemStorageImpl implements ItemStorage {
 
     @Override
     public List<Item> getItems(Long userId) {
-        return items.values().stream().filter(item -> item.getOwnerId().equals(userId)).collect(Collectors.toList());
+       // return items.values().stream().filter(item -> item.getOwnerId().equals(userId)).collect(Collectors.toList());
+        return null;
     }
 
     @Override
@@ -48,7 +49,7 @@ public class ItemStorageImpl implements ItemStorage {
 
     @Override
     public Item addItem(Item item) {
-        Long userId = item.getOwnerId();
+        Long userId = item.getOwner().getId();
         Optional<User> user = userStorage.getUserById(userId);
         if (user.isEmpty()) {
             throw new NotFoundException("Пользователь c id " + userId + " не найден");

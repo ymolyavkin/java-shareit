@@ -5,6 +5,8 @@ import lombok.Setter;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.model.User;
 
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 import java.util.Objects;
@@ -22,6 +24,7 @@ public class Booking {
     private LocalDateTime end;
     private Item item;
     private User booker;
+    @Enumerated(EnumType.STRING)
     private Status status;
 
     public static class Builder {

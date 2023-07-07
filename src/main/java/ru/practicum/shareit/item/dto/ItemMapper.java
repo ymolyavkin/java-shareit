@@ -14,7 +14,7 @@ public class ItemMapper {
                 .name(item.getName())
                 .description(item.getDescription())
                 .isAvailable(item.getAvailable())
-                .ownerId(item.getOwnerId())
+                .ownerId(item.getOwner().getId())
                 .numberOfTimesToRent(item.getNumberOfTimesToRent())
                 .build();
     }
