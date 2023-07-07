@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.item.repository.ItemRepository;
 import ru.practicum.shareit.user.dto.IncomingUserDto;
 import ru.practicum.shareit.user.dto.UserDto;
@@ -61,6 +62,9 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDto updateUser(IncomingUserDto incomingUserDto, Long userId) {
         User user = userRepository.getReferenceById(userId);
+        if (user == null) {
+            throw new NotFoundException(String.format("Пользователь с id %d не найден", userId));
+        }
         boolean needsToBeChanged = false;
         if (incomingUserDto.getName() != null && !incomingUserDto.getName().equals(user.getName())) {
             user.setName(incomingUserDto.getName());
@@ -76,9 +80,16 @@ public class UserServiceImpl implements UserService {
         return UserMapper.mapToUserDto(user);
     }
 
-    @Override
+    /*@Override
     public Optional<User> getUserById(Long id) {
         return userStorage.getUserById(id);
+    }*/
+    @Override
+    public UserDto getUserById(Long id) {
+        Optional<User> optionalUser = userRepository.findById(id);
+        if (optionalUser.isPresent()) {
+            return UserMapper.mapToUserDto(optionalUser.get());
+        } else throw new NotFoundException(String.format("Пользователь с id %d не найден", id));
     }
 
     @Override
