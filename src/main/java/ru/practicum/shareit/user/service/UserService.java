@@ -21,8 +21,15 @@ public interface UserService {
       @Transactional
       UserDto saveUser(IncomingUserDto userDto);
 
-    @Transactional
-    User updateUser(User user, Long userId);
+  /*  @Transactional
+    User updateUser(User user, Long userId);*/
+
+    /*@Override
+    public User updateUser(User user, Long userId) {
+        return userStorage.updateUser(user, userId);
+    }*/
+    UserDto updateUser(IncomingUserDto incomingUserDto, Long userId);
+
     @Transactional(readOnly=true)
     Optional<User> getUserById(Long id);
     @Transactional

@@ -47,15 +47,33 @@ public class UserServiceImpl implements UserService {
       User user = repository.save(UserMapper.mapToNewUser(userDto));
         return UserMapper.mapToUserDto(user);
       */
-    @Transactional
+    //  @Transactional
     @Override
     public UserDto saveUser(IncomingUserDto userDto) {
         User user = userRepository.save(UserMapper.mapToUser(userDto));
         return UserMapper.mapToUserDto(user);
     }
-    @Override
+
+    /*@Override
     public User updateUser(User user, Long userId) {
         return userStorage.updateUser(user, userId);
+    }*/
+    @Override
+    public UserDto updateUser(IncomingUserDto incomingUserDto, Long userId) {
+        User user = userRepository.getReferenceById(userId);
+        boolean needsToBeChanged = false;
+        if (incomingUserDto.getName() != null && !incomingUserDto.getName().equals(user.getName())) {
+            user.setName(incomingUserDto.getName());
+            needsToBeChanged = true;
+        }
+        if (incomingUserDto.getEmail() != null && !incomingUserDto.getEmail().equals(user.getEmail())) {
+            user.setEmail(incomingUserDto.getEmail());
+            needsToBeChanged = true;
+        }
+        if (needsToBeChanged) {
+            userRepository.saveAndFlush(user);
+        }
+        return UserMapper.mapToUserDto(user);
     }
 
     @Override

@@ -39,11 +39,17 @@ public class UserController {
         return userService.addUser(incomingUserDto);
     }
 
-    @PatchMapping(value = "/{id}", consumes = "application/json")
+   /* @PatchMapping(value = "/{id}", consumes = "application/json")
     public User updateUser(@RequestBody User user,
                            @PathVariable Long id) {
         log.info("Получен запрос на обновление пользователя с id = {}", id);
         return userService.updateUser(user, id);
+    }*/
+    @PatchMapping(value = "/{id}", consumes = "application/json")
+    public UserDto updateUser(@RequestBody IncomingUserDto incomingUserDto,
+                           @PathVariable Long id) {
+        log.info("Получен запрос на обновление пользователя с id = {}", id);
+        return userService.updateUser(incomingUserDto, id);
     }
 
     @DeleteMapping(value = "/{id}")
