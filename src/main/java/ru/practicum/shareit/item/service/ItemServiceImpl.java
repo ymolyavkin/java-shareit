@@ -3,6 +3,8 @@ package ru.practicum.shareit.item.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.exception.NoneXSharerUserIdException;
+import ru.practicum.shareit.exception.NotFoundException;
+import ru.practicum.shareit.exception.OwnerMismatchException;
 import ru.practicum.shareit.item.dto.IncomingItemDto;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.ItemMapper;
@@ -32,12 +34,12 @@ public class ItemServiceImpl implements ItemService {
     }
 
     // @Transactional
-    @Override
-    public ItemDto saveItem(IncomingItemDto incomingItemDto) {
-        User owner = userRepository.getReferenceById(incomingItemDto.getOwnerId());
-        Item item = itemRepository.save(ItemMapper.mapToItem(incomingItemDto, owner));
-        return ItemMapper.mapToItemDto(item);
-    }
+//    @Override
+//    public ItemDto saveItem(IncomingItemDto incomingItemDto) {
+//        User owner = userRepository.getReferenceById(incomingItemDto.getOwnerId());
+//        Item item = itemRepository.save(ItemMapper.mapToItem(incomingItemDto, owner));
+//        return ItemMapper.mapToItemDto(item);
+//    }
 
     /* @Override
      public List<Item> getItems() {
@@ -55,18 +57,20 @@ public class ItemServiceImpl implements ItemService {
         if (incomingItemDto.getOwnerId().equals(-1L)) {
             throw new NoneXSharerUserIdException("Не указан владелец вещи");
         }
-        User owner = userRepository.getReferenceById(incomingItemDto.getOwnerId());
-         /*
-          User user = userRepository.save(UserMapper.mapToUser(userDto));
-        return UserMapper.mapToUserDto(user);
-          */
+        Long userId=incomingItemDto.getOwnerId();
+        User owner = userRepository.findById(userId)
+                .orElseThrow(() -> new NotFoundException(String.format("Пользователь с id %d не найден", userId)));
         Item item = itemRepository.save(ItemMapper.mapToItem(incomingItemDto, owner));
+
         return ItemMapper.mapToItemDto(item);
     }
 
     @Override
-    public ItemDto updateItem(IncomingItemDto incomingItemDto, Long itemId) {
+    public ItemDto updateItem(IncomingItemDto incomingItemDto, Long itemId, Long userId) {
         Item item = itemRepository.getReferenceById(itemId);
+        if (!userId.equals(item.getOwnerId())) {
+            throw new OwnerMismatchException("Указанный пользователь не является владельцем вещи");
+        }
         boolean needsToBeChanged = false;
         if (incomingItemDto.getName() != null && !incomingItemDto.getName().equals(item.getName())) {
             item.setName(incomingItemDto.getName());

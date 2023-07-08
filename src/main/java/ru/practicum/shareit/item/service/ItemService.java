@@ -25,8 +25,8 @@ public interface ItemService {
 
     Item getItemById(Long id);
 
-    @Transactional
-    ItemDto saveItem(IncomingItemDto incomingItemDto);
+  //  @Transactional
+  //  ItemDto saveItem(IncomingItemDto incomingItemDto);
 
     /* @Override
      public List<Item> getItems() {
@@ -55,5 +55,5 @@ public interface ItemService {
                      return itemStorage.addItem(ItemMapper.toItem(incomingItemDto));
                  }
              */
-    ItemDto updateItem(IncomingItemDto incomingItemDto, Long itemId);
+    ItemDto updateItem(IncomingItemDto incomingItemDto, Long itemId, Long userId);
 }

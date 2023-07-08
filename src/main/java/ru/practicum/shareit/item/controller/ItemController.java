@@ -28,30 +28,30 @@ public class ItemController {
     @GetMapping
     public List<ItemDto> getItems(@RequestHeader(value = USER_ID_FROM_REQUEST, defaultValue = "-1") Long userId) {
         log.info("Получен запрос на выдачу вещей пользователя с id = {}", userId);
-     return  itemService.getItemsByUser(userId);
+        return itemService.getItemsByUser(userId);
     }
 
     @ExceptionHandler(UnsatisfiedServletRequestParameterException.class)
     @PostMapping
     public ItemDto addItem(@RequestHeader(value = USER_ID_FROM_REQUEST, defaultValue = "-1") Long userId,
-                        @Valid @RequestBody IncomingItemDto incomingItemDto) {
+                           @Valid @RequestBody IncomingItemDto incomingItemDto) {
         log.info("Получен запрос на добавление вещи пользователя с id = {}", userId);
         if (userId.equals(-1L)) {
             throw new NoneXSharerUserIdException("Не указан владелец вещи");
         }
         incomingItemDto.setOwnerId(userId);
-       return itemService.addItem(incomingItemDto);
+        return itemService.addItem(incomingItemDto);
     }
 
     @PatchMapping(value = "/{itemId}", consumes = "application/json")
     public ItemDto updateItem(@RequestHeader(value = USER_ID_FROM_REQUEST, defaultValue = "-1") Long userId,
-                           @RequestBody IncomingItemDto incomingItemDto,
-                           @PathVariable Long itemId) {
+                              @RequestBody IncomingItemDto incomingItemDto,
+                              @PathVariable Long itemId) {
         log.info("Получен запрос на обновление вещи пользователя с id = {}", userId);
         if (userId.equals(-1L)) {
             throw new NoneXSharerUserIdException("Не указан владелец вещи");
         }
-       return itemService.updateItem(incomingItemDto, itemId);
+        return itemService.updateItem(incomingItemDto, itemId, userId);
     }
 
     @GetMapping("/{id}")
