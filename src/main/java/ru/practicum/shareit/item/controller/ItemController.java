@@ -14,7 +14,6 @@ import ru.practicum.shareit.item.service.ItemService;
 import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static ru.practicum.shareit.util.Constants.USER_ID_FROM_REQUEST;
 
@@ -29,39 +28,37 @@ public class ItemController {
     @GetMapping
     public List<ItemDto> getItems(@RequestHeader(value = USER_ID_FROM_REQUEST, defaultValue = "-1") Long userId) {
         log.info("Получен запрос на выдачу вещей пользователя с id = {}", userId);
-     return  null;
+     return  itemService.getItemsByUser(userId);
     }
 
     @ExceptionHandler(UnsatisfiedServletRequestParameterException.class)
     @PostMapping
-    public Item addItem(@RequestHeader(value = USER_ID_FROM_REQUEST, defaultValue = "-1") Long userId,
+    public ItemDto addItem(@RequestHeader(value = USER_ID_FROM_REQUEST, defaultValue = "-1") Long userId,
                         @Valid @RequestBody IncomingItemDto incomingItemDto) {
         log.info("Получен запрос на добавление вещи пользователя с id = {}", userId);
         if (userId.equals(-1L)) {
             throw new NoneXSharerUserIdException("Не указан владелец вещи");
         }
         incomingItemDto.setOwnerId(userId);
-       // return itemService.addItem(incomingItemDto);
-       return null;
+       return itemService.addItem(incomingItemDto);
     }
 
     @PatchMapping(value = "/{itemId}", consumes = "application/json")
-    public Item updateItem(@RequestHeader(value = USER_ID_FROM_REQUEST, defaultValue = "-1") Long userId,
-                           @RequestBody Item item,
+    public ItemDto updateItem(@RequestHeader(value = USER_ID_FROM_REQUEST, defaultValue = "-1") Long userId,
+                           @RequestBody IncomingItemDto incomingItemDto,
                            @PathVariable Long itemId) {
         log.info("Получен запрос на обновление вещи пользователя с id = {}", userId);
         if (userId.equals(-1L)) {
             throw new NoneXSharerUserIdException("Не указан владелец вещи");
         }
-       // return itemService.updateItem(item, itemId, userId);
-        return null;
+       return itemService.updateItem(incomingItemDto, itemId);
     }
 
     @GetMapping("/{id}")
     public ItemDto getItemById(@PathVariable Long id) {
         log.info("Получен запрос на выдачу вещи с id = {}", id);
         Item item = itemService.getItemById(id);
-        return ItemMapper.toItemDto(item);
+        return ItemMapper.mapToItemDto(item);
     }
 
     @GetMapping("/search")

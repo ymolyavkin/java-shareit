@@ -25,10 +25,10 @@ public class UserServiceImpl implements UserService {
     private final ItemRepository itemRepository;
     private final UserRepository userRepository;
 
-    @Override
+    /*@Override
     public List<User> getUsers() {
         return userStorage.getUsers();
-    }
+    }*/
 
     @Override
     public User addUser(IncomingUserDto incomingUserDto) {
@@ -41,30 +41,19 @@ public class UserServiceImpl implements UserService {
         return UserMapper.mapToUserDto(users);
     }
 
-    /*  @Override
-      public User addUser(IncomingUserDto incomingUserDto) {
-          return userStorage.addUser(ser);
-      }
-      User user = repository.save(UserMapper.mapToNewUser(userDto));
-        return UserMapper.mapToUserDto(user);
-      */
-    //  @Transactional
     @Override
     public UserDto saveUser(IncomingUserDto userDto) {
         User user = userRepository.save(UserMapper.mapToUser(userDto));
         return UserMapper.mapToUserDto(user);
     }
 
-    /*@Override
-    public User updateUser(User user, Long userId) {
-        return userStorage.updateUser(user, userId);
-    }*/
     @Override
     public UserDto updateUser(IncomingUserDto incomingUserDto, Long userId) {
-        User user = userRepository.getReferenceById(userId);
-        if (user == null) {
-            throw new NotFoundException(String.format("Пользователь с id %d не найден", userId));
-        }
+        // User user = userRepository.getReferenceById(userId);
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new NotFoundException(String.format("Пользователь с id %d не найден", userId)));
+
         boolean needsToBeChanged = false;
         if (incomingUserDto.getName() != null && !incomingUserDto.getName().equals(user.getName())) {
             user.setName(incomingUserDto.getName());
@@ -80,20 +69,21 @@ public class UserServiceImpl implements UserService {
         return UserMapper.mapToUserDto(user);
     }
 
-    /*@Override
-    public Optional<User> getUserById(Long id) {
-        return userStorage.getUserById(id);
-    }*/
     @Override
     public UserDto getUserById(Long id) {
-        Optional<User> optionalUser = userRepository.findById(id);
-        if (optionalUser.isPresent()) {
-            return UserMapper.mapToUserDto(optionalUser.get());
-        } else throw new NotFoundException(String.format("Пользователь с id %d не найден", id));
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException(String.format("Пользователь с id %d не найден", id)));
+        return UserMapper.mapToUserDto(user);
     }
 
     @Override
     public void deleteUserById(Long id) {
-        userStorage.deleteUserById(id);
+        userRepository.findById(id).ifPresent(user -> userRepository.deleteById(id));
+
+        /*Optional<User> optionalUser = userRepository.findById(id);
+        if (optionalUser.isPresent()) {
+            userRepository.deleteById(id);
+        } else throw new NotFoundException(String.format("Пользователь с id %d не найден", id));*/
+
     }
 }

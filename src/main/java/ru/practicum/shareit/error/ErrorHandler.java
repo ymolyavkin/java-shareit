@@ -1,6 +1,7 @@
 package ru.practicum.shareit.error;
 
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.exception.ConstraintViolationException;
 import org.hibernate.exception.JDBCConnectionException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -10,7 +11,8 @@ import ru.practicum.shareit.exception.AlreadyExistsException;
 import ru.practicum.shareit.exception.NoneXSharerUserIdException;
 import ru.practicum.shareit.exception.NotFoundException;
 
-import javax.validation.ConstraintViolationException;
+
+import javax.persistence.EntityNotFoundException;
 import javax.validation.ValidationException;
 import java.util.Map;
 
@@ -61,10 +63,18 @@ public class ErrorHandler {
     @ExceptionHandler({JDBCConnectionException.class})
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public Map<String, String> handleJDBCConnectionException(final RuntimeException e) {
-        log.debug("Нарушение БД. Статус ошибки 500 INTERNAL_SERVER_ERROR");
+        log.debug("Нарушение ограничений БД. Статус ошибки 500 INTERNAL_SERVER_ERROR");
         return Map.of(
-                "error", "Нарушение БД. Статус ошибки 500 INTERNAL_SERVER_ERROR"
+                "error", "Нарушение ограничений БД. Статус ошибки 500 INTERNAL_SERVER_ERROR"
         );
     }
-
+    //EntityNotFoundException
+    @ExceptionHandler({EntityNotFoundException.class})
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public Map<String, String> handleEntityNotFound(final RuntimeException e) {
+        log.debug("Ошибка БД. Статус ошибки 404 Not found");
+        return Map.of(
+                "error", "Ошибка БД. Статус ошибки 404 Not found"
+        );
+    }
 }

@@ -20,19 +20,20 @@ public class Item {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @NotBlank(message = "Название вещи не может быть пустым.")
+    @Column(name = "name")
     private String name;
     @NotBlank(message = "Описание вещи не может быть пустым.")
+    @Column(name = "description")
     private String description;
     @NotNull(message = "Доступность вещи для аренды должна быть указана.")
+    @Column(name = "available")
     private Boolean available;
     //  private Long ownerId;
-    @ManyToOne(fetch = FetchType.LAZY)
-    // исключаем все поля с отложенной загрузкой из метода toString,
-    // чтобы не было случайных обращений к базе данных, например при выводе в лог.
-    //  @ToString.Exclude
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "owner_id")
     private User owner;
     @ToString.Exclude
+    @Column(name = "request_id")
     private Integer requestId;
     @Column(name = "number_of_times_to_rent")
     private int numberOfTimesToRent;
@@ -46,7 +47,9 @@ public class Item {
     }
 
     public void setOwnerId(Long id) {
-        owner.setId(id);
+        if (owner != null) {
+            owner.setId(id);
+        }
     }
 
     @Override

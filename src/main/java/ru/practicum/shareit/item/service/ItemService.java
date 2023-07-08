@@ -27,4 +27,33 @@ public interface ItemService {
 
     @Transactional
     ItemDto saveItem(IncomingItemDto incomingItemDto);
+
+    /* @Override
+     public List<Item> getItems() {
+         return itemStorage.getItems();
+     }
+*/
+    List<ItemDto> getItemsByUser(Long userId);
+
+    ItemDto addItem(IncomingItemDto incomingItemDto);
+
+    /* @Override
+                 public List<Item> getItems() {
+                     return itemStorage.getItems();
+                 }
+
+                 @Override
+                 public List<Item> getItems(Long userId) {
+                     return itemStorage.getItems(userId);
+                 }
+
+                 @Override
+                 public Item addItem(IncomingItemDto incomingItemDto) {
+                     if (incomingItemDto.getOwnerId().equals(-1L)) {
+                         throw new NoneXSharerUserIdException("Не указан владелец вещи");
+                     }
+                     return itemStorage.addItem(ItemMapper.toItem(incomingItemDto));
+                 }
+             */
+    ItemDto updateItem(IncomingItemDto incomingItemDto, Long itemId);
 }

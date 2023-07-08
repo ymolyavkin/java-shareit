@@ -9,8 +9,8 @@ import java.util.List;
 
 @Transactional(readOnly=true)
 public interface UserService {
-    @Transactional(readOnly=true)
-    List<User> getUsers();
+   /* @Transactional(readOnly=true)
+    List<User> getUsers();*/
     @Transactional
     User addUser(IncomingUserDto incomingUserDto);
     List<UserDto> getAllUsers();
