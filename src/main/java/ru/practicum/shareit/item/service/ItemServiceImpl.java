@@ -14,6 +14,7 @@ import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserRepository;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 //@Transactional(readOnly = true)
@@ -48,8 +49,11 @@ public class ItemServiceImpl implements ItemService {
 */
     @Override
     public List<ItemDto> getItemsByUser(Long userId) {
-
-        return itemRepository.getItemsByUser(userId);
+        List<Item> items = itemRepository.findAllByOwnerId(userId);
+        return items
+                .stream()
+                .map(ItemMapper::mapToItemDto)
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -57,7 +61,7 @@ public class ItemServiceImpl implements ItemService {
         if (incomingItemDto.getOwnerId().equals(-1L)) {
             throw new NoneXSharerUserIdException("Не указан владелец вещи");
         }
-        Long userId=incomingItemDto.getOwnerId();
+        Long userId = incomingItemDto.getOwnerId();
         User owner = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException(String.format("Пользователь с id %d не найден", userId)));
         Item item = itemRepository.save(ItemMapper.mapToItem(incomingItemDto, owner));
