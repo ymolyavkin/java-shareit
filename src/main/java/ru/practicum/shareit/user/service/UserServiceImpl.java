@@ -24,11 +24,6 @@ public class UserServiceImpl implements UserService {
     private final ItemRepository itemRepository;
     private final UserRepository userRepository;
 
-    /*@Override
-    public List<User> getUsers() {
-        return userStorage.getUsers();
-    }*/
-
     @Override
     public User addUser(IncomingUserDto incomingUserDto) {
         return userRepository.save(UserMapper.mapToUser(incomingUserDto));
@@ -48,8 +43,6 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDto updateUser(IncomingUserDto incomingUserDto, Long userId) {
-        // User user = userRepository.getReferenceById(userId);
-
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException(String.format("Пользователь с id %d не найден", userId)));
 
@@ -78,11 +71,5 @@ public class UserServiceImpl implements UserService {
     @Override
     public void deleteUserById(Long id) {
         userRepository.findById(id).ifPresent(user -> userRepository.deleteById(id));
-
-        /*Optional<User> optionalUser = userRepository.findById(id);
-        if (optionalUser.isPresent()) {
-            userRepository.deleteById(id);
-        } else throw new NotFoundException(String.format("Пользователь с id %d не найден", id));*/
-
     }
 }

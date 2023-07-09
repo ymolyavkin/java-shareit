@@ -17,10 +17,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-//@Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class ItemServiceImpl implements ItemService {
-    //   private final ItemStorage itemStorage;
     private final ItemRepository itemRepository;
     private final UserRepository userRepository;
 
@@ -34,19 +32,6 @@ public class ItemServiceImpl implements ItemService {
         return itemRepository.getReferenceById(id);
     }
 
-    // @Transactional
-//    @Override
-//    public ItemDto saveItem(IncomingItemDto incomingItemDto) {
-//        User owner = userRepository.getReferenceById(incomingItemDto.getOwnerId());
-//        Item item = itemRepository.save(ItemMapper.mapToItem(incomingItemDto, owner));
-//        return ItemMapper.mapToItemDto(item);
-//    }
-
-    /* @Override
-     public List<Item> getItems() {
-         return itemStorage.getItems();
-     }
-*/
     @Override
     public List<ItemDto> getItemsByUser(Long userId) {
         List<Item> items = itemRepository.findAllByOwnerId(userId);
