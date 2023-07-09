@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import ru.practicum.shareit.exception.AlreadyExistsException;
 import ru.practicum.shareit.exception.NoneXSharerUserIdException;
+import ru.practicum.shareit.exception.BadRequestException;
 import ru.practicum.shareit.exception.NotFoundException;
 
 
@@ -51,6 +52,7 @@ public class ErrorHandler {
                 "error", e.getMessage()
         );
     }
+
     @ExceptionHandler({ConstraintViolationException.class})
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public Map<String, String> handleConstraintViolationException(final RuntimeException e) {
@@ -68,13 +70,22 @@ public class ErrorHandler {
                 "error", "Нарушение ограничений БД. Статус ошибки 500 INTERNAL_SERVER_ERROR"
         );
     }
-    //EntityNotFoundException
+
     @ExceptionHandler({EntityNotFoundException.class})
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public Map<String, String> handleEntityNotFound(final RuntimeException e) {
         log.debug("Ошибка БД. Статус ошибки 404 Not found");
         return Map.of(
                 "error", "Ошибка БД. Статус ошибки 404 Not found"
+        );
+    }
+
+    @ExceptionHandler({BadRequestException.class})
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public Map<String, String> handleNotAvailable(final RuntimeException e) {
+        log.debug("Ошибка бронирования - вещь недоступна для бронирования. Статус ошибки 400 Bad Request");
+        return Map.of(
+                "error", e.getMessage()
         );
     }
 }

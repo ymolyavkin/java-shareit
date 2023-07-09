@@ -1,12 +1,14 @@
 package ru.practicum.shareit.item.model;
 
 import lombok.*;
+import ru.practicum.shareit.request.ItemRequest;
 import ru.practicum.shareit.user.model.User;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.util.Objects;
+import java.util.Set;
 
 @Builder
 @AllArgsConstructor
@@ -28,13 +30,13 @@ public class Item {
     @NotNull(message = "Доступность вещи для аренды должна быть указана.")
     @Column(name = "available")
     private Boolean available;
-    //  private Long ownerId;
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "owner_id")
     private User owner;
     @ToString.Exclude
+    @OneToMany(cascade = CascadeType.ALL)
     @Column(name = "request_id")
-    private Integer requestId;
+    private Set<ItemRequest> request;
     @Column(name = "number_of_times_to_rent")
     private int numberOfTimesToRent;
 
@@ -44,12 +46,6 @@ public class Item {
 
     public Long getOwnerId() {
         return owner.getId();
-    }
-
-    public void setOwnerId(Long id) {
-        if (owner != null) {
-            owner.setId(id);
-        }
     }
 
     @Override
@@ -72,8 +68,7 @@ public class Item {
                 ", name='" + name + '\'' +
                 ", description='" + description + '\'' +
                 ", available=" + available +
-                ", owner='" + owner.getId() + '\'' +
-                ", request='" + requestId + '\'' +
+                ", owner='" + this.getOwnerId() + '\'' +
                 '}';
     }
 }
