@@ -59,7 +59,7 @@ public class BookingServiceImpl implements BookingService {
                 .orElseThrow(() -> new NotFoundException(String.format("Вещь с id %d не найдена", itemId)));
 
         BookingValidation.bookingIsValid(incomingBookingDto, item);
-Booking booking0 = BookingMapper.mapToBooking(incomingBookingDto, item, booker);
+//Booking booking0 = BookingMapper.mapToBooking(incomingBookingDto, item, booker);
         Booking booking = bookingRepository.save(BookingMapper.mapToBooking(incomingBookingDto, item, booker));
 
         return BookingMapper.mapToBookingDto(booking);
