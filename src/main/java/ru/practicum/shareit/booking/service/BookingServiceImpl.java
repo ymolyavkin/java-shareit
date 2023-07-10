@@ -68,9 +68,7 @@ Booking booking0 = BookingMapper.mapToBooking(incomingBookingDto, item, booker);
     @Override
     public BookingDto updateBooking(IncomingBookingDto incomingBookingDto, Long bookingId, Long bookerId) {
         Booking booking = bookingRepository.getReferenceById(bookingId);
-      /*  if (!bookingId.equals(booking.getBookerId())) {
-            throw new OwnerMismatchException("Указанный пользователь не является владельцем вещи");
-        }*/
+
         boolean needsToBeChanged = false;
         if (incomingBookingDto.getStart() != null && !incomingBookingDto.getStart().equals(booking.getStart())) {
             booking.setStart(incomingBookingDto.getStart());
@@ -89,15 +87,4 @@ Booking booking0 = BookingMapper.mapToBooking(incomingBookingDto, item, booker);
         }
         return BookingMapper.mapToBookingDto(booking);
     }
-
-/*
-    @Override
-    public Optional<Item> getItemById(Long id) {
-        return itemStorage.getItemById(id);
-    }
-
-    @Override
-    public List<Item> searchItems(String keyword) {
-        return itemStorage.searchItems(keyword);
-    }*/
 }
