@@ -1,6 +1,8 @@
 package ru.practicum.shareit.item.service;
 
 import lombok.RequiredArgsConstructor;
+
+import org.springframework.data.domain.Example;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.exception.NoneXSharerUserIdException;
 import ru.practicum.shareit.exception.NotFoundException;
@@ -82,8 +84,19 @@ public class ItemServiceImpl implements ItemService {
         }
         return ItemMapper.mapToItemDto(item);
     }
-
+    @Override
+    public List<Item> searchItemsByText(String searchText) {
+        String likeExpression = "%" + searchText + "%";
+        Example<String> employeeExample = Example.of(likeExpression);
+        return itemRepository.findAll(employeeExample);
+    }
 /*
+public Iterable<User> searchByText(String searchText) {
+
+    String likeExpression = "%" + searchText + "%";
+    Iterable<User> users = userRepository.searchByText(likeExpression);
+    return users ;
+}
     @Override
     public Optional<Item> getItemById(Long id) {
         return itemStorage.getItemById(id);

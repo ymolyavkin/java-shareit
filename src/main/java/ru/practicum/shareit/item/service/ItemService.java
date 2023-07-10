@@ -24,6 +24,7 @@ public interface ItemService {
 
 
     Item getItemById(Long id);
+    List<Item> searchItemsByText(String searchText);
 
   //  @Transactional
   //  ItemDto saveItem(IncomingItemDto incomingItemDto);

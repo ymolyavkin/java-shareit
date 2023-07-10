@@ -67,7 +67,6 @@ public class ItemController {
         if (text.isBlank()) {
             return new ArrayList<>(0);
         }
-        //return itemService.searchItems(text);
-        return null;
+        return itemService.searchItemsByText(text);
     }
 }
