@@ -24,13 +24,18 @@ public class ItemServiceImpl implements ItemService {
     private final UserRepository userRepository;
 
     @Override
-    public List<Item> getAll() {
-        return itemRepository.findAll();
+    public List<ItemDto> getAll() {
+        List<Item> items = itemRepository.findAll();
+        return items
+                .stream()
+                .map(ItemMapper::mapToItemDto)
+                .collect(Collectors.toList());
     }
 
     @Override
-    public Item getItemById(Long id) {
-        return itemRepository.getReferenceById(id);
+    public ItemDto getItemById(Long id) {
+        Item item = itemRepository.getReferenceById(id);
+        return ItemMapper.mapToItemDto(item);
     }
 
     @Override
@@ -93,39 +98,4 @@ public class ItemServiceImpl implements ItemService {
                 .map(ItemMapper::mapToItemDto)
                 .collect(Collectors.toList());
     }
-//    @Override
-//    public List<Item> searchItemsByText(String searchText) {
-/*        ExampleMatcher customExampleMatcher = ExampleMatcher.matchingAny()
-                .withMatcher("name", ExampleMatcher.GenericPropertyMatchers.contains().ignoreCase())
-                .withMatcher("description", ExampleMatcher.GenericPropertyMatchers.contains().ignoreCase())
-                .withIgnorePaths("id", "available", "owner","request", "numberOfTimesToRent");
-        Item item = new Item();
-        item.setName(searchText);
-        item.setDescription(searchText);
-        Example example = Example.of(item, customExampleMatcher);*/
-
-    //  return itemRepository.findAll(example);
-    // }
-/*
-ExampleMatcher customExampleMatcher = ExampleMatcher.matchingAny()
-      .withMatcher("firstName", ExampleMatcher.GenericPropertyMatchers.contains().ignoreCase())
-      .withMatcher("lastName", ExampleMatcher.GenericPropertyMatchers.contains().ignoreCase());
-
-    Example example = Example.of(Passenger.from("e", "s", null), customExampleMatcher);
-
-public Iterable<User> searchByText(String searchText) {
-
-    String likeExpression = "%" + searchText + "%";
-    Iterable<User> users = userRepository.searchByText(likeExpression);
-    return users ;
-}
-    @Override
-    public Optional<Item> getItemById(Long id) {
-        return itemStorage.getItemById(id);
-    }
-
-    @Override
-    public List<Item> searchItems(String keyword) {
-        return itemStorage.searchItems(keyword);
-    }*/
 }

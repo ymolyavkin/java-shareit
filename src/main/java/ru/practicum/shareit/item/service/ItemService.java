@@ -1,9 +1,7 @@
 package ru.practicum.shareit.item.service;
 
-import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.item.dto.IncomingItemDto;
 import ru.practicum.shareit.item.dto.ItemDto;
-import ru.practicum.shareit.item.model.Item;
 
 import java.util.List;
 
@@ -20,10 +18,10 @@ public interface ItemService {
 
     List<Item> searchItems(String keyword);*/
 
-    List<Item> getAll();
+    List<ItemDto> getAll();
 
 
-    Item getItemById(Long id);
+    ItemDto getItemById(Long id);
     List<ItemDto> searchItemsByText(String searchText);
 
   //  @Transactional

@@ -57,8 +57,9 @@ public class ItemController {
     @GetMapping("/{id}")
     public ItemDto getItemById(@PathVariable Long id) {
         log.info("Получен запрос на выдачу вещи с id = {}", id);
-        Item item = itemService.getItemById(id);
-        return ItemMapper.mapToItemDto(item);
+       /* Item item = itemService.getItemById(id);
+        return ItemMapper.mapToItemDto(item);*/
+        return  itemService.getItemById(id);
     }
 
     @GetMapping("/search")

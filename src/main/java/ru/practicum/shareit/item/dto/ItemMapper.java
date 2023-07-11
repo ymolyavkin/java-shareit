@@ -29,5 +29,8 @@ public class ItemMapper {
 
         return item;
     }
+    public static ItemWithIdAndNameDto mapToItemOnlyNameDto(Item item){
+        return new ItemWithIdAndNameDto(item.getId(), item.getName());
+    }
 }
 

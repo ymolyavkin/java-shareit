@@ -3,21 +3,21 @@ package ru.practicum.shareit.booking.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.booking.Booking;
-import ru.practicum.shareit.booking.dto.BookingDto;
-import ru.practicum.shareit.booking.dto.BookingMapper;
-import ru.practicum.shareit.booking.dto.IncomingBookingDto;
+import ru.practicum.shareit.booking.dto.*;
 import ru.practicum.shareit.booking.repository.BookingRepository;
 import ru.practicum.shareit.exception.NoneXSharerUserIdException;
-import ru.practicum.shareit.exception.BadRequestException;
 import ru.practicum.shareit.exception.NotFoundException;
+import ru.practicum.shareit.item.dto.ItemMapper;
+import ru.practicum.shareit.item.dto.ItemWithIdAndNameDto;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.repository.ItemRepository;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserRepository;
 import ru.practicum.shareit.validator.BookingValidation;
 
-import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -33,8 +33,10 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public Booking getBookingById(Long id) {
-        return bookingRepository.getReferenceById(id);
+    public BookingDto getBookingById(Long id) {
+        Booking booking = bookingRepository.getReferenceById(id);
+
+        return BookingMapper.mapToBookingDto(booking);
     }
 
     @Override
@@ -47,7 +49,8 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public BookingDto addBooking(IncomingBookingDto incomingBookingDto) {
+   // public BookingWithItemIdAndNameDto addBookingWithItem(IncomingBookingDto incomingBookingDto) {
+    public BookingWithItemMapDto addBookingWithItem(IncomingBookingDto incomingBookingDto) {
         if (incomingBookingDto.getBookerId().equals(-1L)) {
             throw new NoneXSharerUserIdException("Не указан инициатор бронирования");
         }
@@ -59,16 +62,21 @@ public class BookingServiceImpl implements BookingService {
                 .orElseThrow(() -> new NotFoundException(String.format("Вещь с id %d не найдена", itemId)));
 
         BookingValidation.bookingIsValid(incomingBookingDto, item);
-//Booking booking0 = BookingMapper.mapToBooking(incomingBookingDto, item, booker);
-        Booking booking = bookingRepository.save(BookingMapper.mapToBooking(incomingBookingDto, item, booker));
 
-        return BookingMapper.mapToBookingDto(booking);
+        Booking booking = bookingRepository.save(BookingMapper.mapToBooking(incomingBookingDto, item, booker));
+        Map<String, String> itemMap = new HashMap<>();
+        itemMap.put("id", String.valueOf(itemId));
+        itemMap.put("name", item.getName());
+
+        //return BookingMapper.mapToBookingWithItemIdAndNameDto(booking, itemWithIdAndNameDto);
+        return BookingMapper.mapToBookingWithItemMapDto(booking, itemMap);
     }
 
     @Override
     public BookingDto updateBooking(IncomingBookingDto incomingBookingDto, Long bookingId, Long bookerId) {
         Booking booking = bookingRepository.getReferenceById(bookingId);
-
+        Item item = itemRepository.findById(booking.getItemId())
+                .orElseThrow(() -> new NotFoundException(String.format("Вещь с id %d не найдена", booking.getItemId())));
         boolean needsToBeChanged = false;
         if (incomingBookingDto.getStart() != null && !incomingBookingDto.getStart().equals(booking.getStart())) {
             booking.setStart(incomingBookingDto.getStart());

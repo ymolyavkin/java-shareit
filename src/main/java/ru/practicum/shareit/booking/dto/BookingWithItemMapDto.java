@@ -5,13 +5,15 @@ import lombok.Data;
 import ru.practicum.shareit.booking.Status;
 
 import java.time.LocalDateTime;
+import java.util.Map;
+
 @Builder
 @Data
-public class BookingDto {
+public class BookingWithItemMapDto {
     private long id;
     private LocalDateTime start;
     private LocalDateTime end;
-    private Long itemId;
+    private Map<String, String> item;
     private Long bookerId;
     private Status status;
 }
