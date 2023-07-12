@@ -7,8 +7,6 @@ import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.exception.NoneXSharerUserIdException;
 import ru.practicum.shareit.item.dto.IncomingItemDto;
 import ru.practicum.shareit.item.dto.ItemDto;
-import ru.practicum.shareit.item.dto.ItemMapper;
-import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.service.ItemService;
 
 import javax.validation.Valid;
@@ -28,6 +26,7 @@ public class ItemController {
     @GetMapping
     public List<ItemDto> getItems(@RequestHeader(value = USER_ID_FROM_REQUEST, defaultValue = "-1") Long userId) {
         log.info("Получен запрос на выдачу вещей пользователя с id = {}", userId);
+
         return itemService.getItemsByUser(userId);
     }
 
@@ -35,7 +34,7 @@ public class ItemController {
     @PostMapping
     public ItemDto addItem(@RequestHeader(value = USER_ID_FROM_REQUEST, defaultValue = "-1") Long userId,
                            @Valid @RequestBody IncomingItemDto incomingItemDto) {
-        log.info("Получен запрос на добавление вещи пользователя с id = {}", userId);
+        log.info("Получен запрос пользователя с id = {} на добавление вещи", userId);
         if (userId.equals(-1L)) {
             throw new NoneXSharerUserIdException("Не указан владелец вещи");
         }
@@ -47,7 +46,7 @@ public class ItemController {
     public ItemDto updateItem(@RequestHeader(value = USER_ID_FROM_REQUEST, defaultValue = "-1") Long userId,
                               @RequestBody IncomingItemDto incomingItemDto,
                               @PathVariable Long itemId) {
-        log.info("Получен запрос на обновление вещи пользователя с id = {}", userId);
+        log.info("Получен запрос на обновление вещи id = {} пользователя с id = {}", itemId, userId);
         if (userId.equals(-1L)) {
             throw new NoneXSharerUserIdException("Не указан владелец вещи");
         }
@@ -57,8 +56,7 @@ public class ItemController {
     @GetMapping("/{id}")
     public ItemDto getItemById(@PathVariable Long id) {
         log.info("Получен запрос на выдачу вещи с id = {}", id);
-       /* Item item = itemService.getItemById(id);
-        return ItemMapper.mapToItemDto(item);*/
+
         return  itemService.getItemById(id);
     }
 

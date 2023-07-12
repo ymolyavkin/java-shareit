@@ -74,9 +74,9 @@ public class ErrorHandler {
     @ExceptionHandler({EntityNotFoundException.class})
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public Map<String, String> handleEntityNotFound(final RuntimeException e) {
-        log.debug("Ошибка БД. Статус ошибки 404 Not found");
+        log.debug("Объект не найден в БД. Статус ошибки 404 Not found");
         return Map.of(
-                "error", "Ошибка БД. Статус ошибки 404 Not found"
+                "error", "Объект не найден в БД. Статус ошибки 404 Not found"
         );
     }
 

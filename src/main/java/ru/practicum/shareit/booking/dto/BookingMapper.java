@@ -2,36 +2,26 @@ package ru.practicum.shareit.booking.dto;
 
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
-import ru.practicum.shareit.booking.Booking;
+import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.item.dto.ItemWithIdAndNameDto;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.model.User;
-
-import java.util.Map;
 
 @Slf4j
 @UtilityClass
 public class BookingMapper {
 
-    public static BookingWithItemIdAndNameDto mapToBookingWithItemIdAndNameDto(Booking booking, ItemWithIdAndNameDto itemWithIdAndNameDto) {
-        BookingWithItemIdAndNameDto bookWee = BookingWithItemIdAndNameDto.builder()
-                .id(booking.getId())
-                .start(booking.getStart())
-                .end(booking.getEnd())
-                .item(itemWithIdAndNameDto)
-                .bookerId(booking.getBookerId())
-                .status(booking.getStatus())
-                .build();
-        System.out.println();
+    public static BookingWithItemIdAndNameDto mapToBookingWithItemIdAndNameDto(Booking booking, Item item) {
         return BookingWithItemIdAndNameDto.builder()
                 .id(booking.getId())
                 .start(booking.getStart())
                 .end(booking.getEnd())
-                .item(itemWithIdAndNameDto)
-                .bookerId(booking.getBookerId())
+                .item(new ItemWithIdAndNameDto(item.getId(), item.getName()))
+                .booker(new BookerDto(booking.getBookerId()))
                 .status(booking.getStatus())
                 .build();
     }
+
     public static BookingDto mapToBookingDto(Booking booking) {
         return BookingDto.builder()
                 .id(booking.getId())
@@ -52,7 +42,8 @@ public class BookingMapper {
 
         return booking;
     }
-    public static BookingWithItemMapDto mapToBookingWithItemMapDto(Booking booking, Map<String, String> item) {
+
+  /*  public static BookingWithItemMapDto mapToBookingWithItemMapDto(Booking booking, Map<String, String> item) {
         return BookingWithItemMapDto.builder()
                 .id(booking.getId())
                 .start(booking.getStart())
@@ -61,6 +52,6 @@ public class BookingMapper {
                 .item(item)
                 .status(booking.getStatus())
                 .build();
-    }
+    }*/
 }
 

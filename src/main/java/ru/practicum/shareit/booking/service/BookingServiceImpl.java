@@ -2,22 +2,20 @@ package ru.practicum.shareit.booking.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import ru.practicum.shareit.booking.Booking;
+import ru.practicum.shareit.booking.model.Booking;
+import ru.practicum.shareit.booking.model.Status;
 import ru.practicum.shareit.booking.dto.*;
 import ru.practicum.shareit.booking.repository.BookingRepository;
 import ru.practicum.shareit.exception.NoneXSharerUserIdException;
 import ru.practicum.shareit.exception.NotFoundException;
-import ru.practicum.shareit.item.dto.ItemMapper;
-import ru.practicum.shareit.item.dto.ItemWithIdAndNameDto;
+import ru.practicum.shareit.exception.OwnerMismatchException;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.repository.ItemRepository;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserRepository;
 import ru.practicum.shareit.validator.BookingValidation;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -33,14 +31,17 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public BookingDto getBookingById(Long id) {
+    public BookingWithItemIdAndNameDto getBookingById(Long id) {
         Booking booking = bookingRepository.getReferenceById(id);
-
-        return BookingMapper.mapToBookingDto(booking);
+        Item item = itemRepository.findById(booking.getItemId())
+                .orElseThrow(() -> new NotFoundException(String.format("Вещь с id %d не найдена", booking.getItemId())));
+        return BookingMapper.mapToBookingWithItemIdAndNameDto(booking, item);
     }
 
     @Override
     public List<BookingDto> getBookingsByBooker(Long bookerId) {
+        User booker = userRepository.findById(bookerId)
+                .orElseThrow(() -> new NotFoundException(String.format("Пользователь с id %d не найден", bookerId)));
         List<Booking> bookings = bookingRepository.findAllByBookerId(bookerId);
         return bookings
                 .stream()
@@ -49,8 +50,7 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-   // public BookingWithItemIdAndNameDto addBookingWithItem(IncomingBookingDto incomingBookingDto) {
-    public BookingWithItemMapDto addBookingWithItem(IncomingBookingDto incomingBookingDto) {
+    public BookingWithItemIdAndNameDto addBooking(IncomingBookingDto incomingBookingDto) {
         if (incomingBookingDto.getBookerId().equals(-1L)) {
             throw new NoneXSharerUserIdException("Не указан инициатор бронирования");
         }
@@ -64,16 +64,12 @@ public class BookingServiceImpl implements BookingService {
         BookingValidation.bookingIsValid(incomingBookingDto, item);
 
         Booking booking = bookingRepository.save(BookingMapper.mapToBooking(incomingBookingDto, item, booker));
-        Map<String, String> itemMap = new HashMap<>();
-        itemMap.put("id", String.valueOf(itemId));
-        itemMap.put("name", item.getName());
 
-        //return BookingMapper.mapToBookingWithItemIdAndNameDto(booking, itemWithIdAndNameDto);
-        return BookingMapper.mapToBookingWithItemMapDto(booking, itemMap);
+        return BookingMapper.mapToBookingWithItemIdAndNameDto(booking, item);
     }
 
     @Override
-    public BookingDto updateBooking(IncomingBookingDto incomingBookingDto, Long bookingId, Long bookerId) {
+    public BookingWithItemIdAndNameDto updateBooking(IncomingBookingDto incomingBookingDto, Long bookingId, Long bookerId) {
         Booking booking = bookingRepository.getReferenceById(bookingId);
         Item item = itemRepository.findById(booking.getItemId())
                 .orElseThrow(() -> new NotFoundException(String.format("Вещь с id %d не найдена", booking.getItemId())));
@@ -93,6 +89,23 @@ public class BookingServiceImpl implements BookingService {
         if (needsToBeChanged) {
             bookingRepository.saveAndFlush(booking);
         }
-        return BookingMapper.mapToBookingDto(booking);
+        return BookingMapper.mapToBookingWithItemIdAndNameDto(booking, item);
+    }
+
+    @Override
+    public BookingWithItemIdAndNameDto approvingBooking(Long bookingId, Long ownerId, boolean approved) {
+        Item item = itemRepository.findById(bookingId)
+                .orElseThrow(() -> new NotFoundException(String.format("Вещь с id %d не найдена", bookingId)));
+        if (!ownerId.equals(item.getOwnerId())){
+            throw new OwnerMismatchException("Подтвержение может быть выполнено только владельцем вещи");
+        }
+        Booking booking = bookingRepository.getReferenceById(bookingId);
+        if (approved){
+            booking.setStatus(Status.APPROVED);
+        } else {
+            booking.setStatus(Status.REJECTED);
+        }
+        bookingRepository.saveAndFlush(booking);
+        return null;
     }
 }
