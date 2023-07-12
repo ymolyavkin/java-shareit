@@ -14,6 +14,6 @@ public class BookingWithItemMapDto {
     private LocalDateTime start;
     private LocalDateTime end;
     private Map<String, String> item;
-    private Long bookerId;
+    private BookerDto booker;
     private Status status;
 }
