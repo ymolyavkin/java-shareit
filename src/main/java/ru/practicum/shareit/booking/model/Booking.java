@@ -36,11 +36,11 @@ public class Booking {
     @JoinColumn(name = "status")
     private Status status = Status.WAITING;
 
-    public long getItemId() {
+    public Long getItemId() {
         return item.getId();
     }
 
-    public long getBookerId() {
+    public Long getBookerId() {
         return booker.getId();
     }
 

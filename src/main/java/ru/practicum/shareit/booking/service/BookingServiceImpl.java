@@ -31,21 +31,30 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public BookingWithItemIdAndNameDto getBookingById(Long id) {
+    public BookingWithItemIdAndNameDto getBookingById(Long id, Long userId) {
         Booking booking = bookingRepository.getReferenceById(id);
         Item item = itemRepository.findById(booking.getItemId())
                 .orElseThrow(() -> new NotFoundException(String.format("Вещь с id %d не найдена", booking.getItemId())));
+        if (!booking.getBookerId().equals(userId) && !item.getOwnerId().equals(userId)) {
+            throw new OwnerMismatchException("Пользователь с id = {} не автор ,бронирования и не владелец вещи, данные о бронировании недоступны");
+        }
+
         return BookingMapper.mapToBookingWithItemIdAndNameDto(booking, item);
     }
 
     @Override
     public List<BookingDto> getBookingsByBooker(Long bookerId) {
-        User booker = userRepository.findById(bookerId)
-                .orElseThrow(() -> new NotFoundException(String.format("Пользователь с id %d не найден", bookerId)));
-        List<Booking> bookings = bookingRepository.findAllByBookerId(bookerId);
+//        User booker = userRepository.findById(bookerId)
+//                .orElseThrow(() -> new NotFoundException(String.format("Пользователь с id %d не найден", bookerId)));
+//        List<Booking> bookings = bookingRepository.findAllByBookerId(bookerId);
+//        return bookings
+//                .stream()
+//                .map(BookingMapper::mapToBookingDto)
+//                .collect(Collectors.toList());
+        List<Booking> bookings = bookingRepository.findAll();
         return bookings
                 .stream()
-                .map(BookingMapper::mapToBookingDto)
+               .map(BookingMapper::mapToBookingDto)
                 .collect(Collectors.toList());
     }
 
@@ -96,11 +105,11 @@ public class BookingServiceImpl implements BookingService {
     public BookingWithItemIdAndNameDto approvingBooking(Long bookingId, Long ownerId, boolean approved) {
         Item item = itemRepository.findById(bookingId)
                 .orElseThrow(() -> new NotFoundException(String.format("Вещь с id %d не найдена", bookingId)));
-        if (!ownerId.equals(item.getOwnerId())){
+        if (!ownerId.equals(item.getOwnerId())) {
             throw new OwnerMismatchException("Подтвержение может быть выполнено только владельцем вещи");
         }
         Booking booking = bookingRepository.getReferenceById(bookingId);
-        if (approved){
+        if (approved) {
             booking.setStatus(Status.APPROVED);
         } else {
             booking.setStatus(Status.REJECTED);

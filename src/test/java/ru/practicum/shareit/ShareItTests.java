@@ -21,7 +21,7 @@ class ShareItTests {
 
     @BeforeEach
     void setUp() {
-        User requestor = new User(1, "Name Requestor", "email@yandex.ru");
+        User requestor = new User(1L, "Name Requestor", "email@yandex.ru");
         ItemRequest request = new ItemRequest("description", requestor.getId(), LocalDateTime.now());
         /*Item item = new Item();
        item.setId(1L);
@@ -35,12 +35,11 @@ class ShareItTests {
                 .name("Name")
                 .description("descr")
                 .available(true)
-                .ownerId(1L)
-                .requestId(1)
+                .owner(requestor)
                 .build();
         User booker = new User("Name", "email@mail.ru");
 
-        Booking booking = new Booking.Builder()
+        Booking booking = Booking.builder()
                 .id(0L)
                 .start(LocalDateTime.now())
                 .end(LocalDateTime.now())
@@ -48,7 +47,7 @@ class ShareItTests {
                 .booker(booker)
                 .status(Status.WAITING)
                 .build();
-       // Long itemRequestId = item.getRequestId().getId();
+        // Long itemRequestId = item.getRequestId().getId();
         ItemDto itemDto = ItemDto.builder()
                 .id(0L)
                 .name("Name")

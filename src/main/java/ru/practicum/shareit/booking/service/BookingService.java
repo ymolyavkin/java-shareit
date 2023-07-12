@@ -10,7 +10,7 @@ import java.util.List;
 public interface BookingService {
     List<Booking> getAll();
 
-    BookingWithItemIdAndNameDto getBookingById(Long id);
+    BookingWithItemIdAndNameDto getBookingById(Long id, Long userId);
 
     List<BookingDto> getBookingsByBooker(Long bookerId);
 

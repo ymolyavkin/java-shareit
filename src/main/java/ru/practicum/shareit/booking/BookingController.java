@@ -57,11 +57,12 @@ public class BookingController {
         return bookingService.updateBooking(incomingBookingDto, bookingId, ownerId);
     }
 
-    @GetMapping("/{id}")
-    public BookingWithItemIdAndNameDto getBookingById(@PathVariable Long id) {
-        log.info("Получен запрос на выдачу бронирования с id = {}", id);
+    @GetMapping("/{bookingId}")
+    public BookingWithItemIdAndNameDto getBookingById(@RequestHeader(value = USER_ID_FROM_REQUEST, defaultValue = "-1") Long userId,
+                                                      @PathVariable Long bookingId) {
+        log.info("Получен запрос на выдачу бронирования с id = {}", bookingId);
 
-        return bookingService.getBookingById(id);
+        return bookingService.getBookingById(bookingId, userId);
     }
 
 }
