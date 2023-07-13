@@ -1,9 +1,11 @@
 package ru.practicum.shareit.booking.dto;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 import ru.practicum.shareit.booking.model.Booking;
-import ru.practicum.shareit.item.dto.ItemWithIdAndNameDto;
+import ru.practicum.shareit.item.dto.ItemIdName;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.model.User;
 
@@ -12,6 +14,12 @@ import ru.practicum.shareit.user.model.User;
 public class BookingMapper {
 
     public static BookingWithItemIdAndNameDto mapToBookingWithItemIdAndNameDto(Booking booking, Item item) {
+        @AllArgsConstructor
+        @Getter
+        class ItemWithIdAndNameDto implements ItemIdName {
+            private final long id;
+            private final String name;
+        }
         return BookingWithItemIdAndNameDto.builder()
                 .id(booking.getId())
                 .start(booking.getStart())
