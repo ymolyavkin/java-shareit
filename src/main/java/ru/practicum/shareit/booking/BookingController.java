@@ -2,10 +2,11 @@ package ru.practicum.shareit.booking;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.context.properties.bind.DefaultValue;
 import org.springframework.web.bind.UnsatisfiedServletRequestParameterException;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.booking.dto.BookingDto;
-import ru.practicum.shareit.booking.dto.BookingWithItemIdAndNameDto;
+import ru.practicum.shareit.booking.dto.BookingResponseDto;
 import ru.practicum.shareit.booking.dto.IncomingBookingDto;
 import ru.practicum.shareit.booking.service.BookingService;
 import ru.practicum.shareit.exception.NoneXSharerUserIdException;
@@ -23,15 +24,22 @@ public class BookingController {
     private final BookingService bookingService;
 
     @GetMapping
-    public List<BookingDto> getBookings(@RequestHeader(value = USER_ID_FROM_REQUEST, defaultValue = "-1") Long bookerId) {
+    public List<BookingResponseDto> getBookings(@RequestHeader(value = USER_ID_FROM_REQUEST, defaultValue = "-1") Long bookerId,
+                                        @RequestParam(required = false) @DefaultValue("ALL") String state) {
         log.info("Получен запрос на выдачу вещей, забронированных пользователем с id = {}", bookerId);
         return bookingService.getBookingsByBooker(bookerId);
+    }
+    @GetMapping("/owner")
+    public List<BookingResponseDto> getBookingsByOwner(@RequestHeader(value = USER_ID_FROM_REQUEST, defaultValue = "-1") Long ownerId,
+                                        @RequestParam(required = false) @DefaultValue("ALL") String state) {
+        log.info("Получен запрос на выдачу вещей, забронированных пользователем с id = {}", ownerId);
+        return bookingService.getBookingsByOwner(ownerId);
     }
 
     @ExceptionHandler(UnsatisfiedServletRequestParameterException.class)
     @PostMapping
-    public BookingWithItemIdAndNameDto addBooking(@RequestHeader(value = USER_ID_FROM_REQUEST, defaultValue = "-1") Long bookerId,
-                                                  @Valid @RequestBody IncomingBookingDto incomingBookingDto) {
+    public BookingResponseDto addBooking(@RequestHeader(value = USER_ID_FROM_REQUEST, defaultValue = "-1") Long bookerId,
+                                         @Valid @RequestBody IncomingBookingDto incomingBookingDto) {
         log.info("Получен запрос на бронирование вещи пользователем с id = {}", bookerId);
         if (bookerId.equals(-1L)) {
             throw new NoneXSharerUserIdException("Не указан инициатор бронирования вещи");
@@ -42,7 +50,7 @@ public class BookingController {
     }
 
     @PatchMapping(value = "/{bookingId}", consumes = "application/json")
-    public BookingWithItemIdAndNameDto updateBooking(@RequestHeader(value = USER_ID_FROM_REQUEST, defaultValue = "-1") Long ownerId,
+    public BookingResponseDto updateBooking(@RequestHeader(value = USER_ID_FROM_REQUEST, defaultValue = "-1") Long ownerId,
                                     @RequestBody(required = false) IncomingBookingDto incomingBookingDto,
                                     @PathVariable Long bookingId,
                                     @RequestParam(required = false) Boolean approved) {
@@ -58,7 +66,7 @@ public class BookingController {
     }
 
     @GetMapping("/{bookingId}")
-    public BookingWithItemIdAndNameDto getBookingById(@RequestHeader(value = USER_ID_FROM_REQUEST, defaultValue = "-1") Long userId,
+    public BookingResponseDto getBookingById(@RequestHeader(value = USER_ID_FROM_REQUEST, defaultValue = "-1") Long userId,
                                                       @PathVariable Long bookingId) {
         log.info("Получен запрос на выдачу бронирования с id = {}", bookingId);
 

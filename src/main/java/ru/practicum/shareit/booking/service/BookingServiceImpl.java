@@ -31,7 +31,7 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public BookingWithItemIdAndNameDto getBookingById(Long id, Long userId) {
+    public BookingResponseDto getBookingById(Long id, Long userId) {
         Booking booking = bookingRepository.getReferenceById(id);
         Item item = itemRepository.findById(booking.getItemId())
                 .orElseThrow(() -> new NotFoundException(String.format("Вещь с id %d не найдена", booking.getItemId())));
@@ -39,22 +39,22 @@ public class BookingServiceImpl implements BookingService {
             throw new OwnerMismatchException("Пользователь с id = {} не автор ,бронирования и не владелец вещи, данные о бронировании недоступны");
         }
 
-        return BookingMapper.mapToBookingWithItemIdAndNameDto(booking, item);
+        return BookingMapper.mapToBookingResponseDto(booking, item);
     }
 
     @Override
-    public List<BookingDto> getBookingsByBooker(Long bookerId) {
+    public List<BookingResponseDto> getBookingsByBooker(Long bookerId) {
         User booker = userRepository.findById(bookerId)
                 .orElseThrow(() -> new NotFoundException(String.format("Пользователь с id %d не найден", bookerId)));
         List<Booking> bookings = bookingRepository.findAllByBookerId(bookerId);
         return bookings
                 .stream()
-                .map(BookingMapper::mapToBookingDto)
+                .map(booking -> BookingMapper.mapToBookingResponseDto(booking, booking.getItem()))
                 .collect(Collectors.toList());
     }
 
     @Override
-    public BookingWithItemIdAndNameDto addBooking(IncomingBookingDto incomingBookingDto) {
+    public BookingResponseDto addBooking(IncomingBookingDto incomingBookingDto) {
         if (incomingBookingDto.getBookerId().equals(-1L)) {
             throw new NoneXSharerUserIdException("Не указан инициатор бронирования");
         }
@@ -69,11 +69,11 @@ public class BookingServiceImpl implements BookingService {
 
         Booking booking = bookingRepository.save(BookingMapper.mapToBooking(incomingBookingDto, item, booker));
 
-        return BookingMapper.mapToBookingWithItemIdAndNameDto(booking, item);
+        return BookingMapper.mapToBookingResponseDto(booking, item);
     }
 
     @Override
-    public BookingWithItemIdAndNameDto updateBooking(IncomingBookingDto incomingBookingDto, Long bookingId, Long bookerId) {
+    public BookingResponseDto updateBooking(IncomingBookingDto incomingBookingDto, Long bookingId, Long bookerId) {
         Booking booking = bookingRepository.getReferenceById(bookingId);
         Item item = itemRepository.findById(booking.getItemId())
                 .orElseThrow(() -> new NotFoundException(String.format("Вещь с id %d не найдена", booking.getItemId())));
@@ -93,11 +93,11 @@ public class BookingServiceImpl implements BookingService {
         if (needsToBeChanged) {
             bookingRepository.saveAndFlush(booking);
         }
-        return BookingMapper.mapToBookingWithItemIdAndNameDto(booking, item);
+        return BookingMapper.mapToBookingResponseDto(booking, item);
     }
 
     @Override
-    public BookingWithItemIdAndNameDto approvingBooking(Long bookingId, Long ownerId, boolean approved) {
+    public BookingResponseDto approvingBooking(Long bookingId, Long ownerId, boolean approved) {
         Booking booking = bookingRepository.findById(bookingId)
                 .orElseThrow(() -> new NotFoundException(String.format("Бронирование с id %d не найдено", bookingId)));
         Item item = itemRepository.findById(booking.getItemId())
@@ -105,7 +105,6 @@ public class BookingServiceImpl implements BookingService {
         if (!ownerId.equals(item.getOwnerId())) {
             throw new OwnerMismatchException("Подтвержение может быть выполнено только владельцем вещи");
         }
-     //   Booking booking = bookingRepository.getReferenceById(bookingId);
         if (approved) {
             booking.setStatus(Status.APPROVED);
         } else {
@@ -113,6 +112,22 @@ public class BookingServiceImpl implements BookingService {
         }
         bookingRepository.saveAndFlush(booking);
 
-        return BookingMapper.mapToBookingWithItemIdAndNameDto(booking, item);
+        return BookingMapper.mapToBookingResponseDto(booking, item);
+    }
+
+    @Override
+    public List<BookingResponseDto> getBookingsByOwner(Long ownerId) {
+        User booker = userRepository.findById(ownerId)
+                .orElseThrow(() -> new NotFoundException(String.format("Пользователь с id %d не найден", ownerId)));
+        List<Item> items = itemRepository.findAllByOwnerId(ownerId);
+//        return items
+//                .stream()
+//                .map(ItemMapper::mapToItemDto)
+//                .collect(Collectors.toList());
+        List<Booking> bookings = bookingRepository.findAllByBookerId(ownerId);
+        return bookings
+                .stream()
+                .map(booking -> BookingMapper.mapToBookingResponseDto(booking, null))
+                .collect(Collectors.toList());
     }
 }

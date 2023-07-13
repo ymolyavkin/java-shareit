@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 
 @Builder
 @Data
-public class BookingWithItemIdAndNameDto {
+public class BookingResponseDto {
     private long id;
     private LocalDateTime start;
     private LocalDateTime end;

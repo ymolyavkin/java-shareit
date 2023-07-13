@@ -13,14 +13,14 @@ import ru.practicum.shareit.user.model.User;
 @UtilityClass
 public class BookingMapper {
 
-    public static BookingWithItemIdAndNameDto mapToBookingWithItemIdAndNameDto(Booking booking, Item item) {
+    public static BookingResponseDto mapToBookingResponseDto(Booking booking, Item item) {
         @AllArgsConstructor
         @Getter
         class ItemWithIdAndNameDto implements ItemIdName {
             private final long id;
             private final String name;
         }
-        return BookingWithItemIdAndNameDto.builder()
+        return BookingResponseDto.builder()
                 .id(booking.getId())
                 .start(booking.getStart())
                 .end(booking.getEnd())
@@ -50,16 +50,5 @@ public class BookingMapper {
 
         return booking;
     }
-
-  /*  public static BookingWithItemMapDto mapToBookingWithItemMapDto(Booking booking, Map<String, String> item) {
-        return BookingWithItemMapDto.builder()
-                .id(booking.getId())
-                .start(booking.getStart())
-                .end(booking.getEnd())
-                .booker(new BookerDto(booking.getBookerId()))
-                .item(item)
-                .status(booking.getStatus())
-                .build();
-    }*/
 }
 
