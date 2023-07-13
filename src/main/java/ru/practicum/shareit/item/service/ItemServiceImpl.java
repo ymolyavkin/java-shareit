@@ -79,10 +79,6 @@ public class ItemServiceImpl implements ItemService {
             item.setAvailable(incomingItemDto.getAvailable());
             needsToBeChanged = true;
         }
-        /*if (incomingItemDto.getOwnerId() != null && !incomingItemDto.getOwnerId().equals(item.getOwnerId())) {
-            item.setOwnerId(incomingItemDto.getOwnerId());
-            needsToBeChanged = true;
-        }*/
         if (needsToBeChanged) {
             itemRepository.saveAndFlush(item);
         }
@@ -92,7 +88,7 @@ public class ItemServiceImpl implements ItemService {
     @Override
     public List<ItemDto> searchItemsByText(String searchText) {
         List<Item> items = itemRepository.findByNameIsContainingIgnoreCaseOrDescriptionIsContainingIgnoreCase(searchText, searchText);
-        // return itemRepository.findByNameLikeOrDescriptionLike(searchText.toLowerCase(), searchText.toLowerCase());
+
         return items
                 .stream()
                 .map(ItemMapper::mapToItemDto)

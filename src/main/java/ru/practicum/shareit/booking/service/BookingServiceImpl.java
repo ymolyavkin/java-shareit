@@ -44,17 +44,12 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     public List<BookingDto> getBookingsByBooker(Long bookerId) {
-//        User booker = userRepository.findById(bookerId)
-//                .orElseThrow(() -> new NotFoundException(String.format("Пользователь с id %d не найден", bookerId)));
-//        List<Booking> bookings = bookingRepository.findAllByBookerId(bookerId);
-//        return bookings
-//                .stream()
-//                .map(BookingMapper::mapToBookingDto)
-//                .collect(Collectors.toList());
-        List<Booking> bookings = bookingRepository.findAll();
+        User booker = userRepository.findById(bookerId)
+                .orElseThrow(() -> new NotFoundException(String.format("Пользователь с id %d не найден", bookerId)));
+        List<Booking> bookings = bookingRepository.findAllByBookerId(bookerId);
         return bookings
                 .stream()
-               .map(BookingMapper::mapToBookingDto)
+                .map(BookingMapper::mapToBookingDto)
                 .collect(Collectors.toList());
     }
 
@@ -103,18 +98,21 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     public BookingWithItemIdAndNameDto approvingBooking(Long bookingId, Long ownerId, boolean approved) {
-        Item item = itemRepository.findById(bookingId)
-                .orElseThrow(() -> new NotFoundException(String.format("Вещь с id %d не найдена", bookingId)));
+        Booking booking = bookingRepository.findById(bookingId)
+                .orElseThrow(() -> new NotFoundException(String.format("Бронирование с id %d не найдено", bookingId)));
+        Item item = itemRepository.findById(booking.getItemId())
+                .orElseThrow(() -> new NotFoundException(String.format("Вещь с id %d не найдена", booking.getItemId())));
         if (!ownerId.equals(item.getOwnerId())) {
             throw new OwnerMismatchException("Подтвержение может быть выполнено только владельцем вещи");
         }
-        Booking booking = bookingRepository.getReferenceById(bookingId);
+     //   Booking booking = bookingRepository.getReferenceById(bookingId);
         if (approved) {
             booking.setStatus(Status.APPROVED);
         } else {
             booking.setStatus(Status.REJECTED);
         }
         bookingRepository.saveAndFlush(booking);
-        return null;
+
+        return BookingMapper.mapToBookingWithItemIdAndNameDto(booking, item);
     }
 }
