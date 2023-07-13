@@ -5,7 +5,7 @@ import lombok.Getter;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 import ru.practicum.shareit.booking.model.Booking;
-import ru.practicum.shareit.item.dto.ItemIdName;
+import ru.practicum.shareit.item.dto.ItemIdNameDto;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.model.User;
 
@@ -16,7 +16,7 @@ public class BookingMapper {
     public static BookingResponseDto mapToBookingResponseDto(Booking booking, Item item) {
         @AllArgsConstructor
         @Getter
-        class ItemWithIdAndNameDto implements ItemIdName {
+        class ItemWithIdAndNameDtoDto implements ItemIdNameDto {
             private final long id;
             private final String name;
         }
@@ -24,7 +24,7 @@ public class BookingMapper {
                 .id(booking.getId())
                 .start(booking.getStart())
                 .end(booking.getEnd())
-                .item(new ItemWithIdAndNameDto(item.getId(), item.getName()))
+                .item(new ItemWithIdAndNameDtoDto(item.getId(), item.getName()))
                 .booker(new BookerDto(booking.getBookerId()))
                 .status(booking.getStatus())
                 .build();

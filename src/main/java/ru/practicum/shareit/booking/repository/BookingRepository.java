@@ -18,4 +18,16 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
             "from BOOKINGS " +
             "where item_id = ?1", nativeQuery = true)
     List<Booking> findAllByItemId(Long itemId);
+    @Query(value="select * " +
+            "from BOOKINGS " +
+            "where id = ?1 and status = 'APPROVED' " +
+            "order by start_time " +
+            "limit 1", nativeQuery = true)
+    Booking findLast(Long itemId);
+    @Query(value="select * " +
+            "from BOOKINGS " +
+            "where id = ?1 and status = 'APPROVED' " +
+            "order by start_time desc " +
+            "limit 1", nativeQuery = true)
+    Booking findNext(Long itemId);
 }

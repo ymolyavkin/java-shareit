@@ -7,6 +7,8 @@ import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.exception.NoneXSharerUserIdException;
 import ru.practicum.shareit.item.dto.IncomingItemDto;
 import ru.practicum.shareit.item.dto.ItemDto;
+import ru.practicum.shareit.item.dto.ItemLastNextDto;
+import ru.practicum.shareit.item.dto.ItemWithDateDto;
 import ru.practicum.shareit.item.service.ItemService;
 
 import javax.validation.Valid;
@@ -24,10 +26,12 @@ public class ItemController {
     private final ItemService itemService;
 
     @GetMapping
-    public List<ItemDto> getItems(@RequestHeader(value = USER_ID_FROM_REQUEST, defaultValue = "-1") Long userId) {
+  //  public List<ItemDto> getItems(@RequestHeader(value = USER_ID_FROM_REQUEST, defaultValue = "-1") Long userId) {
+    public List<ItemLastNextDto> getItems(@RequestHeader(value = USER_ID_FROM_REQUEST, defaultValue = "-1") Long userId) {
         log.info("Получен запрос на выдачу вещей пользователя с id = {}", userId);
 
-        return itemService.getItemsByUser(userId);
+        //return itemService.getItemsByUser(userId);
+        return itemService.getItemsLastNextBookingByUser(userId);
     }
 
     @ExceptionHandler(UnsatisfiedServletRequestParameterException.class)

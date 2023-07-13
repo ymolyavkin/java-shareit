@@ -2,6 +2,7 @@ package ru.practicum.shareit.item.service;
 
 import ru.practicum.shareit.item.dto.IncomingItemDto;
 import ru.practicum.shareit.item.dto.ItemDto;
+import ru.practicum.shareit.item.dto.ItemLastNextDto;
 import ru.practicum.shareit.item.dto.ItemWithDateDto;
 
 import java.util.List;
@@ -30,11 +31,13 @@ public interface ItemService {
 
     List<ItemWithDateDto> getItemsWithDateByUser(Long userId);
 
+    List<ItemLastNextDto> getItemsLastNextBookingByUser(Long userId);
+
     /* @Override
-         public List<Item> getItems() {
-             return itemStorage.getItems();
-         }
-    */
+             public List<Item> getItems() {
+                 return itemStorage.getItems();
+             }
+        */
     List<ItemDto> getItemsByUser(Long userId);
 
     ItemDto addItem(IncomingItemDto incomingItemDto);

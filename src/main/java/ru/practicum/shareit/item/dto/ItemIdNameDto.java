@@ -1,4 +1,4 @@
 package ru.practicum.shareit.item.dto;
 
-public interface ItemIdName {
+public interface ItemIdNameDto {
 }

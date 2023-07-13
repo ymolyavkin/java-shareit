@@ -7,10 +7,7 @@ import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.exception.NoneXSharerUserIdException;
 import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.exception.OwnerMismatchException;
-import ru.practicum.shareit.item.dto.IncomingItemDto;
-import ru.practicum.shareit.item.dto.ItemDto;
-import ru.practicum.shareit.item.dto.ItemMapper;
-import ru.practicum.shareit.item.dto.ItemWithDateDto;
+import ru.practicum.shareit.item.dto.*;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.repository.ItemRepository;
 import ru.practicum.shareit.user.model.User;
@@ -47,6 +44,7 @@ public class ItemServiceImpl implements ItemService {
         Item item = itemRepository.getReferenceById(id);
         return ItemMapper.mapToItemDto(item);
     }
+
     @Override
     public List<ItemWithDateDto> getItemsWithDateByUser(Long userId) {
         List<Item> items = itemRepository.findAllByOwnerId(userId);
@@ -55,11 +53,21 @@ public class ItemServiceImpl implements ItemService {
         for (Item item : items) {
             List<Booking> bookings = bookingRepository.findAllByItemId(item.getId());
             for (Booking booking : bookings) {
-                result.add(ItemMapper.mapToItemWithDateDto(item, booking.getStart(),booking.getEnd()));
+                result.add(ItemMapper.mapToItemWithDateDto(item, booking.getStart(), booking.getEnd()));
             }
         }
 
         return result;
+    }
+
+    @Override
+    public List<ItemLastNextDto> getItemsLastNextBookingByUser(Long userId) {
+        List<Item> items = itemRepository.findAllByOwnerId(userId);
+
+        return items
+                .stream()
+                .map(item -> ItemMapper.mapToItemLastNextDto(item, bookingRepository.findLast(item.getId()), bookingRepository.findNext(item.getId())))
+                .collect(Collectors.toList());
     }
 
     @Override
