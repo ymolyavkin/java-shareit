@@ -5,6 +5,8 @@ import lombok.extern.slf4j.Slf4j;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.model.User;
 
+import java.time.LocalDateTime;
+
 @Slf4j
 @UtilityClass
 public class ItemMapper {
@@ -28,6 +30,18 @@ public class ItemMapper {
         item.setOwner(owner);
 
         return item;
+    }
+    public static ItemWithDateDto mapToItemWithDateDto(Item item, LocalDateTime start, LocalDateTime end) {
+        return ItemWithDateDto.builder()
+                .id(item.getId())
+                .name(item.getName())
+                .description(item.getDescription())
+                .isAvailable(item.getAvailable())
+                .ownerId(item.getOwnerId())
+                .start(start)
+                .end(end)
+                .numberOfTimesToRent(item.getNumberOfTimesToRent())
+                .build();
     }
 }
 

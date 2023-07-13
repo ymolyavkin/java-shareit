@@ -97,7 +97,7 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public BookingResponseDto approvingBooking(Long bookingId, Long ownerId, boolean approved) {
+    public BookingResponseDto approvingBooking(Long bookingId, Long ownerId, Boolean approved) {
         Booking booking = bookingRepository.findById(bookingId)
                 .orElseThrow(() -> new NotFoundException(String.format("Бронирование с id %d не найдено", bookingId)));
         Item item = itemRepository.findById(booking.getItemId())
@@ -105,13 +105,14 @@ public class BookingServiceImpl implements BookingService {
         if (!ownerId.equals(item.getOwnerId())) {
             throw new OwnerMismatchException("Подтвержение может быть выполнено только владельцем вещи");
         }
-        if (approved) {
-            booking.setStatus(Status.APPROVED);
-        } else {
-            booking.setStatus(Status.REJECTED);
+        if (approved != null) {
+            if (approved) {
+                booking.setStatus(Status.APPROVED);
+            } else {
+                booking.setStatus(Status.REJECTED);
+            }
+            bookingRepository.saveAndFlush(booking);
         }
-        bookingRepository.saveAndFlush(booking);
-
         return BookingMapper.mapToBookingResponseDto(booking, item);
     }
 
@@ -119,15 +120,11 @@ public class BookingServiceImpl implements BookingService {
     public List<BookingResponseDto> getBookingsByOwner(Long ownerId) {
         User booker = userRepository.findById(ownerId)
                 .orElseThrow(() -> new NotFoundException(String.format("Пользователь с id %d не найден", ownerId)));
-        List<Item> items = itemRepository.findAllByOwnerId(ownerId);
-//        return items
-//                .stream()
-//                .map(ItemMapper::mapToItemDto)
-//                .collect(Collectors.toList());
+
         List<Booking> bookings = bookingRepository.findAllByBookerId(ownerId);
         return bookings
                 .stream()
-                .map(booking -> BookingMapper.mapToBookingResponseDto(booking, null))
+                .map(booking -> BookingMapper.mapToBookingResponseDto(booking, booking.getItem()))
                 .collect(Collectors.toList());
     }
 }

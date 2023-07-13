@@ -14,5 +14,8 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
             "where booker_id = ?1", nativeQuery = true)
 
     List<Booking> findAllByBookerId(Long bookerId);
-
+    @Query(value = "select * " +
+            "from BOOKINGS " +
+            "where item_id = ?1", nativeQuery = true)
+    List<Booking> findAllByItemId(Long itemId);
 }

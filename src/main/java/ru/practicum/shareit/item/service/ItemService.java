@@ -2,6 +2,7 @@ package ru.practicum.shareit.item.service;
 
 import ru.practicum.shareit.item.dto.IncomingItemDto;
 import ru.practicum.shareit.item.dto.ItemDto;
+import ru.practicum.shareit.item.dto.ItemWithDateDto;
 
 import java.util.List;
 
@@ -18,7 +19,7 @@ public interface ItemService {
 
     List<Item> searchItems(String keyword);*/
 
-    List<ItemDto> getAll();
+  //  List<ItemDto> getAll();
 
 
     ItemDto getItemById(Long id);
@@ -27,11 +28,13 @@ public interface ItemService {
   //  @Transactional
   //  ItemDto saveItem(IncomingItemDto incomingItemDto);
 
+    List<ItemWithDateDto> getItemsWithDateByUser(Long userId);
+
     /* @Override
-     public List<Item> getItems() {
-         return itemStorage.getItems();
-     }
-*/
+         public List<Item> getItems() {
+             return itemStorage.getItems();
+         }
+    */
     List<ItemDto> getItemsByUser(Long userId);
 
     ItemDto addItem(IncomingItemDto incomingItemDto);

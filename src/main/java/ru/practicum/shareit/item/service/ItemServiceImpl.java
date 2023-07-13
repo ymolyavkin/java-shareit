@@ -3,17 +3,21 @@ package ru.practicum.shareit.item.service;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.stereotype.Service;
+import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.exception.NoneXSharerUserIdException;
 import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.exception.OwnerMismatchException;
 import ru.practicum.shareit.item.dto.IncomingItemDto;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.ItemMapper;
+import ru.practicum.shareit.item.dto.ItemWithDateDto;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.repository.ItemRepository;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserRepository;
+import ru.practicum.shareit.booking.repository.BookingRepository;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -22,20 +26,40 @@ import java.util.stream.Collectors;
 public class ItemServiceImpl implements ItemService {
     private final ItemRepository itemRepository;
     private final UserRepository userRepository;
+    private final BookingRepository bookingRepository;
 
-    @Override
-    public List<ItemDto> getAll() {
+   /* @Override
+    public List<ItemWithDateDto> getAll() {
+        List<ItemWithDateDto> result = new ArrayList<>();
         List<Item> items = itemRepository.findAll();
+        for (Item item : items) {
+
+        }
+        List<Booking> bookings = bookingRepository.findAllByItemId(item.getId()
         return items
                 .stream()
-                .map(ItemMapper::mapToItemDto)
+                .map(item -> {bookingRepository.findAllByItemId(item.getId()))})
                 .collect(Collectors.toList());
-    }
+    }*/
 
     @Override
     public ItemDto getItemById(Long id) {
         Item item = itemRepository.getReferenceById(id);
         return ItemMapper.mapToItemDto(item);
+    }
+    @Override
+    public List<ItemWithDateDto> getItemsWithDateByUser(Long userId) {
+        List<Item> items = itemRepository.findAllByOwnerId(userId);
+        List<ItemWithDateDto> result = new ArrayList<>();
+
+        for (Item item : items) {
+            List<Booking> bookings = bookingRepository.findAllByItemId(item.getId());
+            for (Booking booking : bookings) {
+                result.add(ItemMapper.mapToItemWithDateDto(item, booking.getStart(),booking.getEnd()));
+            }
+        }
+
+        return result;
     }
 
     @Override
