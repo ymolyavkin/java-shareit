@@ -8,26 +8,12 @@ import ru.practicum.shareit.item.dto.ItemWithDateDto;
 import java.util.List;
 
 public interface ItemService {
-   /* List<Item> getItems();
-
-    List<Item> getItems(Long userId);
-
-    Item addItem(IncomingItemDto incomingItemDto);
-
-    Item updateItem(Item item, Long itemId, Long userId);
-
-    Item getItemById(Long id);
-
-    List<Item> searchItems(String keyword);*/
-
-  //  List<ItemDto> getAll();
-
-
     ItemDto getItemById(Long id);
+
     List<ItemDto> searchItemsByText(String searchText);
 
-  //  @Transactional
-  //  ItemDto saveItem(IncomingItemDto incomingItemDto);
+    //  @Transactional
+    //  ItemDto saveItem(IncomingItemDto incomingItemDto);
 
     List<ItemWithDateDto> getItemsWithDateByUser(Long userId);
 
