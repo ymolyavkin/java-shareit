@@ -5,6 +5,8 @@ import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.model.User;
 
 import javax.persistence.*;
+import java.util.Date;
+import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
@@ -27,7 +29,12 @@ public class Comment {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "author_id", nullable = false)
     private User author;
-    private LocalDateTime dateComment;
+    @Column(name = "created", nullable = false, columnDefinition = "timestamp default now()")
+    private LocalDateTime created;
+
+    public String getAuthorName() {
+        return author.getName();
+    }
 
     @Override
     public boolean equals(Object o) {
@@ -47,7 +54,7 @@ public class Comment {
         return "Comment{" +
                 "id=" + id +
                 ", text='" + text + '\'' +
-                ", dateComment=" + dateComment +
+                ", dateComment=" + created +
                 '}';
     }
 }

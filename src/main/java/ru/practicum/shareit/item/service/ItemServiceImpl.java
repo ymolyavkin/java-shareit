@@ -7,6 +7,11 @@ import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.exception.NoneXSharerUserIdException;
 import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.exception.OwnerMismatchException;
+import ru.practicum.shareit.item.comment.Comment;
+import ru.practicum.shareit.item.comment.CommentRepository;
+import ru.practicum.shareit.item.comment.IncomingCommentDto;
+import ru.practicum.shareit.item.comment.dto.CommentDto;
+import ru.practicum.shareit.item.comment.dto.CommentMapper;
 import ru.practicum.shareit.item.dto.*;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.repository.ItemRepository;
@@ -24,20 +29,7 @@ public class ItemServiceImpl implements ItemService {
     private final ItemRepository itemRepository;
     private final UserRepository userRepository;
     private final BookingRepository bookingRepository;
-
-   /* @Override
-    public List<ItemWithDateDto> getAll() {
-        List<ItemWithDateDto> result = new ArrayList<>();
-        List<Item> items = itemRepository.findAll();
-        for (Item item : items) {
-
-        }
-        List<Booking> bookings = bookingRepository.findAllByItemId(item.getId()
-        return items
-                .stream()
-                .map(item -> {bookingRepository.findAllByItemId(item.getId()))})
-                .collect(Collectors.toList());
-    }*/
+    private final CommentRepository commentRepository;
 
     @Override
     public ItemDto getItemById(Long id) {
@@ -51,7 +43,7 @@ public class ItemServiceImpl implements ItemService {
         List<ItemWithDateDto> result = new ArrayList<>();
 
         for (Item item : items) {
-            List<Booking> bookings = bookingRepository.findAllByItemId(item.getId());
+            List<Booking> bookings = bookingRepository.findByItem_Id(item.getId());
             for (Booking booking : bookings) {
                 result.add(ItemMapper.mapToItemWithDateDto(item, booking.getStart(), booking.getEnd()));
             }
@@ -125,5 +117,20 @@ public class ItemServiceImpl implements ItemService {
                 .stream()
                 .map(ItemMapper::mapToItemDto)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public CommentDto addComment(IncomingCommentDto incomingCommentDto, Long userId, Long itemId) {
+        Item item = itemRepository.findById(itemId)
+                .orElseThrow(() -> new NotFoundException(String.format("Вещь с id %d не найдена", itemId)));
+        int countBookings = bookingRepository.findByItemIdAndBookerId(itemId, userId);
+        if (countBookings == 0) {
+            throw new NotFoundException("Автор не брал данную вещь в аренду");
+        }
+        User author = item.getOwner();
+
+        Comment comment = commentRepository.save(CommentMapper.mapToComment(incomingCommentDto, author, item));
+
+        return CommentMapper.mapToCommentDto(comment);
     }
 }

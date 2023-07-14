@@ -5,8 +5,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.UnsatisfiedServletRequestParameterException;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.exception.NoneXSharerUserIdException;
+import ru.practicum.shareit.item.comment.dto.CommentDto;
 import ru.practicum.shareit.item.comment.IncomingCommentDto;
-import ru.practicum.shareit.item.comment.service.CommentService;
 import ru.practicum.shareit.item.dto.IncomingItemDto;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.ItemLastNextDto;
@@ -25,7 +25,6 @@ import static ru.practicum.shareit.util.Constants.USER_ID_FROM_REQUEST;
 @RequestMapping("/items")
 public class ItemController {
     private final ItemService itemService;
-    private final CommentService commentService;
 
     @GetMapping
     //  public List<ItemDto> getItems(@RequestHeader(value = USER_ID_FROM_REQUEST, defaultValue = "-1") Long userId) {
@@ -77,13 +76,13 @@ public class ItemController {
 
     //@ExceptionHandler(UnsatisfiedServletRequestParameterException.class)
     @PostMapping(value = "/{itemId}/comment", consumes = "application/json")
-    public ItemDto addComment(@RequestHeader(value = USER_ID_FROM_REQUEST, defaultValue = "-1") Long userId,
-                              @RequestBody IncomingCommentDto incomingCommentDto,
-                              @PathVariable Long itemId) {
+    public CommentDto addComment(@RequestHeader(value = USER_ID_FROM_REQUEST, defaultValue = "-1") Long userId,
+                                 @RequestBody IncomingCommentDto incomingCommentDto,
+                                 @PathVariable Long itemId) {
         log.info("Получен запрос пользователя с id = {} на добавление комментария к вещи с id = {}", userId, itemId);
         if (userId.equals(-1L)) {
             throw new NoneXSharerUserIdException("Не указан владелец вещи");
         }
-        return commentService.addComment(incomingCommentDto);
+        return itemService.addComment(incomingCommentDto, userId, itemId);
     }
 }
