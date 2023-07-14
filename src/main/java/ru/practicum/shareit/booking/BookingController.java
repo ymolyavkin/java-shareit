@@ -23,9 +23,15 @@ import static ru.practicum.shareit.util.Constants.USER_ID_FROM_REQUEST;
 public class BookingController {
     private final BookingService bookingService;
 
-    @GetMapping
+   /* @GetMapping
     public List<BookingResponseDto> getBookings(@RequestHeader(value = USER_ID_FROM_REQUEST, defaultValue = "-1") Long bookerId,
                                         @RequestParam(required = false) @DefaultValue("ALL") String state) {
+        log.info("Получен запрос на выдачу вещей, забронированных пользователем с id = {}", bookerId);
+        return bookingService.getBookingsByBooker(bookerId);
+    }*/
+    @GetMapping
+    public List<BookingResponseDto> getBookingsByBooker(@RequestHeader(value = USER_ID_FROM_REQUEST, defaultValue = "-1") Long bookerId,
+                                                @RequestParam(required = false) @DefaultValue("ALL") String state) {
         log.info("Получен запрос на выдачу вещей, забронированных пользователем с id = {}", bookerId);
         return bookingService.getBookingsByBooker(bookerId);
     }
@@ -68,7 +74,7 @@ public class BookingController {
     @GetMapping("/{bookingId}")
     public BookingResponseDto getBookingById(@RequestHeader(value = USER_ID_FROM_REQUEST, defaultValue = "-1") Long userId,
                                                       @PathVariable Long bookingId) {
-        log.info("Получен запрос на выдачу бронирования с id = {}", bookingId);
+        log.info("Получен запрос на данных о бронировании с id = {}", bookingId);
 
         return bookingService.getBookingById(bookingId, userId);
     }

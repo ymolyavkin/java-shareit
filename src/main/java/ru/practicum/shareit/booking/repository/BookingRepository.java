@@ -13,7 +13,7 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
             "from BOOKINGS " +
             "where booker_id = ?1", nativeQuery = true)*/
 
-    List<Booking> findByBooker_Id(Long bookerId);
+    List<Booking> findByBooker_IdOrderByStart(Long bookerId);
    /* @Query(value = "select * " +
             "from BOOKINGS " +
             "where item_id = ?1", nativeQuery = true)*/
