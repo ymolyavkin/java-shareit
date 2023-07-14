@@ -5,12 +5,11 @@ import ru.practicum.shareit.item.comment.dto.CommentDto;
 import ru.practicum.shareit.item.dto.IncomingItemDto;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.ItemLastNextDto;
-import ru.practicum.shareit.item.dto.ItemWithDateDto;
 
 import java.util.List;
 
 public interface ItemService {
-    ItemDto getItemById(Long id);
+    ItemLastNextDto getItemById(Long id);
 
     List<ItemDto> searchItemsByText(String searchText);
 

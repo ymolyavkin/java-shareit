@@ -3,7 +3,6 @@ package ru.practicum.shareit.item.service;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.stereotype.Service;
-import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.exception.NoneXSharerUserIdException;
 import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.exception.OwnerMismatchException;
@@ -19,7 +18,6 @@ import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserRepository;
 import ru.practicum.shareit.booking.repository.BookingRepository;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -31,12 +29,21 @@ public class ItemServiceImpl implements ItemService {
     private final BookingRepository bookingRepository;
     private final CommentRepository commentRepository;
 
-    @Override
+    /*@Override
     public ItemDto getItemById(Long id) {
         Item item = itemRepository.getReferenceById(id);
         return ItemMapper.mapToItemDto(item);
-    }
+    }*/
+    @Override
+    public ItemLastNextDto getItemById(Long id) {
+        Item item = itemRepository.getReferenceById(id);
 
+        return ItemMapper.mapToItemLastNextDto(item,
+                bookingRepository.findLast(item.getId()),
+                bookingRepository.findNext(item.getId()),
+                commentRepository.findByItem_Id(item.getId()));
+
+    }
    /* @Override
     public List<ItemWithDateDto> getItemsWithDateByUser(Long userId) {
         List<Item> items = itemRepository.findAllByOwnerId(userId);
@@ -58,7 +65,10 @@ public class ItemServiceImpl implements ItemService {
 
         return items
                 .stream()
-                .map(item -> ItemMapper.mapToItemLastNextDto(item, bookingRepository.findLast(item.getId()), bookingRepository.findNext(item.getId())))
+                .map(item -> ItemMapper.mapToItemLastNextDto(item,
+                        bookingRepository.findLast(item.getId()),
+                        bookingRepository.findNext(item.getId()),
+                        commentRepository.findByItem_Id(item.getId())))
                 .collect(Collectors.toList());
     }
 

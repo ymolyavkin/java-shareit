@@ -7,11 +7,13 @@ import lombok.extern.slf4j.Slf4j;
 import ru.practicum.shareit.booking.dto.BookingLastNextDto;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.item.comment.Comment;
-import ru.practicum.shareit.item.comment.dto.CommentToDto;
+import ru.practicum.shareit.item.comment.dto.CommentDto;
+import ru.practicum.shareit.item.comment.dto.CommentMapper;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.model.User;
 
-import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 @UtilityClass
@@ -51,26 +53,31 @@ public class ItemMapper {
                 .build();
     }*/
 
-    public static ItemLastNextDto mapToItemLastNextDto(Item item, Booking lastBooking, Booking nextBooking, Comment comment) {
+    public static ItemLastNextDto mapToItemLastNextDto(Item item, Booking lastBooking, Booking nextBooking, List<Comment> comments) {
         @AllArgsConstructor
         @Getter
         class NearestBookingDto implements BookingLastNextDto {
             private final Long id;
             private final Long bookerId;
         }
-        @AllArgsConstructor
+        /*@AllArgsConstructor
         @Getter
         class CommentOutDto implements CommentToDto {
             private final Long id;
             private final String text;
             private final String authorName;
             private LocalDateTime created;
-        }
+        }*/
         Long lastBookingId = (lastBooking == null) ? null : lastBooking.getId();
         Long nextBookingId = (nextBooking == null) ? null : nextBooking.getId();
 
         Long lastBookerId = (lastBooking == null) ? null : lastBooking.getBookerId();
         Long nextBookerId = (nextBooking == null) ? null : nextBooking.getBookerId();
+
+        List<CommentDto> commentsOut = comments
+                .stream()
+                .map(CommentMapper::mapToCommentDto)
+                .collect(Collectors.toList());
 
         return ItemLastNextDto.builder()
                 .id(item.getId())
@@ -79,6 +86,7 @@ public class ItemMapper {
                 .isAvailable(item.getAvailable())
                 .lastBooking(new NearestBookingDto(lastBookingId, lastBookerId))
                 .nextBooking(new NearestBookingDto(nextBookingId, nextBookerId))
+                .comment(commentsOut)
                 .build();
     }
 }

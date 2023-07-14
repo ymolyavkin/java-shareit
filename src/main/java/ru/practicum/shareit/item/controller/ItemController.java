@@ -27,12 +27,12 @@ public class ItemController {
     private final ItemService itemService;
 
     @GetMapping
-    //  public List<ItemDto> getItems(@RequestHeader(value = USER_ID_FROM_REQUEST, defaultValue = "-1") Long userId) {
-    public List<ItemLastNextDto> getItems(@RequestHeader(value = USER_ID_FROM_REQUEST, defaultValue = "-1") Long userId) {
+    public List<ItemDto> getItems(@RequestHeader(value = USER_ID_FROM_REQUEST, defaultValue = "-1") Long userId) {
+        //public List<ItemLastNextDto> getItems(@RequestHeader(value = USER_ID_FROM_REQUEST, defaultValue = "-1") Long userId) {
         log.info("Получен запрос на выдачу вещей пользователя с id = {}", userId);
 
-        //return itemService.getItemsByUser(userId);
-        return itemService.getItemsLastNextBookingByUser(userId);
+        return itemService.getItemsByUser(userId);
+        //return itemService.getItemsLastNextBookingByUser(userId);
     }
 
     @ExceptionHandler(UnsatisfiedServletRequestParameterException.class)
@@ -59,9 +59,11 @@ public class ItemController {
     }
 
     @GetMapping("/{id}")
-    public ItemDto getItemById(@PathVariable Long id) {
+    //public ItemDto getItemById(@PathVariable Long id) {
+    public ItemLastNextDto getItemById(@PathVariable Long id) {
         log.info("Получен запрос на выдачу вещи с id = {}", id);
 
+        //return itemService.getItemById(id);
         return itemService.getItemById(id);
     }
 
@@ -74,10 +76,10 @@ public class ItemController {
         return itemService.searchItemsByText(text);
     }
 
-    //@ExceptionHandler(UnsatisfiedServletRequestParameterException.class)
+    @ExceptionHandler(UnsatisfiedServletRequestParameterException.class)
     @PostMapping(value = "/{itemId}/comment", consumes = "application/json")
     public CommentDto addComment(@RequestHeader(value = USER_ID_FROM_REQUEST, defaultValue = "-1") Long userId,
-                                 @RequestBody IncomingCommentDto incomingCommentDto,
+                                 @Valid @RequestBody IncomingCommentDto incomingCommentDto,
                                  @PathVariable Long itemId) {
         log.info("Получен запрос пользователя с id = {} на добавление комментария к вещи с id = {}", userId, itemId);
         if (userId.equals(-1L)) {
