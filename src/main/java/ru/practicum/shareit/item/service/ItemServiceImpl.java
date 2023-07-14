@@ -37,7 +37,7 @@ public class ItemServiceImpl implements ItemService {
         return ItemMapper.mapToItemDto(item);
     }
 
-    @Override
+   /* @Override
     public List<ItemWithDateDto> getItemsWithDateByUser(Long userId) {
         List<Item> items = itemRepository.findAllByOwnerId(userId);
         List<ItemWithDateDto> result = new ArrayList<>();
@@ -50,7 +50,7 @@ public class ItemServiceImpl implements ItemService {
         }
 
         return result;
-    }
+    }*/
 
     @Override
     public List<ItemLastNextDto> getItemsLastNextBookingByUser(Long userId) {

@@ -6,6 +6,8 @@ import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 import ru.practicum.shareit.booking.dto.BookingLastNextDto;
 import ru.practicum.shareit.booking.model.Booking;
+import ru.practicum.shareit.item.comment.Comment;
+import ru.practicum.shareit.item.comment.dto.CommentToDto;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.model.User;
 
@@ -36,7 +38,7 @@ public class ItemMapper {
         return item;
     }
 
-    public static ItemWithDateDto mapToItemWithDateDto(Item item, LocalDateTime start, LocalDateTime end) {
+    /*public static ItemWithDateDto mapToItemWithDateDto(Item item, LocalDateTime start, LocalDateTime end) {
         return ItemWithDateDto.builder()
                 .id(item.getId())
                 .name(item.getName())
@@ -47,14 +49,22 @@ public class ItemMapper {
                 .end(end)
                 .numberOfTimesToRent(item.getNumberOfTimesToRent())
                 .build();
-    }
+    }*/
 
-    public static ItemLastNextDto mapToItemLastNextDto(Item item, Booking lastBooking, Booking nextBooking) {
+    public static ItemLastNextDto mapToItemLastNextDto(Item item, Booking lastBooking, Booking nextBooking, Comment comment) {
         @AllArgsConstructor
         @Getter
         class NearestBookingDto implements BookingLastNextDto {
             private final Long id;
             private final Long bookerId;
+        }
+        @AllArgsConstructor
+        @Getter
+        class CommentOutDto implements CommentToDto {
+            private final Long id;
+            private final String text;
+            private final String authorName;
+            private LocalDateTime created;
         }
         Long lastBookingId = (lastBooking == null) ? null : lastBooking.getId();
         Long nextBookingId = (nextBooking == null) ? null : nextBooking.getId();
