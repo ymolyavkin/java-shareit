@@ -76,7 +76,7 @@ public class ItemController {
         return itemService.searchItemsByText(text);
     }
 
-    @ExceptionHandler(UnsatisfiedServletRequestParameterException.class)
+   // @ExceptionHandler(UnsatisfiedServletRequestParameterException.class)
     @PostMapping(value = "/{itemId}/comment", consumes = "application/json")
     public CommentDto addComment(@RequestHeader(value = USER_ID_FROM_REQUEST, defaultValue = "-1") Long userId,
                                  @Valid @RequestBody IncomingCommentDto incomingCommentDto,

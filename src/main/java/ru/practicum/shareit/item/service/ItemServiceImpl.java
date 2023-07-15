@@ -96,7 +96,10 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public ItemDto updateItem(IncomingItemDto incomingItemDto, Long itemId, Long userId) {
-        Item item = itemRepository.getReferenceById(itemId);
+        // Item item = itemRepository.getReferenceById(itemId);
+        Item item = itemRepository.findById(itemId).orElseThrow(() -> new NotFoundException("Вещь с id = {} не найдена"));
+        // User user = item.getOwner();
+
         if (!userId.equals(item.getOwnerId())) {
             throw new OwnerMismatchException("Указанный пользователь не является владельцем вещи");
         }
@@ -125,6 +128,7 @@ public class ItemServiceImpl implements ItemService {
 
         return items
                 .stream()
+                .filter(item -> item.getAvailable())
                 .map(ItemMapper::mapToItemDto)
                 .collect(Collectors.toList());
     }

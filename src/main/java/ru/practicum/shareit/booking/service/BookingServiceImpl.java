@@ -46,7 +46,7 @@ public class BookingServiceImpl implements BookingService {
     public List<BookingResponseDto> getBookingsByBooker(Long bookerId) {
         User booker = userRepository.findById(bookerId)
                 .orElseThrow(() -> new NotFoundException(String.format("Пользователь с id %d не найден", bookerId)));
-        List<Booking> bookings = bookingRepository.findByBooker_IdOrderByStart(bookerId);
+        List<Booking> bookings = bookingRepository.findByBooker_IdOrderByStartDesc(bookerId);
         return bookings
                 .stream()
                 .map(booking -> BookingMapper.mapToBookingResponseDto(booking, booking.getItem()))
@@ -121,7 +121,8 @@ public class BookingServiceImpl implements BookingService {
         User owner = userRepository.findById(ownerId)
                 .orElseThrow(() -> new NotFoundException(String.format("Пользователь с id %d не найден", ownerId)));
 
-        List<Booking> bookings = bookingRepository.findByBooker_IdOrderByStart(ownerId);
+        List<Booking> bookings = bookingRepository.findByBooker_IdOrderByStartDesc(ownerId);
+        //Predicate<String> tester = value -> value % 2 == 1;
         return bookings
                 .stream()
                 .map(booking -> BookingMapper.mapToBookingResponseDto(booking, booking.getItem()))
