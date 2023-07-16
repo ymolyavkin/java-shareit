@@ -63,30 +63,30 @@ public class BookingServiceImpl implements BookingService {
 
         List<Long> itemIdsByOwner = itemsIdsByOwner(ownerId);
 
-        Set<Booking> bookingSet = bookingRepository.findByItem_IdInOrderByStartDesc(new HashSet<Long>(itemIdsByOwner));
+        List<Booking> bookingList = bookingRepository.findByItem_IdInOrderByStartDesc(itemIdsByOwner);
         /*List<Item> items = itemsByOwner(ownerId);
         List<Booking> v  = itemIdsByOwner.stream().map(itemId -> this.add(bookingRepository.findByItemId(itemId))).collect(Collectors.toList());
       //  List<Booking> v = items.stream().map(item -> item.getBookings()).sorted().toList();
         Item item = itemRepository.getReferenceById(itemIdsByOwner.get(0));*/
 
-        Set<Booking> bookings = switch (state) {
-            case ALL -> bookingSet;
-            case CURRENT -> bookingSet
+        List<Booking> bookings = switch (state) {
+            case ALL -> bookingList;
+            case CURRENT -> bookingList
                     .stream()
                     .filter(booking -> booking.getStart().isBefore(LocalDateTime.now()) && booking.getEnd().isAfter(LocalDateTime.now()))
-                    .collect(Collectors.toSet());
-            case FUTURE -> bookingSet
+                    .collect(Collectors.toList());
+            case FUTURE -> bookingList
                     .stream()
                     .filter(booking -> booking.getStart().isAfter(LocalDateTime.now()))
-                    .collect(Collectors.toSet());
-            case WAITING -> bookingSet
+                    .collect(Collectors.toList());
+            case WAITING -> bookingList
                     .stream()
                     .filter(booking -> booking.getStatus() == Status.WAITING)
-                    .collect(Collectors.toSet());
-            case REJECTED -> bookingSet
+                    .collect(Collectors.toList());
+            case REJECTED -> bookingList
                     .stream()
                     .filter(booking -> booking.getStatus() == Status.REJECTED)
-                    .collect(Collectors.toSet());
+                    .collect(Collectors.toList());
             default -> throw new UnsupportedStatusException("Unknown state: UNSUPPORTED_STATUS");
         };
         // List<Booking> bookings = bookingRepository.findByBooker_IdOrderByStartDesc(ownerId);
