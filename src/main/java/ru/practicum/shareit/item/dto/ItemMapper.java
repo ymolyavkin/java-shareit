@@ -60,20 +60,13 @@ public class ItemMapper {
             private final Long id;
             private final Long bookerId;
         }
-        /*@AllArgsConstructor
-        @Getter
-        class CommentOutDto implements CommentToDto {
-            private final Long id;
-            private final String text;
-            private final String authorName;
-            private LocalDateTime created;
-        }*/
-        Long lastBookingId = (lastBooking == null) ? null : lastBooking.getId();
+        /*Long lastBookingId = (lastBooking == null) ? null : lastBooking.getId();
         Long nextBookingId = (nextBooking == null) ? null : nextBooking.getId();
-
+        new NearestBookingDto(lastBookingId, lastBookerId)
         Long lastBookerId = (lastBooking == null) ? null : lastBooking.getBookerId();
-        Long nextBookerId = (nextBooking == null) ? null : nextBooking.getBookerId();
-
+        Long nextBookerId = (nextBooking == null) ? null : nextBooking.getBookerId();*/
+        NearestBookingDto last = (lastBooking == null) ? null : new NearestBookingDto(lastBooking.getId(), lastBooking.getBookerId());
+        NearestBookingDto next = (nextBooking == null) ? null : new NearestBookingDto(nextBooking.getId(), nextBooking.getBookerId());
         List<CommentDto> commentsOut = comments
                 .stream()
                 .map(CommentMapper::mapToCommentDto)
@@ -84,8 +77,8 @@ public class ItemMapper {
                 .name(item.getName())
                 .description(item.getDescription())
                 .isAvailable(item.getAvailable())
-                .lastBooking(new NearestBookingDto(lastBookingId, lastBookerId))
-                .nextBooking(new NearestBookingDto(nextBookingId, nextBookerId))
+                .lastBooking(last)
+                .nextBooking(next)
                 .comment(commentsOut)
                 .build();
     }

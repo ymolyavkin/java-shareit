@@ -3,6 +3,7 @@ package ru.practicum.shareit.item.service;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.stereotype.Service;
+import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.exception.NoneXSharerUserIdException;
 import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.exception.OwnerMismatchException;
@@ -18,8 +19,11 @@ import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserRepository;
 import ru.practicum.shareit.booking.repository.BookingRepository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static ru.practicum.shareit.util.Constants.DATE_TIME_NOW;
 
 @Service
 @RequiredArgsConstructor
@@ -39,8 +43,10 @@ public class ItemServiceImpl implements ItemService {
         Item item = itemRepository.getReferenceById(id);
 
         return ItemMapper.mapToItemLastNextDto(item,
-                bookingRepository.findLast(item.getId()),
-                bookingRepository.findNext(item.getId()),
+              //  getLastBooking(item),
+              //  getNextBooking(item),
+                bookingRepository.findLast(item.getId(), DATE_TIME_NOW),
+                bookingRepository.findNext(item.getId(), DATE_TIME_NOW),
                 commentRepository.findByItem_Id(item.getId()));
 
     }
@@ -58,7 +64,19 @@ public class ItemServiceImpl implements ItemService {
 
         return result;
     }*/
+   /*Map<Long, BookingItemDto> lastBookings = bookingRepository.findFirstByItemIdInAndStartLessThanEqualAndStatus(idItems, LocalDateTime.now(), Status.APPROVED, Sort.by(DESC, "start"))
+           .stream()
+           .map(BookingMapper::bookingToItemBookingDto)
+           .collect(Collectors.toMap(BookingItemDto::getItemId, Function.identity()));
+        itemDtoList.forEach(i -> i.setLastBooking(lastBookings.get(i.getId())));
 
+    //5) Для каждого элемента ItemDto в списке itemDtoList устанавливается последнее бронирование,
+    // используя значение из словаря lastBookings по его идентификатору.
+    Map<Long, BookingItemDto> nextBookings = bookingRepository.findFirstByItemIdInAndStartAfterAndStatus(
+                    idItems, LocalDateTime.now(), Status.APPROVED, Sort.by(Sort.Direction.ASC, "start"))
+            .stream()
+            .map(BookingMapper::bookingToItemBookingDto)
+            .collect(Collectors.toMap(BookingItemDto::getItemId, Function.identity()));*/
     @Override
     public List<ItemLastNextDto> getItemsLastNextBookingByUser(Long userId) {
         List<Item> items = itemRepository.findAllByOwnerId(userId);
@@ -66,10 +84,35 @@ public class ItemServiceImpl implements ItemService {
         return items
                 .stream()
                 .map(item -> ItemMapper.mapToItemLastNextDto(item,
-                        bookingRepository.findLast(item.getId()),
-                        bookingRepository.findNext(item.getId()),
+                        bookingRepository.findLast(item.getId(), DATE_TIME_NOW),
+                        bookingRepository.findNext(item.getId(), DATE_TIME_NOW),
+                      //  getLastBooking(item),
+                       // getNextBooking(item),
                         commentRepository.findByItem_Id(item.getId())))
                 .collect(Collectors.toList());
+    }
+
+    private Booking getLastBooking(Item item) {
+        List<Booking> bookings = bookingRepository.findByItem_Id(item.getId());
+        List<Booking> currentBooking = bookings
+                .stream()
+                .filter(booking -> booking.getStart().isBefore(LocalDateTime.now()) && booking.getEnd().isAfter(LocalDateTime.now()))
+                .collect(Collectors.toList());
+        if (currentBooking.size() > 0) {
+            return currentBooking.get(0);
+        }
+        return bookingRepository.findLast(item.getId(), DATE_TIME_NOW);
+    }
+    private Booking getNextBooking(Item item) {
+        List<Booking> bookings = bookingRepository.findByItem_Id(item.getId());
+        List<Booking> currentBooking = bookings
+                .stream()
+                .filter(booking -> booking.getStart().isBefore(LocalDateTime.now()) && booking.getEnd().isAfter(LocalDateTime.now()))
+                .collect(Collectors.toList());
+        if (currentBooking.size() > 0) {
+            return currentBooking.get(0);
+        }
+        return bookingRepository.findNext(item.getId(), DATE_TIME_NOW);
     }
 
     @Override
