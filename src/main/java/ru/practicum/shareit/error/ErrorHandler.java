@@ -7,10 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import ru.practicum.shareit.exception.AlreadyExistsException;
-import ru.practicum.shareit.exception.NoneXSharerUserIdException;
-import ru.practicum.shareit.exception.BadRequestException;
-import ru.practicum.shareit.exception.NotFoundException;
+import ru.practicum.shareit.exception.*;
 
 
 import javax.persistence.EntityNotFoundException;
@@ -62,6 +59,14 @@ public class ErrorHandler {
         );
     }
 
+    @ExceptionHandler({UnsupportedStatusException.class})
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public Map<String, String> handleUnsupportedStatusException(final RuntimeException e) {
+        log.debug("Unknown state: UNSUPPORTED_STATUS. Статус ошибки 500 INTERNAL_SERVER_ERROR");
+        return Map.of(
+                "error", e.getMessage()
+        );
+    }
     @ExceptionHandler({JDBCConnectionException.class})
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public Map<String, String> handleJDBCConnectionException(final RuntimeException e) {

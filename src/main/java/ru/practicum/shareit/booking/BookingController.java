@@ -8,6 +8,8 @@ import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.BookingResponseDto;
 import ru.practicum.shareit.booking.dto.IncomingBookingDto;
+import ru.practicum.shareit.booking.model.State;
+import ru.practicum.shareit.booking.model.StateRequest;
 import ru.practicum.shareit.booking.service.BookingService;
 import ru.practicum.shareit.exception.NoneXSharerUserIdException;
 
@@ -23,23 +25,24 @@ import static ru.practicum.shareit.util.Constants.USER_ID_FROM_REQUEST;
 public class BookingController {
     private final BookingService bookingService;
 
-   /* @GetMapping
-    public List<BookingResponseDto> getBookings(@RequestHeader(value = USER_ID_FROM_REQUEST, defaultValue = "-1") Long bookerId,
-                                        @RequestParam(required = false) @DefaultValue("ALL") String state) {
-        log.info("Получен запрос на выдачу вещей, забронированных пользователем с id = {}", bookerId);
-        return bookingService.getBookingsByBooker(bookerId);
-    }*/
+    /* @GetMapping
+     public List<BookingResponseDto> getBookings(@RequestHeader(value = USER_ID_FROM_REQUEST, defaultValue = "-1") Long bookerId,
+                                         @RequestParam(required = false) @DefaultValue("ALL") String state) {
+         log.info("Получен запрос на выдачу вещей, забронированных пользователем с id = {}", bookerId);
+         return bookingService.getBookingsByBooker(bookerId);
+     }*/
     @GetMapping
     public List<BookingResponseDto> getBookingsByBooker(@RequestHeader(value = USER_ID_FROM_REQUEST, defaultValue = "-1") Long bookerId,
-                                                @RequestParam(required = false) @DefaultValue("ALL") String state) {
+                                                        @RequestParam(required = false, defaultValue = "ALL") StateRequest state) {
         log.info("Получен запрос на выдачу вещей, забронированных пользователем с id = {}", bookerId);
-        return bookingService.getBookingsByBooker(bookerId);
+        return bookingService.getBookingsByBooker(bookerId, state);
     }
+
     @GetMapping("/owner")
     public List<BookingResponseDto> getBookingsByOwner(@RequestHeader(value = USER_ID_FROM_REQUEST, defaultValue = "-1") Long ownerId,
-                                        @RequestParam(required = false) @DefaultValue("ALL") String state) {
+                                                       @RequestParam(required = false, defaultValue = "ALL") StateRequest state) {
         log.info("Получен запрос на выдачу вещей, забронированных пользователем с id = {}", ownerId);
-        return bookingService.getBookingsByOwner(ownerId);
+        return bookingService.getBookingsByOwner(ownerId, state);
     }
 
     @ExceptionHandler(UnsatisfiedServletRequestParameterException.class)
@@ -57,9 +60,9 @@ public class BookingController {
 
     @PatchMapping(value = "/{bookingId}", consumes = "application/json")
     public BookingResponseDto updateBooking(@RequestHeader(value = USER_ID_FROM_REQUEST, defaultValue = "-1") Long ownerId,
-                                    @RequestBody(required = false) IncomingBookingDto incomingBookingDto,
-                                    @PathVariable Long bookingId,
-                                    @RequestParam(required = false) Boolean approved) {
+                                            @RequestBody(required = false) IncomingBookingDto incomingBookingDto,
+                                            @PathVariable Long bookingId,
+                                            @RequestParam(required = false) Boolean approved) {
         if (ownerId.equals(-1L)) {
             throw new NoneXSharerUserIdException("Не указан владелец вещи");
         }
@@ -73,7 +76,7 @@ public class BookingController {
 
     @GetMapping("/{bookingId}")
     public BookingResponseDto getBookingById(@RequestHeader(value = USER_ID_FROM_REQUEST, defaultValue = "-1") Long userId,
-                                                      @PathVariable Long bookingId) {
+                                             @PathVariable Long bookingId) {
         log.info("Получен запрос на данных о бронировании с id = {}", bookingId);
 
         return bookingService.getBookingById(bookingId, userId);

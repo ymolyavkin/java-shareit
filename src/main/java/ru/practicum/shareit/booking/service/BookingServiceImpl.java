@@ -3,18 +3,19 @@ package ru.practicum.shareit.booking.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.booking.model.Booking;
+import ru.practicum.shareit.booking.model.State;
+import ru.practicum.shareit.booking.model.StateRequest;
 import ru.practicum.shareit.booking.model.Status;
 import ru.practicum.shareit.booking.dto.*;
 import ru.practicum.shareit.booking.repository.BookingRepository;
-import ru.practicum.shareit.exception.NoneXSharerUserIdException;
-import ru.practicum.shareit.exception.NotFoundException;
-import ru.practicum.shareit.exception.OwnerMismatchException;
+import ru.practicum.shareit.exception.*;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.repository.ItemRepository;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserRepository;
 import ru.practicum.shareit.validator.BookingValidation;
 
+import javax.persistence.Query;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -36,16 +37,52 @@ public class BookingServiceImpl implements BookingService {
         Item item = itemRepository.findById(booking.getItemId())
                 .orElseThrow(() -> new NotFoundException(String.format("Вещь с id %d не найдена", booking.getItemId())));
         if (!booking.getBookerId().equals(userId) && !item.getOwnerId().equals(userId)) {
-            throw new OwnerMismatchException("Пользователь с id = {} не автор ,бронирования и не владелец вещи, данные о бронировании недоступны");
+            throw new NotFoundException(String.format("Пользователь с id %d не не автор бронирования и не владелец вещи, данные о бронировании недоступны", userId));
         }
 
         return BookingMapper.mapToBookingResponseDto(booking, item);
     }
 
+    private List<Long> itemsByOwner(Long ownerId) {
+        return itemRepository.findItemIdsByOwnerId(ownerId);
+    }
+
     @Override
-    public List<BookingResponseDto> getBookingsByBooker(Long bookerId) {
+    public List<BookingResponseDto> getBookingsByOwner(Long ownerId, StateRequest state) {
+        User owner = userRepository.findById(ownerId)
+                .orElseThrow(() -> new NotFoundException(String.format("Пользователь с id %d не найден", ownerId)));
+        if (state == StateRequest.UNSUPPORTED_STATUS) {
+            throw new UnsupportedStatusException("Unknown state: UNSUPPORTED_STATUS");
+        }
+        List<Long> itemsByOwner = itemsByOwner(ownerId);
+        List<Booking> bookings = switch (state) {
+            case ALL -> bookingRepository.findByListItemIds(itemsByOwner.get(0));
+            case CURRENT -> bookingRepository.findCurrent(ownerId);
+            case FUTURE -> bookingRepository.findFuture(ownerId);
+            case WAITING -> bookingRepository.findWaiting(ownerId);
+            case REJECTED -> bookingRepository.findRejected(ownerId);
+            default -> throw new UnsupportedStatusException("Unknown state: UNSUPPORTED_STATUS");
+        };
+        // List<Booking> bookings = bookingRepository.findByBooker_IdOrderByStartDesc(ownerId);
+
+        return bookings
+                .stream()
+                .map(booking -> BookingMapper.mapToBookingResponseDto(booking, booking.getItem()))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<BookingResponseDto> getBookingsByBooker(Long bookerId, StateRequest state) {
         User booker = userRepository.findById(bookerId)
                 .orElseThrow(() -> new NotFoundException(String.format("Пользователь с id %d не найден", bookerId)));
+       /* List<Booking> bookings = switch (state) {
+            case ALL, CURRENT, FUTURE, WAITING, REJECTED -> bookingRepository.findByBooker_IdOrderByStartDesc(bookerId);
+            default -> throw new UnsupportedStatusException ("Unknown state: UNSUPPORTED_STATUS");
+        };*/
+
+        if (state == StateRequest.UNSUPPORTED_STATUS) {
+            throw new UnsupportedStatusException("Unknown state: UNSUPPORTED_STATUS");
+        }
         List<Booking> bookings = bookingRepository.findByBooker_IdOrderByStartDesc(bookerId);
         return bookings
                 .stream()
@@ -116,18 +153,7 @@ public class BookingServiceImpl implements BookingService {
         return BookingMapper.mapToBookingResponseDto(booking, item);
     }
 
-    @Override
-    public List<BookingResponseDto> getBookingsByOwner(Long ownerId) {
-        User owner = userRepository.findById(ownerId)
-                .orElseThrow(() -> new NotFoundException(String.format("Пользователь с id %d не найден", ownerId)));
 
-        List<Booking> bookings = bookingRepository.findByBooker_IdOrderByStartDesc(ownerId);
-        //Predicate<String> tester = value -> value % 2 == 1;
-        return bookings
-                .stream()
-                .map(booking -> BookingMapper.mapToBookingResponseDto(booking, booking.getItem()))
-                .collect(Collectors.toList());
-    }
 }
 
 
