@@ -74,5 +74,5 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
  /*@Query ("SELECT H FROM HENTIY H WHERE H.C_ID IN: C_IDS")
  List <Guentity > FingHentityBycids (@param ("C_IDS") List <LONG> c_ids);*/
 
- Set<Booking> findByItem_IdIn(Set<Long> Ids);
+ Set<Booking> findByItem_IdInOrderByStartDesc(Set<Long> Ids);
 }

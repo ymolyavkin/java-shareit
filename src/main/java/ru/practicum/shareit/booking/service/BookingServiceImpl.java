@@ -14,6 +14,7 @@ import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserRepository;
 import ru.practicum.shareit.validator.BookingValidation;
 
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -46,6 +47,7 @@ public class BookingServiceImpl implements BookingService {
     private List<Long> itemsIdsByOwner(Long ownerId) {
         return itemRepository.findItemIdsByOwnerId(ownerId);
     }
+
     private List<Item> itemsByOwner(Long ownerId) {
         return itemRepository.findAllByOwnerId(ownerId);
     }
@@ -60,18 +62,30 @@ public class BookingServiceImpl implements BookingService {
 
         List<Long> itemIdsByOwner = itemsIdsByOwner(ownerId);
 
-        Set<Booking> bookingSet = bookingRepository.findByItem_IdIn(new HashSet<Long>(itemIdsByOwner));
+        Set<Booking> bookingSet = bookingRepository.findByItem_IdInOrderByStartDesc(new HashSet<Long>(itemIdsByOwner));
         /*List<Item> items = itemsByOwner(ownerId);
         List<Booking> v  = itemIdsByOwner.stream().map(itemId -> this.add(bookingRepository.findByItemId(itemId))).collect(Collectors.toList());
       //  List<Booking> v = items.stream().map(item -> item.getBookings()).sorted().toList();
         Item item = itemRepository.getReferenceById(itemIdsByOwner.get(0));*/
 
-        List<Booking> bookings = switch (state) {
-            case ALL -> bookingRepository.findByItemId(itemIdsByOwner.get(0));
-            case CURRENT -> bookingRepository.findCurrent(ownerId);
-            case FUTURE -> bookingRepository.findFuture(ownerId);
-            case WAITING -> bookingRepository.findWaiting(ownerId);
-            case REJECTED -> bookingRepository.findRejected(ownerId);
+        Set<Booking> bookings = switch (state) {
+            case ALL -> bookingSet;
+            case CURRENT -> bookingSet
+                    .stream()
+                    .filter(booking -> booking.getStart().isBefore(LocalDateTime.now()) && booking.getEnd().isAfter(LocalDateTime.now()))
+                    .collect(Collectors.toSet());
+            case FUTURE -> bookingSet
+                    .stream()
+                    .filter(booking -> booking.getStart().isAfter(LocalDateTime.now()))
+                    .collect(Collectors.toSet());
+            case WAITING -> bookingSet
+                    .stream()
+                    .filter(booking -> booking.getStatus() == Status.WAITING)
+                    .collect(Collectors.toSet());
+            case REJECTED -> bookingSet
+                    .stream()
+                    .filter(booking -> booking.getStatus() == Status.REJECTED)
+                    .collect(Collectors.toSet());
             default -> throw new UnsupportedStatusException("Unknown state: UNSUPPORTED_STATUS");
         };
         // List<Booking> bookings = bookingRepository.findByBooker_IdOrderByStartDesc(ownerId);
@@ -151,7 +165,7 @@ public class BookingServiceImpl implements BookingService {
         Item item = itemRepository.findById(booking.getItemId())
                 .orElseThrow(() -> new NotFoundException(String.format("Вещь с id %d не найдена", booking.getItemId())));
         if (!ownerId.equals(item.getOwnerId())) {
-            throw new OwnerMismatchException("Подтвержение может быть выполнено только владельцем вещи");
+            throw new NotFoundException("Подтвержение может быть выполнено только владельцем вещи");
         }
         if (approved != null) {
             if (approved) {
