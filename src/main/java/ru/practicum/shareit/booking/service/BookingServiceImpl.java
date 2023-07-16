@@ -12,6 +12,7 @@ import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.repository.ItemRepository;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserRepository;
+import ru.practicum.shareit.util.Time;
 import ru.practicum.shareit.validator.BookingValidation;
 
 import java.time.LocalDateTime;
@@ -126,12 +127,33 @@ public class BookingServiceImpl implements BookingService {
                 .orElseThrow(() -> new NotFoundException(String.format("Пользователь с id %d не найден", bookerId)));
         Item item = itemRepository.findById(itemId)
                 .orElseThrow(() -> new NotFoundException(String.format("Вещь с id %d не найдена", itemId)));
-
+        if (bookerId.equals(item.getOwnerId())) {
+            throw new NotFoundException("Инициатор бронирования и владелец запрашиваемой вещи совпадают");
+        }
         BookingValidation.bookingIsValid(incomingBookingDto, item);
+        Booking resultBooking = BookingMapper.mapToBooking(incomingBookingDto, item, booker);
+        List<Booking> allBookingsByItem = bookingRepository.findByItem_Id(itemId);
+        //stream.map(Whatever::someCheck).reduce(Boolean::logicalAnd).orElse(false);
+        boolean isOverlap = allBookingsByItem
+                .stream()
+                .map(booking -> isOverlapTime(booking, resultBooking))
+                .reduce(Boolean::logicalOr).orElse(false);
+        /*List<Booking> overlapBookings = allBookingsByItem.stream().findFirst().
+                .stream()
+                .filter(booking -> isOverlapTime(booking, resultBooking))
+                .collect(Collectors.toList());*/
 
-        Booking booking = bookingRepository.save(BookingMapper.mapToBooking(incomingBookingDto, item, booker));
+        if (isOverlap) {
+            throw new NotFoundException("Данная вещь на этот период недоступна");
+        }
+        //  Booking booking = bookingRepository.save(BookingMapper.mapToBooking(incomingBookingDto, item, booker));
+        Booking booking = bookingRepository.save(resultBooking);
 
         return BookingMapper.mapToBookingResponseDto(booking, item);
+    }
+
+    public boolean isOverlapTime(Booking one, Booking two) {
+        return Time.isOverlapping(one.getStart(), one.getEnd(), two.getStart(), two.getEnd());
     }
 
     @Override
@@ -140,6 +162,8 @@ public class BookingServiceImpl implements BookingService {
         Item item = itemRepository.findById(booking.getItemId())
                 .orElseThrow(() -> new NotFoundException(String.format("Вещь с id %d не найдена", booking.getItemId())));
         boolean needsToBeChanged = false;
+       /* Status currentStatus = booking.getStatus();
+        Status newStatus = incomingBookingDto.getStatus();*/
         if (incomingBookingDto.getStart() != null && !incomingBookingDto.getStart().equals(booking.getStart())) {
             booking.setStart(incomingBookingDto.getStart());
             needsToBeChanged = true;
@@ -154,7 +178,9 @@ public class BookingServiceImpl implements BookingService {
         }
         if (needsToBeChanged) {
             bookingRepository.saveAndFlush(booking);
-        }
+        } /*else {
+            throw new BadRequestException("Nothing to change");
+        }*/
         return BookingMapper.mapToBookingResponseDto(booking, item);
     }
 
@@ -169,6 +195,9 @@ public class BookingServiceImpl implements BookingService {
         }
         if (approved != null) {
             if (approved) {
+                if (booking.getStatus() == Status.APPROVED) {
+                    throw new BadRequestException("Status is already approved");
+                }
                 booking.setStatus(Status.APPROVED);
             } else {
                 booking.setStatus(Status.REJECTED);

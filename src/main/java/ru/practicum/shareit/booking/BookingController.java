@@ -66,11 +66,11 @@ public class BookingController {
         if (ownerId.equals(-1L)) {
             throw new NoneXSharerUserIdException("Не указан владелец вещи");
         }
+        log.info("Получен запрос на обновление вещи пользователем с id = {}", ownerId);
         if (approved != null) {
             log.info("Получен запрос на подтверждение бронирования id = {} пользователем с id = {}", bookingId, ownerId);
             return bookingService.approvingBooking(bookingId, ownerId, approved);
         }
-        log.info("Получен запрос на обновление вещи пользователем с id = {}", ownerId);
         return bookingService.updateBooking(incomingBookingDto, bookingId, ownerId);
     }
 

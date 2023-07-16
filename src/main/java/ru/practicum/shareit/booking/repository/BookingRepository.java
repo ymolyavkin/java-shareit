@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Component;
 import ru.practicum.shareit.booking.model.Booking;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
 
@@ -75,4 +76,9 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
  List <Guentity > FingHentityBycids (@param ("C_IDS") List <LONG> c_ids);*/
 
  Set<Booking> findByItem_IdInOrderByStartDesc(Set<Long> Ids);
+ //           select count(*) from BOOKINGS where item_id=1 and ((end_time between ?2 and ?3) or (?3 between start_time and end_time))
+/*@Query(value="select * from BOOKINGS where item_id=?1 and (END_TIME between 2? and 3? or 3? between start_time and end_time)"
+        , nativeQuery = true)
+ List<Booking> ctBosExng(Long itemId, LocalDateTime sTime, LocalDateTime eTime);*/
+
 }
