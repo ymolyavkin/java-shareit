@@ -1,15 +1,12 @@
 package ru.practicum.shareit.booking.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Component;
 import ru.practicum.shareit.booking.model.Booking;
-import ru.practicum.shareit.item.model.Item;
 
-import javax.transaction.Transactional;
 import java.util.List;
+import java.util.Set;
 
 @Component
 public interface BookingRepository extends JpaRepository<Booking, Long> {
@@ -73,7 +70,9 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
 
  @Query(value="select * from BOOKINGS where item_id=?1 order by start_time desc", nativeQuery = true)
 
- List<Booking> findByListItemIds(Long itemId);
+ List<Booking> findByItemId(Long itemId);
  /*@Query ("SELECT H FROM HENTIY H WHERE H.C_ID IN: C_IDS")
  List <Guentity > FingHentityBycids (@param ("C_IDS") List <LONG> c_ids);*/
+
+ Set<Booking> findByItem_IdIn(Set<Long> Ids);
 }

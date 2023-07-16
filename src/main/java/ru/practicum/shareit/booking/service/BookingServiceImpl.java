@@ -3,7 +3,6 @@ package ru.practicum.shareit.booking.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.booking.model.Booking;
-import ru.practicum.shareit.booking.model.State;
 import ru.practicum.shareit.booking.model.StateRequest;
 import ru.practicum.shareit.booking.model.Status;
 import ru.practicum.shareit.booking.dto.*;
@@ -15,8 +14,9 @@ import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserRepository;
 import ru.practicum.shareit.validator.BookingValidation;
 
-import javax.persistence.Query;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -43,8 +43,11 @@ public class BookingServiceImpl implements BookingService {
         return BookingMapper.mapToBookingResponseDto(booking, item);
     }
 
-    private List<Long> itemsByOwner(Long ownerId) {
+    private List<Long> itemsIdsByOwner(Long ownerId) {
         return itemRepository.findItemIdsByOwnerId(ownerId);
+    }
+    private List<Item> itemsByOwner(Long ownerId) {
+        return itemRepository.findAllByOwnerId(ownerId);
     }
 
     @Override
@@ -54,9 +57,17 @@ public class BookingServiceImpl implements BookingService {
         if (state == StateRequest.UNSUPPORTED_STATUS) {
             throw new UnsupportedStatusException("Unknown state: UNSUPPORTED_STATUS");
         }
-        List<Long> itemsByOwner = itemsByOwner(ownerId);
+
+        List<Long> itemIdsByOwner = itemsIdsByOwner(ownerId);
+
+        Set<Booking> bookingSet = bookingRepository.findByItem_IdIn(new HashSet<Long>(itemIdsByOwner));
+        /*List<Item> items = itemsByOwner(ownerId);
+        List<Booking> v  = itemIdsByOwner.stream().map(itemId -> this.add(bookingRepository.findByItemId(itemId))).collect(Collectors.toList());
+      //  List<Booking> v = items.stream().map(item -> item.getBookings()).sorted().toList();
+        Item item = itemRepository.getReferenceById(itemIdsByOwner.get(0));*/
+
         List<Booking> bookings = switch (state) {
-            case ALL -> bookingRepository.findByListItemIds(itemsByOwner.get(0));
+            case ALL -> bookingRepository.findByItemId(itemIdsByOwner.get(0));
             case CURRENT -> bookingRepository.findCurrent(ownerId);
             case FUTURE -> bookingRepository.findFuture(ownerId);
             case WAITING -> bookingRepository.findWaiting(ownerId);
