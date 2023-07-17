@@ -60,12 +60,13 @@ public class BookingServiceImpl implements BookingService {
     @Transactional(readOnly = true)
     @Override
     public List<BookingResponseDto> getBookingsByOwner(Long ownerId, StateRequest state) {
+        LocalDateTime dateTimeNow = LocalDateTime.now();
         User owner = userRepository.findById(ownerId)
                 .orElseThrow(() -> new NotFoundException(String.format("Пользователь с id %d не найден", ownerId)));
         if (state == StateRequest.UNSUPPORTED_STATUS) {
             throw new UnsupportedStatusException("Unknown state: UNSUPPORTED_STATUS");
         }
-
+        LocalDateTime myNew = LocalDateTime.now();
         List<Long> itemIdsByOwner = itemsIdsByOwner(ownerId);
 
         List<Booking> bookingList = bookingRepository.findByItem_IdInOrderByStartDesc(itemIdsByOwner);
@@ -74,15 +75,43 @@ public class BookingServiceImpl implements BookingService {
       //  List<Booking> v = items.stream().map(item -> item.getBookings()).sorted().toList();
         Item item = itemRepository.getReferenceById(itemIdsByOwner.get(0));*/
 
+//        List<Booking> bookings = switch (state) {
+//            case ALL -> bookingList;
+//            case CURRENT -> bookingList
+//                    .stream()
+//                    .filter(booking -> booking.getStart().isBefore(DATE_TIME_NOW) && booking.getEnd().isAfter(DATE_TIME_NOW))
+//                    .collect(Collectors.toList());
+//            case FUTURE -> bookingList
+//                    .stream()
+//                    .filter(booking -> booking.getStart().isAfter(DATE_TIME_NOW))
+//                    .collect(Collectors.toList());
+//            case PAST -> bookingList
+//                    .stream()
+//                    .filter(booking -> booking.getEnd().isBefore(myNew))
+//                    .collect(Collectors.toList());
+//            case WAITING -> bookingList
+//                    .stream()
+//                    .filter(booking -> booking.getStatus() == Status.WAITING)
+//                    .collect(Collectors.toList());
+//            case REJECTED -> bookingList
+//                    .stream()
+//                    .filter(booking -> booking.getStatus() == Status.REJECTED)
+//                    .collect(Collectors.toList());
+//            default -> throw new UnsupportedStatusException("Unknown state: UNSUPPORTED_STATUS");
+//        };
         List<Booking> bookings = switch (state) {
             case ALL -> bookingList;
             case CURRENT -> bookingList
                     .stream()
-                    .filter(booking -> booking.getStart().isBefore(DATE_TIME_NOW) && booking.getEnd().isAfter(DATE_TIME_NOW))
+                    .filter(booking -> booking.getStart().isBefore(dateTimeNow) && booking.getEnd().isAfter(dateTimeNow))
                     .collect(Collectors.toList());
             case FUTURE -> bookingList
                     .stream()
-                    .filter(booking -> booking.getStart().isAfter(DATE_TIME_NOW))
+                    .filter(booking -> booking.getStart().isAfter(dateTimeNow))
+                    .collect(Collectors.toList());
+            case PAST -> bookingList
+                    .stream()
+                    .filter(booking -> booking.getEnd().isBefore(dateTimeNow))
                     .collect(Collectors.toList());
             case WAITING -> bookingList
                     .stream()
@@ -105,22 +134,33 @@ public class BookingServiceImpl implements BookingService {
     @Transactional(readOnly = true)//1
     @Override
     public List<BookingResponseDto> getBookingsByBooker(Long bookerId, StateRequest state) {
+        LocalDateTime dateTimeNow = LocalDateTime.now();
         User booker = userRepository.findById(bookerId)
                 .orElseThrow(() -> new NotFoundException(String.format("Пользователь с id %d не найден", bookerId)));
         if (state == StateRequest.UNSUPPORTED_STATUS) {
             throw new UnsupportedStatusException("Unknown state: UNSUPPORTED_STATUS");
         }
-       List<Booking> bookings = switch (state) {
+//        List<Booking> bookings = switch (state) {
+//            case ALL -> bookingRepository.findAllByBooker_Id(bookerId, SORT_BY_DESC);
+//            case CURRENT ->
+//                    bookingRepository.findAllByBooker_IdAndStartBeforeAndEndAfter(bookerId, DATE_TIME_NOW, DATE_TIME_NOW, SORT_BY_DESC);
+//            case FUTURE -> bookingRepository.findAllByBooker_IdAndStartAfter(bookerId, DATE_TIME_NOW, SORT_BY_DESC);
+//            case WAITING -> bookingRepository.findAllByBooker_IdAndStatus(bookerId, Status.WAITING, SORT_BY_DESC);
+//            case REJECTED -> bookingRepository.findAllByBooker_IdAndStatus(bookerId, Status.REJECTED, SORT_BY_DESC);
+//            default -> Collections.emptyList();
+//        };
+        List<Booking> bookings = switch (state) {
             case ALL -> bookingRepository.findAllByBooker_Id(bookerId, SORT_BY_DESC);
-           case CURRENT -> bookingRepository.findAllByBooker_IdAndStartBeforeAndEndAfter(bookerId, DATE_TIME_NOW, DATE_TIME_NOW, SORT_BY_DESC);
-              case FUTURE -> bookingRepository.findAllByBooker_IdAndStartAfter(bookerId, DATE_TIME_NOW, SORT_BY_DESC);
-           case WAITING -> bookingRepository.findAllByBooker_IdAndStatus(bookerId, Status.WAITING, SORT_BY_DESC);
-           case REJECTED -> bookingRepository.findAllByBooker_IdAndStatus(bookerId, Status.REJECTED, SORT_BY_DESC);
+            case CURRENT ->
+                    bookingRepository.findAllByBooker_IdAndStartBeforeAndEndAfter(bookerId, dateTimeNow, dateTimeNow, SORT_BY_DESC);
+            case FUTURE -> bookingRepository.findAllByBooker_IdAndStartAfter(bookerId, dateTimeNow, SORT_BY_DESC);
+            case WAITING -> bookingRepository.findAllByBooker_IdAndStatus(bookerId, Status.WAITING, SORT_BY_DESC);
+            case REJECTED -> bookingRepository.findAllByBooker_IdAndStatus(bookerId, Status.REJECTED, SORT_BY_DESC);
             default -> Collections.emptyList();
         };
 
 
-      //  List<Booking> bookings = bookingRepository.findByBooker_IdOrderByStartDesc(bookerId);
+        //  List<Booking> bookings = bookingRepository.findByBooker_IdOrderByStartDesc(bookerId);
         return bookings
                 .stream()
                 .map(booking -> BookingMapper.mapToBookingResponseDto(booking, booking.getItem()))

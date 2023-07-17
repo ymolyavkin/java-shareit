@@ -41,7 +41,7 @@ public class BookingController {
     @GetMapping("/owner")
     public List<BookingResponseDto> getBookingsByOwner(@RequestHeader(value = USER_ID_FROM_REQUEST, defaultValue = "-1") Long ownerId,
                                                        @RequestParam(required = false, defaultValue = "ALL") StateRequest state) {
-        log.info("Получен запрос на выдачу вещей, забронированных пользователем с id = {}", ownerId);
+        log.info("Получен запрос на выдачу вещей, принадлежащих пользователю с id = {}", ownerId);
         return bookingService.getBookingsByOwner(ownerId, state);
     }
 

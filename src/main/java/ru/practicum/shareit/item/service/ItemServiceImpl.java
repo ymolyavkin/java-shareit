@@ -42,12 +42,13 @@ public class ItemServiceImpl implements ItemService {
     }*/
     @Override
     public ItemLastNextDto getItemById(Long id, Long userId) {
+        LocalDateTime dateTimeNow = LocalDateTime.now();
         Item item = itemRepository.getReferenceById(id);
         Booking lastBooking = null;
         Booking nextBooking = null;
         if (item.getOwnerId().equals(userId)) {
-            lastBooking = bookingRepository.findLast(item.getId(), DATE_TIME_NOW);
-            nextBooking = bookingRepository.findNext(item.getId(), DATE_TIME_NOW);
+            lastBooking = bookingRepository.findLast(item.getId(), dateTimeNow);
+            nextBooking = bookingRepository.findNext(item.getId(), dateTimeNow);
         }
         return ItemMapper.mapToItemLastNextDto(item,
                 lastBooking,
@@ -84,32 +85,35 @@ public class ItemServiceImpl implements ItemService {
             .collect(Collectors.toMap(BookingItemDto::getItemId, Function.identity()));*/
     @Override
     public List<ItemLastNextDto> getItemsLastNextBookingByUser(Long userId) {
+        LocalDateTime dateTimeNow = LocalDateTime.now();
         List<Item> items = itemRepository.findAllByOwnerId(userId);
 
         return items
                 .stream()
                 .map(item -> ItemMapper.mapToItemLastNextDto(item,
                         //   bookingRepository.findLast(item.getId(), DATE_TIME_NOW),
-                        bookingRepository.findFirstByItem_IdAndStartBeforeAndStatusOrderByStartDesc(item.getId(), DATE_TIME_NOW, Status.APPROVED).get(),
+                        bookingRepository.findFirstByItem_IdAndStartBeforeAndStatusOrderByStartDesc(item.getId(), dateTimeNow, Status.APPROVED).get(),
                         //  bookingRepository.findNext(item.getId(), DATE_TIME_NOW),
-                        bookingRepository.findFirstByItem_IdAndStartAfterAndStatusOrderByStartAsc(item.getId(), DATE_TIME_NOW, Status.APPROVED).get(),
+                        bookingRepository.findFirstByItem_IdAndStartAfterAndStatusOrderByStartAsc(item.getId(), dateTimeNow, Status.APPROVED).get(),
                         commentRepository.findByItem_Id(item.getId())))
                 .collect(Collectors.toList());
     }
 
     private Booking getLastBooking(Item item) {
+        LocalDateTime dateTimeNow = LocalDateTime.now();
         List<Booking> bookings = bookingRepository.findByItem_Id(item.getId());
         List<Booking> currentBooking = bookings
                 .stream()
-                .filter(booking -> booking.getStart().isBefore(DATE_TIME_NOW) && booking.getEnd().isAfter(DATE_TIME_NOW))
+                .filter(booking -> booking.getStart().isBefore(dateTimeNow) && booking.getEnd().isAfter(dateTimeNow))
                 .collect(Collectors.toList());
         if (currentBooking.size() > 0) {
             return currentBooking.get(0);
         }
-        return bookingRepository.findLast(item.getId(), DATE_TIME_NOW);
+        return bookingRepository.findLast(item.getId(), dateTimeNow);
     }
 
     private Booking getNextBooking(Item item) {
+        LocalDateTime dateTimeNow = LocalDateTime.now();
         List<Booking> bookings = bookingRepository.findByItem_Id(item.getId());
         List<Booking> currentBooking = bookings
                 .stream()
@@ -118,7 +122,7 @@ public class ItemServiceImpl implements ItemService {
         if (currentBooking.size() > 0) {
             return currentBooking.get(0);
         }
-        return bookingRepository.findNext(item.getId(), DATE_TIME_NOW);
+        return bookingRepository.findNext(item.getId(), dateTimeNow);
     }
 
     @Override
@@ -184,6 +188,7 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public CommentDto addComment(IncomingCommentDto incomingCommentDto, Long userId, Long itemId) {
+        LocalDateTime dateTimeNow = LocalDateTime.now();
         Item item = itemRepository.findById(itemId)
                 .orElseThrow(() -> new NotFoundException(String.format("Вещь с id %d не найдена", itemId)));
         int countBookings = bookingRepository.findByItemIdAndBookerId(itemId, userId);
@@ -191,7 +196,7 @@ public class ItemServiceImpl implements ItemService {
             throw new NotFoundException("Автор не брал данную вещь в аренду");
         }
         User author = item.getOwner();
-        if (!bookingRepository.existsByBooker_IdAndEndBeforeAndStatus(userId, DATE_TIME_NOW, Status.APPROVED)) {
+        if (!bookingRepository.existsByBooker_IdAndEndBeforeAndStatus(userId, dateTimeNow, Status.APPROVED)) {
             throw new BadRequestException("Комментарий не может быть создан");
         }
 /*
