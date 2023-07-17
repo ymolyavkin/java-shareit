@@ -9,7 +9,7 @@ import ru.practicum.shareit.item.dto.ItemLastNextDto;
 import java.util.List;
 
 public interface ItemService {
-    ItemLastNextDto getItemById(Long id);
+    ItemLastNextDto getItemById(Long id, Long userId);
 
     List<ItemDto> searchItemsByText(String searchText);
 

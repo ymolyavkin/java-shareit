@@ -2,6 +2,7 @@ package ru.practicum.shareit.booking.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.StateRequest;
 import ru.practicum.shareit.booking.model.Status;
@@ -16,10 +17,12 @@ import ru.practicum.shareit.util.Time;
 import ru.practicum.shareit.validator.BookingValidation;
 
 import java.time.LocalDateTime;
-import java.util.HashSet;
+import java.util.Collections;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
+
+import static ru.practicum.shareit.util.Constants.DATE_TIME_NOW;
+import static ru.practicum.shareit.util.Constants.SORT_BY_DESC;
 
 @Service
 @RequiredArgsConstructor
@@ -33,6 +36,7 @@ public class BookingServiceImpl implements BookingService {
         return bookingRepository.findAll();
     }
 
+    @Transactional(readOnly = true)
     @Override
     public BookingResponseDto getBookingById(Long id, Long userId) {
         Booking booking = bookingRepository.getReferenceById(id);
@@ -53,6 +57,7 @@ public class BookingServiceImpl implements BookingService {
         return itemRepository.findAllByOwnerId(ownerId);
     }
 
+    @Transactional(readOnly = true)
     @Override
     public List<BookingResponseDto> getBookingsByOwner(Long ownerId, StateRequest state) {
         User owner = userRepository.findById(ownerId)
@@ -73,7 +78,7 @@ public class BookingServiceImpl implements BookingService {
             case ALL -> bookingList;
             case CURRENT -> bookingList
                     .stream()
-                    .filter(booking -> booking.getStart().isBefore(LocalDateTime.now()) && booking.getEnd().isAfter(LocalDateTime.now()))
+                    .filter(booking -> booking.getStart().isBefore(DATE_TIME_NOW) && booking.getEnd().isAfter(DATE_TIME_NOW))
                     .collect(Collectors.toList());
             case FUTURE -> bookingList
                     .stream()
@@ -97,19 +102,25 @@ public class BookingServiceImpl implements BookingService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)//1
     @Override
     public List<BookingResponseDto> getBookingsByBooker(Long bookerId, StateRequest state) {
         User booker = userRepository.findById(bookerId)
                 .orElseThrow(() -> new NotFoundException(String.format("Пользователь с id %d не найден", bookerId)));
-       /* List<Booking> bookings = switch (state) {
-            case ALL, CURRENT, FUTURE, WAITING, REJECTED -> bookingRepository.findByBooker_IdOrderByStartDesc(bookerId);
-            default -> throw new UnsupportedStatusException ("Unknown state: UNSUPPORTED_STATUS");
-        };*/
-
         if (state == StateRequest.UNSUPPORTED_STATUS) {
             throw new UnsupportedStatusException("Unknown state: UNSUPPORTED_STATUS");
         }
-        List<Booking> bookings = bookingRepository.findByBooker_IdOrderByStartDesc(bookerId);
+       List<Booking> bookings = switch (state) {
+            case ALL -> bookingRepository.findAllByBooker_Id(bookerId, SORT_BY_DESC);
+           case CURRENT -> bookingRepository.findAllByBooker_IdAndStartBeforeAndEndAfter(bookerId, DATE_TIME_NOW, DATE_TIME_NOW, SORT_BY_DESC);
+              case FUTURE -> bookingRepository.findAllByBooker_IdAndStartAfter(bookerId, DATE_TIME_NOW, SORT_BY_DESC);
+           case WAITING -> bookingRepository.findAllByBooker_IdAndStatus(bookerId, Status.WAITING, SORT_BY_DESC);
+           case REJECTED -> bookingRepository.findAllByBooker_IdAndStatus(bookerId, Status.REJECTED, SORT_BY_DESC);
+            default -> Collections.emptyList();
+        };
+
+
+      //  List<Booking> bookings = bookingRepository.findByBooker_IdOrderByStartDesc(bookerId);
         return bookings
                 .stream()
                 .map(booking -> BookingMapper.mapToBookingResponseDto(booking, booking.getItem()))

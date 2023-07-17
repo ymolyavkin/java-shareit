@@ -40,31 +40,34 @@ public class ItemServiceImpl implements ItemService {
         return ItemMapper.mapToItemDto(item);
     }*/
     @Override
-    public ItemLastNextDto getItemById(Long id) {
+    public ItemLastNextDto getItemById(Long id, Long userId) {
         Item item = itemRepository.getReferenceById(id);
-
-        return ItemMapper.mapToItemLastNextDto(item,
-              //  getLastBooking(item),
-              //  getNextBooking(item),
-                bookingRepository.findLast(item.getId(), DATE_TIME_NOW),
-                bookingRepository.findNext(item.getId(), DATE_TIME_NOW),
-                commentRepository.findByItem_Id(item.getId()));
-
-    }
-   /* @Override
-    public List<ItemWithDateDto> getItemsWithDateByUser(Long userId) {
-        List<Item> items = itemRepository.findAllByOwnerId(userId);
-        List<ItemWithDateDto> result = new ArrayList<>();
-
-        for (Item item : items) {
-            List<Booking> bookings = bookingRepository.findByItem_Id(item.getId());
-            for (Booking booking : bookings) {
-                result.add(ItemMapper.mapToItemWithDateDto(item, booking.getStart(), booking.getEnd()));
-            }
+        Booking lastBooking = null;
+        Booking nextBooking = null;
+        if (item.getOwnerId().equals(userId)) {
+            lastBooking = bookingRepository.findLast(item.getId(), DATE_TIME_NOW);
+            nextBooking = bookingRepository.findNext(item.getId(), DATE_TIME_NOW);
         }
+        return ItemMapper.mapToItemLastNextDto(item,
+                lastBooking,
+                nextBooking,
+                commentRepository.findByItem_Id(item.getId()));
+    }
 
-        return result;
-    }*/
+    /* @Override
+     public List<ItemWithDateDto> getItemsWithDateByUser(Long userId) {
+         List<Item> items = itemRepository.findAllByOwnerId(userId);
+         List<ItemWithDateDto> result = new ArrayList<>();
+
+         for (Item item : items) {
+             List<Booking> bookings = bookingRepository.findByItem_Id(item.getId());
+             for (Booking booking : bookings) {
+                 result.add(ItemMapper.mapToItemWithDateDto(item, booking.getStart(), booking.getEnd()));
+             }
+         }
+
+         return result;
+     }*/
    /*Map<Long, BookingItemDto> lastBookings = bookingRepository.findFirstByItemIdInAndStartLessThanEqualAndStatus(idItems, LocalDateTime.now(), Status.APPROVED, Sort.by(DESC, "start"))
            .stream()
            .map(BookingMapper::bookingToItemBookingDto)
@@ -85,9 +88,9 @@ public class ItemServiceImpl implements ItemService {
         return items
                 .stream()
                 .map(item -> ItemMapper.mapToItemLastNextDto(item,
-                     //   bookingRepository.findLast(item.getId(), DATE_TIME_NOW),
+                        //   bookingRepository.findLast(item.getId(), DATE_TIME_NOW),
                         bookingRepository.findFirstByItem_IdAndStartBeforeAndStatusOrderByStartDesc(item.getId(), DATE_TIME_NOW, Status.APPROVED).get(),
-                      //  bookingRepository.findNext(item.getId(), DATE_TIME_NOW),
+                        //  bookingRepository.findNext(item.getId(), DATE_TIME_NOW),
                         bookingRepository.findFirstByItem_IdAndStartAfterAndStatusOrderByStartAsc(item.getId(), DATE_TIME_NOW, Status.APPROVED).get(),
                         commentRepository.findByItem_Id(item.getId())))
                 .collect(Collectors.toList());
@@ -104,6 +107,7 @@ public class ItemServiceImpl implements ItemService {
         }
         return bookingRepository.findLast(item.getId(), DATE_TIME_NOW);
     }
+
     private Booking getNextBooking(Item item) {
         List<Booking> bookings = bookingRepository.findByItem_Id(item.getId());
         List<Booking> currentBooking = bookings

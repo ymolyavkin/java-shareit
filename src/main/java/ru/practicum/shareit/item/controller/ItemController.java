@@ -58,13 +58,14 @@ public class ItemController {
         return itemService.updateItem(incomingItemDto, itemId, userId);
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/{itemId}")
     //public ItemDto getItemById(@PathVariable Long id) {
-    public ItemLastNextDto getItemById(@PathVariable Long id) {
-        log.info("Получен запрос на выдачу вещи с id = {}", id);
+    public ItemLastNextDto getItemById(@RequestHeader(value = USER_ID_FROM_REQUEST, defaultValue = "-1") Long userId,
+                                       @PathVariable Long itemId) {
+        log.info("Получен запрос на выдачу вещи с id = {} пользователем с id = {}", itemId, userId);
 
         //return itemService.getItemById(id);
-        return itemService.getItemById(id);
+        return itemService.getItemById(itemId, userId);
     }
 
     @GetMapping("/search")
@@ -76,7 +77,7 @@ public class ItemController {
         return itemService.searchItemsByText(text);
     }
 
-   // @ExceptionHandler(UnsatisfiedServletRequestParameterException.class)
+    // @ExceptionHandler(UnsatisfiedServletRequestParameterException.class)
     @PostMapping(value = "/{itemId}/comment", consumes = "application/json")
     public CommentDto addComment(@RequestHeader(value = USER_ID_FROM_REQUEST, defaultValue = "-1") Long userId,
                                  @Valid @RequestBody IncomingCommentDto incomingCommentDto,
