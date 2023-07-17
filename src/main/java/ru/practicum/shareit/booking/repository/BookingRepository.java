@@ -10,6 +10,7 @@ import ru.practicum.shareit.booking.model.Status;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Component
 public interface BookingRepository extends JpaRepository<Booking, Long> {
@@ -78,9 +79,9 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
 
  List<Booking> findByItem_IdInOrderByStartDesc(List<Long> Ids);
  //           select count(*) from BOOKINGS where item_id=1 and ((end_time between ?2 and ?3) or (?3 between start_time and end_time))
-/*@Query(value="select * from BOOKINGS where item_id=?1 and (END_TIME between 2? and 3? or 3? between start_time and end_time)"
-        , nativeQuery = true)
- List<Booking> ctBosExng(Long itemId, LocalDateTime sTime, LocalDateTime eTime);*/
- List<Booking> findFirstByItem_IdInAndStartLessThanEqual(List<Long> itemIds, LocalDateTime now);
- //List<Booking> findFirstByItem_IdInAndStartAfterAndStatusOrderByStartTime(List<Long> itemIds, LocalDateTime now, Status status);
+ Optional<Booking> findFirstByItem_IdAndStartBeforeAndStatusOrderByStartDesc(Long itemId, LocalDateTime localDate,
+                                                                            Status status);
+
+ Optional<Booking> findFirstByItem_IdAndStartAfterAndStatusOrderByStartAsc(Long itemId, LocalDateTime localDate,
+                                                                          Status status);
 }

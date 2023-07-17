@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.booking.model.Booking;
+import ru.practicum.shareit.booking.model.Status;
 import ru.practicum.shareit.exception.NoneXSharerUserIdException;
 import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.exception.OwnerMismatchException;
@@ -84,10 +85,10 @@ public class ItemServiceImpl implements ItemService {
         return items
                 .stream()
                 .map(item -> ItemMapper.mapToItemLastNextDto(item,
-                        bookingRepository.findLast(item.getId(), DATE_TIME_NOW),
-                        bookingRepository.findNext(item.getId(), DATE_TIME_NOW),
-                      //  getLastBooking(item),
-                       // getNextBooking(item),
+                     //   bookingRepository.findLast(item.getId(), DATE_TIME_NOW),
+                        bookingRepository.findFirstByItem_IdAndStartBeforeAndStatusOrderByStartDesc(item.getId(), DATE_TIME_NOW, Status.APPROVED).get(),
+                      //  bookingRepository.findNext(item.getId(), DATE_TIME_NOW),
+                        bookingRepository.findFirstByItem_IdAndStartAfterAndStatusOrderByStartAsc(item.getId(), DATE_TIME_NOW, Status.APPROVED).get(),
                         commentRepository.findByItem_Id(item.getId())))
                 .collect(Collectors.toList());
     }
