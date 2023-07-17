@@ -87,7 +87,22 @@ public class ItemServiceImpl implements ItemService {
     public List<ItemLastNextDto> getItemsLastNextBookingByUser(Long userId) {
         LocalDateTime dateTimeNow = LocalDateTime.now();
         List<Item> items = itemRepository.findAllByOwnerId(userId);
+// TODO: 17.07.2023 Сделать три метода, которые вычисляют параметры для метода ниже
+/*
+ if (itemDto.getOwner().getId().equals(userId)) {
+            itemDto.setLastBooking(
+                    bookingRepository.findFirstByItemIdAndStartBeforeAndStatusOrderByStartDesc(itemDto.getId(),
+                                    LocalDateTime.now(), Status.APPROVED).map(BookingMapper::bookingToItemBookingDto)
+                            .orElse(null));
 
+            itemDto.setNextBooking(
+                    bookingRepository.findFirstByItemIdAndStartAfterAndStatusOrderByStartAsc(itemDto.getId(),
+                                    LocalDateTime.now(), Status.APPROVED).map(BookingMapper::bookingToItemBookingDto)
+                            .orElse(null));
+
+            return itemDto;
+        }
+ */
         return items
                 .stream()
                 .map(item -> ItemMapper.mapToItemLastNextDto(item,
