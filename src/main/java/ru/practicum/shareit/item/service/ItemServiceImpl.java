@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.Status;
+import ru.practicum.shareit.exception.BadRequestException;
 import ru.practicum.shareit.exception.NoneXSharerUserIdException;
 import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.exception.OwnerMismatchException;
@@ -100,7 +101,7 @@ public class ItemServiceImpl implements ItemService {
         List<Booking> bookings = bookingRepository.findByItem_Id(item.getId());
         List<Booking> currentBooking = bookings
                 .stream()
-                .filter(booking -> booking.getStart().isBefore(LocalDateTime.now()) && booking.getEnd().isAfter(LocalDateTime.now()))
+                .filter(booking -> booking.getStart().isBefore(DATE_TIME_NOW) && booking.getEnd().isAfter(DATE_TIME_NOW))
                 .collect(Collectors.toList());
         if (currentBooking.size() > 0) {
             return currentBooking.get(0);
@@ -190,7 +191,27 @@ public class ItemServiceImpl implements ItemService {
             throw new NotFoundException("Автор не брал данную вещь в аренду");
         }
         User author = item.getOwner();
+        if (!bookingRepository.existsByBooker_IdAndEndBeforeAndStatus(userId, DATE_TIME_NOW, Status.APPROVED)) {
+            throw new BadRequestException("Комментарий не может быть создан");
+        }
+/*
+Comment comment = Comment
+                .builder()
+                .text(commentDto.getText())
+                .build();
+        comment.setAuthor(userDtotoUser(userService.getUserById(userId)));
 
+        comment.setItem((itemRepository.findById(itemId)
+                .orElseThrow(() -> new NotFoundException("Item  hasn't be found"))));
+
+        comment.setAuthor(userDtotoUser(userService.getUserById(userId)));
+        if (!bookingRepository.existsByBookerIdAndEndBeforeAndStatus(userId, LocalDateTime.now(), Status.APPROVED)) {
+            throw new NotAvailableException("Comment can't be created");
+        }
+        comment.setCreated(LocalDateTime.now());
+        log.info("Comment has been added");
+        return commentToCommentDto(commentRepository.save(comment));
+ */
         Comment comment = commentRepository.save(CommentMapper.mapToComment(incomingCommentDto, author, item));
 
         return CommentMapper.mapToCommentDto(comment);

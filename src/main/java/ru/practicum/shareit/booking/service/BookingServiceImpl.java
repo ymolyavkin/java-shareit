@@ -82,7 +82,7 @@ public class BookingServiceImpl implements BookingService {
                     .collect(Collectors.toList());
             case FUTURE -> bookingList
                     .stream()
-                    .filter(booking -> booking.getStart().isAfter(LocalDateTime.now()))
+                    .filter(booking -> booking.getStart().isAfter(DATE_TIME_NOW))
                     .collect(Collectors.toList());
             case WAITING -> bookingList
                     .stream()
