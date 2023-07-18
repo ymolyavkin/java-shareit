@@ -126,19 +126,22 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public CommentDto addComment(IncomingCommentDto incomingCommentDto, Long userId, Long itemId) {
-        LocalDateTime dateTimeNow = LocalDateTime.now();
-        Item item = itemRepository.findById(itemId)
-                .orElseThrow(() -> new NotFoundException(String.format("Вещь с id %d не найдена", itemId)));
-        int countBookings = bookingRepository.findByItemIdAndBookerId(itemId, userId);
-        if (countBookings == 0) {
-            throw new BadRequestException("Автор не брал данную вещь в аренду");
-        }
-        User author = item.getOwner();
-        if (!bookingRepository.existsByBooker_IdAndEndBeforeAndStatus(userId, dateTimeNow, Status.APPROVED)) {
+        Comment comment = Comment
+                .builder()
+                .text(incomingCommentDto.getText())
+                .build();
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new NotFoundException(String.format("Пользователь с id %d не найден", userId)));
+        comment.setAuthor(user);
+
+        comment.setItem((itemRepository.findById(itemId)
+                .orElseThrow(() -> new NotFoundException(String.format("Вещь с id %d не найдена", itemId)))));
+
+        if (!bookingRepository.existsByBooker_IdAndEndBeforeAndStatus(userId, LocalDateTime.now(), Status.APPROVED)) {
             throw new CommentErrorException("Комментарий не может быть создан");
         }
-        Comment comment = commentRepository.save(CommentMapper.mapToComment(incomingCommentDto, author, item));
+        comment.setCreated(LocalDateTime.now());
 
-        return CommentMapper.mapToCommentDto(comment);
+        return CommentMapper.mapToCommentDto(commentRepository.save(comment));
     }
 }
