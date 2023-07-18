@@ -65,35 +65,47 @@ public class BookingServiceImpl implements BookingService {
         if (state == StateRequest.UNSUPPORTED_STATUS) {
             throw new UnsupportedStatusException("Unknown state: UNSUPPORTED_STATUS");
         }
-        LocalDateTime myNew = LocalDateTime.now();
         List<Long> itemIdsByOwner = itemsIdsByOwner(ownerId);
 
         List<Booking> bookingList = bookingRepository.findByItem_IdInOrderByStartDesc(itemIdsByOwner);
-
-        List<Booking> bookings = switch (state) {
-            case ALL -> bookingList;
-            case CURRENT -> bookingList
-                    .stream()
-                    .filter(booking -> booking.getStart().isBefore(dateTimeNow) && booking.getEnd().isAfter(dateTimeNow))
-                    .collect(Collectors.toList());
-            case FUTURE -> bookingList
-                    .stream()
-                    .filter(booking -> booking.getStart().isAfter(dateTimeNow))
-                    .collect(Collectors.toList());
-            case PAST -> bookingList
-                    .stream()
-                    .filter(booking -> booking.getEnd().isBefore(dateTimeNow))
-                    .collect(Collectors.toList());
-            case WAITING -> bookingList
-                    .stream()
-                    .filter(booking -> booking.getStatus() == Status.WAITING)
-                    .collect(Collectors.toList());
-            case REJECTED -> bookingList
-                    .stream()
-                    .filter(booking -> booking.getStatus() == Status.REJECTED)
-                    .collect(Collectors.toList());
-            default -> throw new UnsupportedStatusException("Unknown state: UNSUPPORTED_STATUS");
-        };
+        List<Booking> bookings;
+        switch (state) {
+            case ALL:
+                bookings = bookingList;
+                break;
+            case CURRENT:
+                bookings = bookingList
+                        .stream()
+                        .filter(booking -> booking.getStart().isBefore(dateTimeNow) && booking.getEnd().isAfter(dateTimeNow))
+                        .collect(Collectors.toList());
+                break;
+            case FUTURE:
+                bookings = bookingList
+                        .stream()
+                        .filter(booking -> booking.getStart().isAfter(dateTimeNow))
+                        .collect(Collectors.toList());
+                break;
+            case PAST:
+                bookings = bookingList
+                        .stream()
+                        .filter(booking -> booking.getEnd().isBefore(dateTimeNow))
+                        .collect(Collectors.toList());
+                break;
+            case WAITING:
+                bookings = bookingList
+                        .stream()
+                        .filter(booking -> booking.getStatus() == Status.WAITING)
+                        .collect(Collectors.toList());
+                break;
+            case REJECTED:
+                bookings = bookingList
+                        .stream()
+                        .filter(booking -> booking.getStatus() == Status.REJECTED)
+                        .collect(Collectors.toList());
+                break;
+            default:
+                throw new UnsupportedStatusException("Unknown state: UNSUPPORTED_STATUS");
+        }
         return bookings
                 .stream()
                 .map(booking -> BookingMapper.mapToBookingResponseDto(booking, booking.getItem()))
@@ -109,16 +121,26 @@ public class BookingServiceImpl implements BookingService {
         if (state == StateRequest.UNSUPPORTED_STATUS) {
             throw new UnsupportedStatusException("Unknown state: UNSUPPORTED_STATUS");
         }
-        List<Booking> bookings = switch (state) {
-            case ALL -> bookingRepository.findAllByBooker_Id(bookerId, SORT_BY_DESC);
-            case CURRENT ->
-                    bookingRepository.findAllByBooker_IdAndStartBeforeAndEndAfter(bookerId, dateTimeNow, dateTimeNow, SORT_BY_DESC);
-            case FUTURE -> bookingRepository.findAllByBooker_IdAndStartAfter(bookerId, dateTimeNow, SORT_BY_DESC);
-            case WAITING -> bookingRepository.findAllByBooker_IdAndStatus(bookerId, Status.WAITING, SORT_BY_DESC);
-            case REJECTED -> bookingRepository.findAllByBooker_IdAndStatus(bookerId, Status.REJECTED, SORT_BY_DESC);
-            default -> Collections.emptyList();
-        };
-
+        List<Booking> bookings;
+        switch (state) {
+            case ALL:
+                bookings = bookingRepository.findAllByBooker_Id(bookerId, SORT_BY_DESC);
+                break;
+            case CURRENT:
+                bookings = bookingRepository.findAllByBooker_IdAndStartBeforeAndEndAfter(bookerId, dateTimeNow, dateTimeNow, SORT_BY_DESC);
+                break;
+            case FUTURE:
+                bookings = bookingRepository.findAllByBooker_IdAndStartAfter(bookerId, dateTimeNow, SORT_BY_DESC);
+                break;
+            case WAITING:
+                bookings = bookingRepository.findAllByBooker_IdAndStatus(bookerId, Status.WAITING, SORT_BY_DESC);
+                break;
+            case REJECTED:
+                bookings = bookingRepository.findAllByBooker_IdAndStatus(bookerId, Status.REJECTED, SORT_BY_DESC);
+                break;
+            default:
+                bookings = Collections.emptyList();
+        }
         return bookings
                 .stream()
                 .map(booking -> BookingMapper.mapToBookingResponseDto(booking, booking.getItem()))
