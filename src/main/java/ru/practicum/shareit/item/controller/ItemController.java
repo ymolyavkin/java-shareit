@@ -4,6 +4,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.UnsatisfiedServletRequestParameterException;
 import org.springframework.web.bind.annotation.*;
+import ru.practicum.shareit.exception.BadRequestException;
+import ru.practicum.shareit.exception.CommentErrorException;
 import ru.practicum.shareit.exception.NoneXSharerUserIdException;
 import ru.practicum.shareit.item.comment.dto.CommentDto;
 import ru.practicum.shareit.item.comment.IncomingCommentDto;
@@ -77,7 +79,7 @@ public class ItemController {
         return itemService.searchItemsByText(text);
     }
 
-    // @ExceptionHandler(UnsatisfiedServletRequestParameterException.class)
+    @ExceptionHandler(CommentErrorException.class)
     @PostMapping(value = "/{itemId}/comment", consumes = "application/json")
     public CommentDto addComment(@RequestHeader(value = USER_ID_FROM_REQUEST, defaultValue = "-1") Long userId,
                                  @Valid @RequestBody IncomingCommentDto incomingCommentDto,

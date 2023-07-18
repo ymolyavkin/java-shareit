@@ -93,4 +93,13 @@ public class ErrorHandler {
                 "error", e.getMessage()
         );
     }
+    //CommentErrorException
+    @ExceptionHandler({CommentErrorException.class})
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public Map<String, String> handleCommentErrorException(final RuntimeException e) {
+        log.debug("Ошибка сщхранения комментария. Статус ошибки 400 Bad Request");
+        return Map.of(
+                "error", e.getMessage()
+        );
+    }
 }

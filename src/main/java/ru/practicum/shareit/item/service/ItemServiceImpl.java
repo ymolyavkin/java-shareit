@@ -6,10 +6,7 @@ import org.springframework.stereotype.Service;
 import ru.practicum.shareit.booking.dto.BookingMapper;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.Status;
-import ru.practicum.shareit.exception.BadRequestException;
-import ru.practicum.shareit.exception.NoneXSharerUserIdException;
-import ru.practicum.shareit.exception.NotFoundException;
-import ru.practicum.shareit.exception.OwnerMismatchException;
+import ru.practicum.shareit.exception.*;
 import ru.practicum.shareit.item.comment.Comment;
 import ru.practicum.shareit.item.comment.CommentRepository;
 import ru.practicum.shareit.item.comment.IncomingCommentDto;
@@ -218,11 +215,11 @@ public class ItemServiceImpl implements ItemService {
                 .orElseThrow(() -> new NotFoundException(String.format("Вещь с id %d не найдена", itemId)));
         int countBookings = bookingRepository.findByItemIdAndBookerId(itemId, userId);
         if (countBookings == 0) {
-            throw new NotFoundException("Автор не брал данную вещь в аренду");
+            throw new BadRequestException("Автор не брал данную вещь в аренду");
         }
         User author = item.getOwner();
         if (!bookingRepository.existsByBooker_IdAndEndBeforeAndStatus(userId, dateTimeNow, Status.APPROVED)) {
-            throw new BadRequestException("Комментарий не может быть создан");
+            throw new CommentErrorException("Комментарий не может быть создан");
         }
 /*
 Comment comment = Comment
