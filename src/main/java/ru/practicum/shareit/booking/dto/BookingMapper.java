@@ -20,6 +20,7 @@ public class BookingMapper {
             private final long id;
             private final String name;
         }
+
         return BookingResponseDto.builder()
                 .id(booking.getId())
                 .start(booking.getStart())

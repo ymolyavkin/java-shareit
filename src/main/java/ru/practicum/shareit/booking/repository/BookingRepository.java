@@ -46,8 +46,8 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
 
     @Query(value = "select count(*) " +
             "from BOOKINGS " +
-            "where item_id = ?1 and booker_id = ?2 and status = 'APPROVED'"
-            , nativeQuery = true)
+            "where item_id = ?1 and booker_id = ?2 and status = 'APPROVED'",
+            nativeQuery = true)
     int findByItemIdAndBookerId(Long itemId, Long bookerId);
 
     List<Booking> findByItem_IdInOrderByStartDesc(List<Long> ids);
