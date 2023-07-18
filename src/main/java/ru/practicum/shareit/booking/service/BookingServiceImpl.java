@@ -21,7 +21,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static ru.practicum.shareit.util.Constants.DATE_TIME_NOW;
 import static ru.practicum.shareit.util.Constants.SORT_BY_DESC;
 
 @Service
@@ -70,35 +69,7 @@ public class BookingServiceImpl implements BookingService {
         List<Long> itemIdsByOwner = itemsIdsByOwner(ownerId);
 
         List<Booking> bookingList = bookingRepository.findByItem_IdInOrderByStartDesc(itemIdsByOwner);
-        /*List<Item> items = itemsByOwner(ownerId);
-        List<Booking> v  = itemIdsByOwner.stream().map(itemId -> this.add(bookingRepository.findByItemId(itemId))).collect(Collectors.toList());
-      //  List<Booking> v = items.stream().map(item -> item.getBookings()).sorted().toList();
-        Item item = itemRepository.getReferenceById(itemIdsByOwner.get(0));*/
 
-//        List<Booking> bookings = switch (state) {
-//            case ALL -> bookingList;
-//            case CURRENT -> bookingList
-//                    .stream()
-//                    .filter(booking -> booking.getStart().isBefore(DATE_TIME_NOW) && booking.getEnd().isAfter(DATE_TIME_NOW))
-//                    .collect(Collectors.toList());
-//            case FUTURE -> bookingList
-//                    .stream()
-//                    .filter(booking -> booking.getStart().isAfter(DATE_TIME_NOW))
-//                    .collect(Collectors.toList());
-//            case PAST -> bookingList
-//                    .stream()
-//                    .filter(booking -> booking.getEnd().isBefore(myNew))
-//                    .collect(Collectors.toList());
-//            case WAITING -> bookingList
-//                    .stream()
-//                    .filter(booking -> booking.getStatus() == Status.WAITING)
-//                    .collect(Collectors.toList());
-//            case REJECTED -> bookingList
-//                    .stream()
-//                    .filter(booking -> booking.getStatus() == Status.REJECTED)
-//                    .collect(Collectors.toList());
-//            default -> throw new UnsupportedStatusException("Unknown state: UNSUPPORTED_STATUS");
-//        };
         List<Booking> bookings = switch (state) {
             case ALL -> bookingList;
             case CURRENT -> bookingList
@@ -123,8 +94,6 @@ public class BookingServiceImpl implements BookingService {
                     .collect(Collectors.toList());
             default -> throw new UnsupportedStatusException("Unknown state: UNSUPPORTED_STATUS");
         };
-        // List<Booking> bookings = bookingRepository.findByBooker_IdOrderByStartDesc(ownerId);
-
         return bookings
                 .stream()
                 .map(booking -> BookingMapper.mapToBookingResponseDto(booking, booking.getItem()))
@@ -140,15 +109,6 @@ public class BookingServiceImpl implements BookingService {
         if (state == StateRequest.UNSUPPORTED_STATUS) {
             throw new UnsupportedStatusException("Unknown state: UNSUPPORTED_STATUS");
         }
-//        List<Booking> bookings = switch (state) {
-//            case ALL -> bookingRepository.findAllByBooker_Id(bookerId, SORT_BY_DESC);
-//            case CURRENT ->
-//                    bookingRepository.findAllByBooker_IdAndStartBeforeAndEndAfter(bookerId, DATE_TIME_NOW, DATE_TIME_NOW, SORT_BY_DESC);
-//            case FUTURE -> bookingRepository.findAllByBooker_IdAndStartAfter(bookerId, DATE_TIME_NOW, SORT_BY_DESC);
-//            case WAITING -> bookingRepository.findAllByBooker_IdAndStatus(bookerId, Status.WAITING, SORT_BY_DESC);
-//            case REJECTED -> bookingRepository.findAllByBooker_IdAndStatus(bookerId, Status.REJECTED, SORT_BY_DESC);
-//            default -> Collections.emptyList();
-//        };
         List<Booking> bookings = switch (state) {
             case ALL -> bookingRepository.findAllByBooker_Id(bookerId, SORT_BY_DESC);
             case CURRENT ->
@@ -159,8 +119,6 @@ public class BookingServiceImpl implements BookingService {
             default -> Collections.emptyList();
         };
 
-
-        //  List<Booking> bookings = bookingRepository.findByBooker_IdOrderByStartDesc(bookerId);
         return bookings
                 .stream()
                 .map(booking -> BookingMapper.mapToBookingResponseDto(booking, booking.getItem()))
@@ -184,20 +142,15 @@ public class BookingServiceImpl implements BookingService {
         BookingValidation.bookingIsValid(incomingBookingDto, item);
         Booking resultBooking = BookingMapper.mapToBooking(incomingBookingDto, item, booker);
         List<Booking> allBookingsByItem = bookingRepository.findByItem_Id(itemId);
-        //stream.map(Whatever::someCheck).reduce(Boolean::logicalAnd).orElse(false);
+
         boolean isOverlap = allBookingsByItem
                 .stream()
                 .map(booking -> isOverlapTime(booking, resultBooking))
                 .reduce(Boolean::logicalOr).orElse(false);
-        /*List<Booking> overlapBookings = allBookingsByItem.stream().findFirst().
-                .stream()
-                .filter(booking -> isOverlapTime(booking, resultBooking))
-                .collect(Collectors.toList());*/
 
         if (isOverlap) {
             throw new NotFoundException("Данная вещь на этот период недоступна");
         }
-        //  Booking booking = bookingRepository.save(BookingMapper.mapToBooking(incomingBookingDto, item, booker));
         Booking booking = bookingRepository.save(resultBooking);
 
         return BookingMapper.mapToBookingResponseDto(booking, item);
@@ -213,8 +166,7 @@ public class BookingServiceImpl implements BookingService {
         Item item = itemRepository.findById(booking.getItemId())
                 .orElseThrow(() -> new NotFoundException(String.format("Вещь с id %d не найдена", booking.getItemId())));
         boolean needsToBeChanged = false;
-       /* Status currentStatus = booking.getStatus();
-        Status newStatus = incomingBookingDto.getStatus();*/
+
         if (incomingBookingDto.getStart() != null && !incomingBookingDto.getStart().equals(booking.getStart())) {
             booking.setStart(incomingBookingDto.getStart());
             needsToBeChanged = true;
@@ -229,9 +181,7 @@ public class BookingServiceImpl implements BookingService {
         }
         if (needsToBeChanged) {
             bookingRepository.saveAndFlush(booking);
-        } /*else {
-            throw new BadRequestException("Nothing to change");
-        }*/
+        }
         return BookingMapper.mapToBookingResponseDto(booking, item);
     }
 
@@ -257,30 +207,4 @@ public class BookingServiceImpl implements BookingService {
         }
         return BookingMapper.mapToBookingResponseDto(booking, item);
     }
-
-
 }
-
-
-/*
-// сначала создаём описание сортировки по полю id
-        Sort sortById = Sort.by(Sort.Direction.ASC, "id");
-                // затем создаём описание первой "страницы" размером 32 элемента
-        Pageable page = PageRequest.of(0, 32, sortById);
-        do {
-                        // запрашиваем у базы данных страницу с данными
-            Page<User> userPage = repository.findAll(page);
-                        // результат запроса получаем с помощью метода getContent()
-            userPage.getContent().forEach(user -> {
-                // проверяем пользователей
-            });
-                        // для типа Page проверяем, существует ли следующая страница
-            if(userPage.hasNext()){
-                                // если следующая страница существует, создаём её описание, чтобы запросить на следующей итерации цикла
-                page = PageRequest.of(userPage.getNumber() + 1, userPage.getSize(), userPage.getSort()); // или для простоты -- userPage.nextOrLastPageable()
-            } else {
-                page = null;
-            }
-        } while (page != null);
-    }
- */

@@ -3,9 +3,6 @@ package ru.practicum.shareit.item.comment.dto;
 import lombok.Builder;
 import lombok.Data;
 
-
-import java.util.Date;
-import java.sql.Timestamp;
 import java.time.LocalDateTime;
 
 @Builder

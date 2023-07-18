@@ -33,11 +33,6 @@ public class ItemStorageImpl implements ItemStorage {
         return new ArrayList<>(items.values());
     }
 
-    @Override
-    public List<Item> getItems(Long userId) {
-       // return items.values().stream().filter(item -> item.getOwnerId().equals(userId)).collect(Collectors.toList());
-        return null;
-    }
 
     @Override
     public Optional<Item> getItemById(Long id) {

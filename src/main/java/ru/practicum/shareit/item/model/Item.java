@@ -1,15 +1,12 @@
 package ru.practicum.shareit.item.model;
 
 import lombok.*;
-import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.request.ItemRequest;
 import ru.practicum.shareit.user.model.User;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-import java.util.HashSet;
-import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
@@ -42,8 +39,6 @@ public class Item {
     private Set<ItemRequest> request;
     @Column(name = "number_of_times_to_rent")
     private int numberOfTimesToRent;
-    //@OneToMany(mappedBy = "item")
-    //private Set<Booking> bookings = new HashSet<>();
 
     public void incrementNumberOfTimesToRent() {
         numberOfTimesToRent++;

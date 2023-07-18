@@ -2,13 +2,10 @@ package ru.practicum.shareit.booking;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.boot.context.properties.bind.DefaultValue;
 import org.springframework.web.bind.UnsatisfiedServletRequestParameterException;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.BookingResponseDto;
 import ru.practicum.shareit.booking.dto.IncomingBookingDto;
-import ru.practicum.shareit.booking.model.State;
 import ru.practicum.shareit.booking.model.StateRequest;
 import ru.practicum.shareit.booking.service.BookingService;
 import ru.practicum.shareit.exception.NoneXSharerUserIdException;
@@ -25,12 +22,6 @@ import static ru.practicum.shareit.util.Constants.USER_ID_FROM_REQUEST;
 public class BookingController {
     private final BookingService bookingService;
 
-    /* @GetMapping
-     public List<BookingResponseDto> getBookings(@RequestHeader(value = USER_ID_FROM_REQUEST, defaultValue = "-1") Long bookerId,
-                                         @RequestParam(required = false) @DefaultValue("ALL") String state) {
-         log.info("Получен запрос на выдачу вещей, забронированных пользователем с id = {}", bookerId);
-         return bookingService.getBookingsByBooker(bookerId);
-     }*/
     @GetMapping
     public List<BookingResponseDto> getBookingsByBooker(@RequestHeader(value = USER_ID_FROM_REQUEST, defaultValue = "-1") Long bookerId,
                                                         @RequestParam(required = false, defaultValue = "ALL") StateRequest state) {
@@ -81,5 +72,4 @@ public class BookingController {
 
         return bookingService.getBookingById(bookingId, userId);
     }
-
 }
