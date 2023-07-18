@@ -132,6 +132,9 @@ public class BookingServiceImpl implements BookingService {
             case FUTURE:
                 bookings = bookingRepository.findAllByBooker_IdAndStartAfter(bookerId, dateTimeNow, SORT_BY_DESC);
                 break;
+            case PAST:
+                bookings = bookingRepository.findAllByBooker_IdAndEndBefore(bookerId, dateTimeNow, SORT_BY_DESC);
+                break;
             case WAITING:
                 bookings = bookingRepository.findAllByBooker_IdAndStatus(bookerId, Status.WAITING, SORT_BY_DESC);
                 break;
