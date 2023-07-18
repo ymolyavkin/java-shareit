@@ -16,5 +16,5 @@ public class ItemLastNextDto {
     private boolean isAvailable;
     private BookingLastNextDto lastBooking;
     private BookingLastNextDto nextBooking;
-    private List<CommentDto> comment;
+    private List<CommentDto> comments;
 }

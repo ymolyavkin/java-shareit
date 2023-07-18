@@ -1,7 +1,5 @@
 package ru.practicum.shareit.item.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 import ru.practicum.shareit.booking.dto.BookingLastNextDto;
@@ -81,7 +79,7 @@ public class ItemMapper {
                 .isAvailable(item.getAvailable())
                 .lastBooking(last)
                 .nextBooking(next)
-                .comment(commentsOut)
+                .comments(commentsOut)
                 .build();
     }
 
@@ -98,7 +96,7 @@ public class ItemMapper {
                 .isAvailable(item.getAvailable())
                 .lastBooking(last)
                 .nextBooking(next)
-                .comment(commentsOut)
+                .comments(commentsOut)
                 .build();
     }
 }
