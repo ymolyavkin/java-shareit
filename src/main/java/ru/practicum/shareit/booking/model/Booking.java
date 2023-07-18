@@ -49,7 +49,7 @@ public class Booking {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Booking booking = (Booking) o;
-        return id == booking.id && start.equals(booking.start) && end.equals(booking.end);
+        return id.equals(booking.id);
     }
 
     @Override
