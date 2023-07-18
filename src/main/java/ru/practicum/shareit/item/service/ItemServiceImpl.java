@@ -3,6 +3,7 @@ package ru.practicum.shareit.item.service;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.stereotype.Service;
+import ru.practicum.shareit.booking.dto.BookingMapper;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.Status;
 import ru.practicum.shareit.exception.BadRequestException;
@@ -83,6 +84,14 @@ public class ItemServiceImpl implements ItemService {
             .stream()
             .map(BookingMapper::bookingToItemBookingDto)
             .collect(Collectors.toMap(BookingItemDto::getItemId, Function.identity()));*/
+    private ItemLastNextDto toItemLastNextDto(Item item){
+        return ItemMapper.mapToItemLastNextResponseDto(item,
+                bookingRepository.findFirstByItem_IdAndStartBeforeAndStatusOrderByStartDesc(item.getId(),
+                        LocalDateTime.now(), Status.APPROVED).map(BookingMapper::mapToBookingLastNextDto).orElse(null),
+                bookingRepository.findFirstByItem_IdAndStartAfterAndStatusOrderByStartAsc(item.getId(),
+                                LocalDateTime.now(), Status.APPROVED).map(BookingMapper::mapToBookingLastNextDto).orElse(null),
+                commentRepository.findByItem_Id(item.getId()));
+    }
     @Override
     public List<ItemLastNextDto> getItemsLastNextBookingByUser(Long userId) {
         LocalDateTime dateTimeNow = LocalDateTime.now();
@@ -103,7 +112,7 @@ public class ItemServiceImpl implements ItemService {
             return itemDto;
         }
  */
-        return items
+        /*return items
                 .stream()
                 .map(item -> ItemMapper.mapToItemLastNextDto(item,
                         //   bookingRepository.findLast(item.getId(), DATE_TIME_NOW),
@@ -111,7 +120,8 @@ public class ItemServiceImpl implements ItemService {
                         //  bookingRepository.findNext(item.getId(), DATE_TIME_NOW),
                         bookingRepository.findFirstByItem_IdAndStartAfterAndStatusOrderByStartAsc(item.getId(), dateTimeNow, Status.APPROVED).get(),
                         commentRepository.findByItem_Id(item.getId())))
-                .collect(Collectors.toList());
+                .collect(Collectors.toList());*/
+        return items.stream().map(item -> toItemLastNextDto(item)).collect(Collectors.toList());
     }
 
     private Booking getLastBooking(Item item) {

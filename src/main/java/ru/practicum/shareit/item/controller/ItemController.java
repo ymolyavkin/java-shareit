@@ -27,12 +27,12 @@ public class ItemController {
     private final ItemService itemService;
 
     @GetMapping
-    public List<ItemDto> getItems(@RequestHeader(value = USER_ID_FROM_REQUEST, defaultValue = "-1") Long userId) {
-        //public List<ItemLastNextDto> getItems(@RequestHeader(value = USER_ID_FROM_REQUEST, defaultValue = "-1") Long userId) {
+   // public List<ItemDto> getItems(@RequestHeader(value = USER_ID_FROM_REQUEST, defaultValue = "-1") Long userId) {
+        public List<ItemLastNextDto> getItems(@RequestHeader(value = USER_ID_FROM_REQUEST, defaultValue = "-1") Long userId) {
         log.info("Получен запрос на выдачу вещей пользователя с id = {}", userId);
 
-        return itemService.getItemsByUser(userId);
-        //return itemService.getItemsLastNextBookingByUser(userId);
+      //  return itemService.getItemsByUser(userId);
+        return itemService.getItemsLastNextBookingByUser(userId);
     }
 
     @ExceptionHandler(UnsatisfiedServletRequestParameterException.class)

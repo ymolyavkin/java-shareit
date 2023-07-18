@@ -1,4 +1,11 @@
 package ru.practicum.shareit.booking.dto;
 
-public interface BookingLastNextDto {
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+
+@AllArgsConstructor
+@Getter
+public class BookingLastNextDto {
+    private final long id;
+    private final Long bookerId;
 }
