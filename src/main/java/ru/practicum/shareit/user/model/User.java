@@ -20,12 +20,12 @@ public class User {
     private Long id;
     @NotBlank
     @NonNull
-    @Column(name="name", length=255, nullable=false)
+    @Column(name = "name", length = 255, nullable = false)
     private String name;
     @NonNull
     @NotBlank(message = "адрес электронной почты не должен быть пустым")
     @Pattern(regexp = "^.+@.+\\..+$", message = "Некорректный адрес электронной почты")
-    @Column(name="email", length=512, nullable=false, unique=true)
+    @Column(name = "email", length = 512, nullable = false, unique = true)
     private String email;
 
     @Override

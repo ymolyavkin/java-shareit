@@ -7,7 +7,7 @@ import ru.practicum.shareit.item.model.Item;
 import java.time.LocalDateTime;
 
 public class BookingValidation {
-    public static void bookingIsValid(IncomingBookingDto incomingBookingDto, Item item){
+    public static void bookingIsValid(IncomingBookingDto incomingBookingDto, Item item) {
         if (!item.getAvailable()) {
             throw new BadRequestException("Вещь недоступна для бронирования");
         }

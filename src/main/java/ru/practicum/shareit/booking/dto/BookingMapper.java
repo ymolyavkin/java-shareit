@@ -39,6 +39,7 @@ public class BookingMapper {
                 .status(booking.getStatus())
                 .build();
     }
+
     public static BookingLastNextDto mapToBookingLastNextDto(Booking booking) {
         return new BookingLastNextDto(booking.getId(), booking.getBookerId());
     }

@@ -12,8 +12,8 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
     @Query(value = "select * " +
             "from ITEMS " +
             "where owner_id = ?1", nativeQuery = true)
-
     List<Item> findAllByOwnerId(Long userId);
+
     List<Item> findByNameIsContainingIgnoreCaseOrDescriptionIsContainingIgnoreCase(String textInName, String textInDescription);
 
     @Query(value = "SELECT id FROM ITEMS WHERE owner_id = ?1", nativeQuery = true)
