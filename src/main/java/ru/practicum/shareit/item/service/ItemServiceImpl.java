@@ -48,17 +48,18 @@ public class ItemServiceImpl implements ItemService {
     }
 
     private ItemLastNextDto toItemLastNextDto(Item item) {
+        LocalDateTime dateTimeNow = LocalDateTime.now();
+
         return ItemMapper.mapToItemLastNextResponseDto(item,
                 bookingRepository.findFirstByItem_IdAndStartBeforeAndStatusOrderByStartDesc(item.getId(),
-                        LocalDateTime.now(), Status.APPROVED).map(BookingMapper::mapToBookingLastNextDto).orElse(null),
+                        dateTimeNow, Status.APPROVED).map(BookingMapper::mapToBookingLastNextDto).orElse(null),
                 bookingRepository.findFirstByItem_IdAndStartAfterAndStatusOrderByStartAsc(item.getId(),
-                        LocalDateTime.now(), Status.APPROVED).map(BookingMapper::mapToBookingLastNextDto).orElse(null),
+                        dateTimeNow, Status.APPROVED).map(BookingMapper::mapToBookingLastNextDto).orElse(null),
                 commentRepository.findByItem_Id(item.getId()));
     }
 
     @Override
     public List<ItemLastNextDto> getItemsLastNextBookingByUser(Long userId) {
-      //  LocalDateTime dateTimeNow = LocalDateTime.now();
         List<Item> items = itemRepository.findAllByOwnerId(userId);
 
         return items.stream().map(item -> toItemLastNextDto(item)).collect(Collectors.toList());
