@@ -33,13 +33,13 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public ItemLastNextDto getItemById(Long id, Long userId) {
-        LocalDateTime dateTimeNow = LocalDateTime.now();
         Item item = itemRepository.getReferenceById(id);
+
         Booking lastBooking = null;
         Booking nextBooking = null;
         if (item.getOwnerId().equals(userId)) {
-            lastBooking = bookingRepository.findLast(item.getId(), dateTimeNow);
-            nextBooking = bookingRepository.findNext(item.getId(), dateTimeNow);
+            lastBooking = bookingRepository.findLast(item.getId(), LocalDateTime.now());
+            nextBooking = bookingRepository.findNext(item.getId(), LocalDateTime.now());
         }
         return ItemMapper.mapToItemLastNextDto(item,
                 lastBooking,
@@ -49,7 +49,6 @@ public class ItemServiceImpl implements ItemService {
 
     private ItemLastNextDto toItemLastNextDto(Item item) {
         LocalDateTime dateTimeNow = LocalDateTime.now();
-
         return ItemMapper.mapToItemLastNextResponseDto(item,
                 bookingRepository.findFirstByItem_IdAndStartBeforeAndStatusOrderByStartDesc(item.getId(),
                         dateTimeNow, Status.APPROVED).map(BookingMapper::mapToBookingLastNextDto).orElse(null),
