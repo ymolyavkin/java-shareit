@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import ru.practicum.shareit.exception.*;
 
-
 import javax.persistence.EntityNotFoundException;
 import javax.validation.ValidationException;
 import java.util.Map;
@@ -67,6 +66,7 @@ public class ErrorHandler {
                 "error", e.getMessage()
         );
     }
+
     @ExceptionHandler({JDBCConnectionException.class})
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public Map<String, String> handleJDBCConnectionException(final RuntimeException e) {
@@ -93,7 +93,7 @@ public class ErrorHandler {
                 "error", e.getMessage()
         );
     }
-    //CommentErrorException
+
     @ExceptionHandler({CommentErrorException.class})
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public Map<String, String> handleCommentErrorException(final RuntimeException e) {

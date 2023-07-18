@@ -4,8 +4,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.UnsatisfiedServletRequestParameterException;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.shareit.exception.BadRequestException;
-import ru.practicum.shareit.exception.CommentErrorException;
 import ru.practicum.shareit.exception.NoneXSharerUserIdException;
 import ru.practicum.shareit.item.comment.dto.CommentDto;
 import ru.practicum.shareit.item.comment.IncomingCommentDto;
@@ -29,11 +27,9 @@ public class ItemController {
     private final ItemService itemService;
 
     @GetMapping
-   // public List<ItemDto> getItems(@RequestHeader(value = USER_ID_FROM_REQUEST, defaultValue = "-1") Long userId) {
-        public List<ItemLastNextDto> getItems(@RequestHeader(value = USER_ID_FROM_REQUEST, defaultValue = "-1") Long userId) {
+    public List<ItemLastNextDto> getItems(@RequestHeader(value = USER_ID_FROM_REQUEST, defaultValue = "-1") Long userId) {
         log.info("Получен запрос на выдачу вещей пользователя с id = {}", userId);
 
-      //  return itemService.getItemsByUser(userId);
         return itemService.getItemsLastNextBookingByUser(userId);
     }
 
@@ -61,12 +57,10 @@ public class ItemController {
     }
 
     @GetMapping("/{itemId}")
-    //public ItemDto getItemById(@PathVariable Long id) {
     public ItemLastNextDto getItemById(@RequestHeader(value = USER_ID_FROM_REQUEST, defaultValue = "-1") Long userId,
                                        @PathVariable Long itemId) {
         log.info("Получен запрос на выдачу вещи с id = {} пользователем с id = {}", itemId, userId);
 
-        //return itemService.getItemById(id);
         return itemService.getItemById(itemId, userId);
     }
 
@@ -79,7 +73,6 @@ public class ItemController {
         return itemService.searchItemsByText(text);
     }
 
-  //  @ExceptionHandler(CommentErrorException.class)
     @PostMapping(value = "/{itemId}/comment", consumes = "application/json")
     public CommentDto addComment(@RequestHeader(value = USER_ID_FROM_REQUEST, defaultValue = "-1") Long userId,
                                  @Valid @RequestBody IncomingCommentDto incomingCommentDto,

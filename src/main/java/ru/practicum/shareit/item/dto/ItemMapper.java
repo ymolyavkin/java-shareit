@@ -38,35 +38,9 @@ public class ItemMapper {
         return item;
     }
 
-    /*public static ItemWithDateDto mapToItemWithDateDto(Item item, LocalDateTime start, LocalDateTime end) {
-        return ItemWithDateDto.builder()
-                .id(item.getId())
-                .name(item.getName())
-                .description(item.getDescription())
-                .isAvailable(item.getAvailable())
-                .ownerId(item.getOwnerId())
-                .start(start)
-                .end(end)
-                .numberOfTimesToRent(item.getNumberOfTimesToRent())
-                .build();
-    }*/
-
     public static ItemLastNextDto mapToItemLastNextDto(Item item, Booking lastBooking, Booking nextBooking, List<Comment> comments) {
-     /*   @AllArgsConstructor
-        @Getter
-        class NearestBookingDto implements BookingLastNextDto {
-            private final Long id;
-            private final Long bookerId;
-        }*/
-        /*Long lastBookingId = (lastBooking == null) ? null : lastBooking.getId();
-        Long nextBookingId = (nextBooking == null) ? null : nextBooking.getId();
-        new NearestBookingDto(lastBookingId, lastBookerId)
-        Long lastBookerId = (lastBooking == null) ? null : lastBooking.getBookerId();
-        Long nextBookerId = (nextBooking == null) ? null : nextBooking.getBookerId();*/
-        // NearestBookingDto last = (lastBooking == null) ? null : new NearestBookingDto(lastBooking.getId(), lastBooking.getBookerId());
-        BookingLastNextDto last = (lastBooking == null) ? null : new BookingLastNextDto(lastBooking.getId(), lastBooking.getBookerId());
-        //NearestBookingDto next = (nextBooking == null) ? null : new NearestBookingDto(nextBooking.getId(), nextBooking.getBookerId());
-        BookingLastNextDto next = (nextBooking == null) ? null : new BookingLastNextDto(nextBooking.getId(), nextBooking.getBookerId());
+            BookingLastNextDto last = (lastBooking == null) ? null : new BookingLastNextDto(lastBooking.getId(), lastBooking.getBookerId());
+               BookingLastNextDto next = (nextBooking == null) ? null : new BookingLastNextDto(nextBooking.getId(), nextBooking.getBookerId());
         List<CommentDto> commentsOut = comments
                 .stream()
                 .map(CommentMapper::mapToCommentDto)
