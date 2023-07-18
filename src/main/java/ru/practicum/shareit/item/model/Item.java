@@ -53,7 +53,7 @@ public class Item {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Item item = (Item) o;
-        return id == item.id && name.equals(item.name);
+        return id.equals(item.id) && name.equals(item.name);
     }
 
     @Override

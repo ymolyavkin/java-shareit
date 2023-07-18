@@ -33,7 +33,7 @@ public class User {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         User user = (User) o;
-        return id == user.id && email.equals(user.email);
+        return id.equals(user.id) && email.equals(user.email);
     }
 
     @Override

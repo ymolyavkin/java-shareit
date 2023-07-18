@@ -17,7 +17,7 @@ public class UserStorageImpl implements UserStorage {
 
     private boolean emailAlreadyExists(String email, Long skipId) {
         for (User user : users.values()) {
-            if (user.getId() != skipId && user.getEmail().equals(email)) {
+            if (!user.getId().equals(skipId) && user.getEmail().equals(email)) {
                 return true;
             }
         }

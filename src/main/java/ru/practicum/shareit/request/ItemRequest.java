@@ -36,7 +36,7 @@ public class ItemRequest {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         ItemRequest that = (ItemRequest) o;
-        return id == that.id && description.equals(that.description);
+        return id.equals(that.id) && description.equals(that.description);
     }
 
     @Override
