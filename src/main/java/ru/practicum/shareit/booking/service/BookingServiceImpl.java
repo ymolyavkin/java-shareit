@@ -192,10 +192,10 @@ public class BookingServiceImpl implements BookingService {
                 .orElseThrow(() -> new NotFoundException(String.format("Вещь с id %d не найдена", booking.getItemId())));
         boolean needsToBeChanged = false;
 
-        if (incomingBookingDto.getStart() != null && !incomingBookingDto.getStart().equals(booking.getStart())) {
+      //  if (incomingBookingDto.getStart() != null && !incomingBookingDto.getStart().equals(booking.getStart())) {
             booking.setStart(incomingBookingDto.getStart());
             needsToBeChanged = true;
-        }
+       // }
         if (incomingBookingDto.getEnd() != null && !incomingBookingDto.getEnd().equals(booking.getEnd())) {
             booking.setEnd(incomingBookingDto.getEnd());
             needsToBeChanged = true;

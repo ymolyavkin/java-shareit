@@ -2,6 +2,8 @@ package ru.practicum.shareit.booking;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.sql.Update;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.UnsatisfiedServletRequestParameterException;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.booking.dto.BookingResponseDto;
@@ -36,6 +38,7 @@ public class BookingController {
         return bookingService.getBookingsByOwner(ownerId, state);
     }
 
+    @Validated
     @ExceptionHandler(UnsatisfiedServletRequestParameterException.class)
     @PostMapping
     public BookingResponseDto addBooking(@RequestHeader(value = USER_ID_FROM_REQUEST, defaultValue = "-1") Long bookerId,
@@ -49,6 +52,7 @@ public class BookingController {
         return bookingService.addBooking(incomingBookingDto);
     }
 
+    @Validated
     @PatchMapping(value = "/{bookingId}", consumes = "application/json")
     public BookingResponseDto updateBooking(@RequestHeader(value = USER_ID_FROM_REQUEST, defaultValue = "-1") Long ownerId,
                                             @RequestBody(required = false) IncomingBookingDto incomingBookingDto,

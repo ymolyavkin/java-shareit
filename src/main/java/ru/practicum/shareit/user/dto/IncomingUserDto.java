@@ -9,6 +9,7 @@ import javax.validation.constraints.Pattern;
 public class IncomingUserDto {
     @NotBlank
     private String name;
+
     @NotBlank(message = "адрес электронной почты не должен быть пустым")
     @Pattern(regexp = "^.+@.+\\..+$", message = "Некорректный адрес электронной почты")
     private String email;
