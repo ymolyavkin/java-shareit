@@ -20,8 +20,6 @@ import java.util.List;
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
-    private final UserStorage userStorage;
-    private final ItemRepository itemRepository;
     private final UserRepository userRepository;
 
     @Override

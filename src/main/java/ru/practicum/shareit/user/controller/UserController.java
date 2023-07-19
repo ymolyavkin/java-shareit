@@ -2,11 +2,13 @@ package ru.practicum.shareit.user.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.user.dto.IncomingUserDto;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.service.UserService;
+import ru.practicum.shareit.validator.Marker;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -33,14 +35,14 @@ public class UserController {
     }
 
     @PostMapping(consumes = "application/json")
-    public User addUser(@Valid @RequestBody IncomingUserDto incomingUserDto) {
+    public User addUser(@Validated({Marker.OnCreate.class}) @RequestBody IncomingUserDto incomingUserDto) {
         log.info("Получен запрос на добавление пользователя");
 
         return userService.addUser(incomingUserDto);
     }
 
     @PatchMapping(value = "/{id}", consumes = "application/json")
-    public UserDto updateUser(@RequestBody IncomingUserDto incomingUserDto,
+    public UserDto updateUser(@Validated({Marker.OnUpdate.class})@RequestBody IncomingUserDto incomingUserDto,
                               @PathVariable Long id) {
         log.info("Получен запрос на обновление пользователя с id = {}", id);
 
