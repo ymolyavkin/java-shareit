@@ -196,17 +196,17 @@ public class BookingServiceImpl implements BookingService {
             booking.setStart(incomingBookingDto.getStart());
             needsToBeChanged = true;
        // }
-        if (incomingBookingDto.getEnd() != null && !incomingBookingDto.getEnd().equals(booking.getEnd())) {
+       // if (incomingBookingDto.getEnd() != null && !incomingBookingDto.getEnd().equals(booking.getEnd())) {
             booking.setEnd(incomingBookingDto.getEnd());
             needsToBeChanged = true;
-        }
-        if (incomingBookingDto.getStatus() != null && !incomingBookingDto.getStatus().equals(booking.getStatus())) {
+     //   }
+     //   if (incomingBookingDto.getStatus() != null && !incomingBookingDto.getStatus().equals(booking.getStatus())) {
             booking.setStatus(incomingBookingDto.getStatus());
-            needsToBeChanged = true;
-        }
-        if (needsToBeChanged) {
+      //      needsToBeChanged = true;
+      //  }
+     //   if (needsToBeChanged) {
             bookingRepository.saveAndFlush(booking);
-        }
+     //   }
         return BookingMapper.mapToBookingResponseDto(booking, item);
     }
 

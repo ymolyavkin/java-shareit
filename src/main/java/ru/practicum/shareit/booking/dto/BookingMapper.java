@@ -1,5 +1,6 @@
 package ru.practicum.shareit.booking.dto;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.experimental.UtilityClass;
@@ -20,13 +21,19 @@ public class BookingMapper {
             private final long id;
             private final String name;
         }
+        BookerDto bookerDto = new BookerDto() {
+            private Long id = booking.getBookerId();
+           public Long getId() {
+                return id;
+            }
+        };
 
         return BookingResponseDto.builder()
                 .id(booking.getId())
                 .start(booking.getStart())
                 .end(booking.getEnd())
                 .item(new ItemWithIdAndNameDtoDto(item.getId(), item.getName()))
-                .booker(new BookerDto(booking.getBookerId()))
+                .booker(bookerDto)
                 .status(booking.getStatus())
                 .build();
     }
