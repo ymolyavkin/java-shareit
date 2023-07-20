@@ -10,7 +10,6 @@ import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.service.UserService;
 import ru.practicum.shareit.validator.Marker;
 
-import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -42,7 +41,7 @@ public class UserController {
     }
 
     @PatchMapping(value = "/{id}", consumes = "application/json")
-    public UserDto updateUser(@Validated({Marker.OnUpdate.class})@RequestBody IncomingUserDto incomingUserDto,
+    public UserDto updateUser(@Validated({Marker.OnUpdate.class}) @RequestBody IncomingUserDto incomingUserDto,
                               @PathVariable Long id) {
         log.info("Получен запрос на обновление пользователя с id = {}", id);
 

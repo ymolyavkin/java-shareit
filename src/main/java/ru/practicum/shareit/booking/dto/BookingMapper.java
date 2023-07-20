@@ -1,8 +1,5 @@
 package ru.practicum.shareit.booking.dto;
 
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 import ru.practicum.shareit.booking.model.Booking;
@@ -15,15 +12,22 @@ import ru.practicum.shareit.user.model.User;
 public class BookingMapper {
 
     public static BookingResponseDto mapToBookingResponseDto(Booking booking, Item item) {
-        @AllArgsConstructor
-        @Getter
-        class ItemWithIdAndNameDtoDto implements ItemIdNameDto {
-            private final long id;
-            private final String name;
-        }
+        ItemIdNameDto itemIdNameDto = new ItemIdNameDto() {
+            private Long id = item.getId();
+            private String name = item.getName();
+
+            public Long getId() {
+                return id;
+            }
+
+            public String getName() {
+                return name;
+            }
+        };
         BookerDto bookerDto = new BookerDto() {
             private Long id = booking.getBookerId();
-           public Long getId() {
+
+            public Long getId() {
                 return id;
             }
         };
@@ -32,7 +36,7 @@ public class BookingMapper {
                 .id(booking.getId())
                 .start(booking.getStart())
                 .end(booking.getEnd())
-                .item(new ItemWithIdAndNameDtoDto(item.getId(), item.getName()))
+                .item(itemIdNameDto)
                 .booker(bookerDto)
                 .status(booking.getStatus())
                 .build();

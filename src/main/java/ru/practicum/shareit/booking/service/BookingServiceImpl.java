@@ -190,23 +190,12 @@ public class BookingServiceImpl implements BookingService {
         Booking booking = bookingRepository.getReferenceById(bookingId);
         Item item = itemRepository.findById(booking.getItemId())
                 .orElseThrow(() -> new NotFoundException(String.format("Вещь с id %d не найдена", booking.getItemId())));
-        boolean needsToBeChanged = false;
 
-      //  if (incomingBookingDto.getStart() != null && !incomingBookingDto.getStart().equals(booking.getStart())) {
             booking.setStart(incomingBookingDto.getStart());
-            needsToBeChanged = true;
-       // }
-       // if (incomingBookingDto.getEnd() != null && !incomingBookingDto.getEnd().equals(booking.getEnd())) {
             booking.setEnd(incomingBookingDto.getEnd());
-            needsToBeChanged = true;
-     //   }
-     //   if (incomingBookingDto.getStatus() != null && !incomingBookingDto.getStatus().equals(booking.getStatus())) {
             booking.setStatus(incomingBookingDto.getStatus());
-      //      needsToBeChanged = true;
-      //  }
-     //   if (needsToBeChanged) {
             bookingRepository.saveAndFlush(booking);
-     //   }
+
         return BookingMapper.mapToBookingResponseDto(booking, item);
     }
 
