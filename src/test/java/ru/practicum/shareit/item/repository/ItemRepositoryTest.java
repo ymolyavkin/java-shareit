@@ -41,5 +41,7 @@ class ItemRepositoryTest {
         List<Long> itemIds = itemRepository.findItemIdsByOwnerId(1L);
 
         assertEquals(2, itemIds.size());
+        assertTrue(itemIds.contains(1L));
+        assertTrue(itemIds.contains(2L));
     }
 }
