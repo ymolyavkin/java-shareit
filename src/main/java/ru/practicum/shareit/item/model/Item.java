@@ -34,9 +34,10 @@ public class Item {
     @JoinColumn(name = "owner_id")
     private User owner;
     @ToString.Exclude
-    @OneToMany(cascade = CascadeType.ALL)
+   // @OneToMany(cascade={CascadeType.PERSIST, CascadeType.MERGE})//cascade={CascadeType.PERSIST, cascadeType.MERGE}
     @Column(name = "request_id")
-    private Set<ItemRequest> request;
+   // private Set<ItemRequest> request;
+    private Long requestId;
     @Column(name = "number_of_times_to_rent")
     private int numberOfTimesToRent;
 

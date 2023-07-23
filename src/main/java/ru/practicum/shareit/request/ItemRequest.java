@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import ru.practicum.shareit.user.model.User;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
@@ -15,19 +16,23 @@ import java.util.Objects;
 @Setter
 @ToString
 @NoArgsConstructor
-@Table(name = "item_request")
+@Table(name = "items_request")
 public class ItemRequest {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @NotBlank
+    @NotBlank(message = "Описание запроса не может быть пустым.")
+    @Column(name = "description")
     private String description;
-    private Long requestorId;
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "requesterId")
+    private User requester;
+    @Column(name = "created")
     private LocalDateTime created;
 
-    public ItemRequest(String description, Long requestorId, LocalDateTime created) {
+    public ItemRequest(String description, User requestor, LocalDateTime created) {
         this.description = description;
-        this.requestorId = requestorId;
+        this.requester = requestor;
         this.created = created;
     }
 
@@ -49,7 +54,6 @@ public class ItemRequest {
         return "ItemRequest{" +
                 "id=" + id +
                 ", description='" + description + '\'' +
-                ", requestor=" + requestorId +
                 ", created=" + created +
                 '}';
     }

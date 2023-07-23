@@ -2,6 +2,7 @@ package ru.practicum.shareit.item.service;
 
 import lombok.RequiredArgsConstructor;
 
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.dto.BookingMapper;
@@ -23,7 +24,9 @@ import ru.practicum.shareit.item.repository.ItemRepository;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserRepository;
 import ru.practicum.shareit.booking.repository.BookingRepository;
+import ru.practicum.shareit.util.OffsetPageRequest;
 
+import java.awt.print.Pageable;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -68,8 +71,11 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public List<ItemLastNextDto> getItemsLastNextBookingByUser(Long userId) {
+    // public List<ItemLastNextDto> getItemsLastNextBookingByUser(Long userId) {
+    public List<ItemLastNextDto> getItemsLastNextBookingByUser(Long userId, int from, int size) {
         List<Item> items = itemRepository.findAllByOwnerId(userId);
+        OffsetPageRequest pageRequest = new OffsetPageRequest(from, size);
+        Page<Item> page = itemRepository.findAll(pageRequest);
 
         return items.stream().map(item -> toItemLastNextDto(item)).collect(Collectors.toList());
     }

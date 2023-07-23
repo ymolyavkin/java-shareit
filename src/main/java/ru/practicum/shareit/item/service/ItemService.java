@@ -13,7 +13,10 @@ public interface ItemService {
 
     List<ItemDto> searchItemsByText(String searchText);
 
-    List<ItemLastNextDto> getItemsLastNextBookingByUser(Long userId);
+  //  List<ItemLastNextDto> getItemsLastNextBookingByUser(Long userId);
+
+    // public List<ItemLastNextDto> getItemsLastNextBookingByUser(Long userId) {
+    List<ItemLastNextDto> getItemsLastNextBookingByUser(Long userId, int from, int size);
 
     List<ItemDto> getItemsByUser(Long userId);
 

@@ -102,4 +102,12 @@ public class ErrorHandler {
                 "error", e.getMessage()
         );
     }
+    @ExceptionHandler({IllegalStateException.class})
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public Map<String, String> handleIllegalStateException(final RuntimeException e) {
+        log.debug("Ошибка IllegalStateException. Статус ошибки 400 Bad Request");
+        return Map.of(
+                "error", e.getMessage()
+        );
+    }
 }

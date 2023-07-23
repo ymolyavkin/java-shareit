@@ -6,7 +6,9 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.exception.NotFoundException;
+import ru.practicum.shareit.item.dto.ItemResponseDto;
 import ru.practicum.shareit.request.dto.IncomingItemRequestDto;
+import ru.practicum.shareit.request.dto.ItemRequestDto;
 import ru.practicum.shareit.request.service.ItemRequestService;
 import ru.practicum.shareit.user.dto.IncomingUserDto;
 import ru.practicum.shareit.user.model.User;
@@ -23,9 +25,10 @@ public class ItemRequestController {
     private final ItemRequestService itemRequestService;
 
     @PostMapping(consumes = "application/json")
-    public User addItemRequest(@RequestHeader(value = USER_ID_FROM_REQUEST, defaultValue = "-1") Long userId,
-                               @Validated({Marker.OnCreate.class}) BindingResult errors,
-                               @RequestBody IncomingItemRequestDto incomingItemRequestDto) {
+    public ItemResponseDto addItemRequest(@RequestHeader(value = USER_ID_FROM_REQUEST, defaultValue = "-1") Long userId,
+                                          @Validated({Marker.OnCreate.class})
+                                          @RequestBody IncomingItemRequestDto incomingItemRequestDto,
+                                          BindingResult errors) {
         //this is the validation barrier
         if (errors.hasErrors()) {
             throw new NotFoundException("My exception");

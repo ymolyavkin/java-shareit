@@ -2,6 +2,8 @@ package ru.practicum.shareit.item.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.web.bind.UnsatisfiedServletRequestParameterException;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.exception.NoneXSharerUserIdException;
@@ -26,11 +28,19 @@ import static ru.practicum.shareit.util.Constants.USER_ID_FROM_REQUEST;
 public class ItemController {
     private final ItemService itemService;
 
-    @GetMapping
+    /*@GetMapping
     public List<ItemLastNextDto> getItems(@RequestHeader(value = USER_ID_FROM_REQUEST, defaultValue = "-1") Long userId) {
         log.info("Получен запрос на выдачу вещей пользователя с id = {}", userId);
 
         return itemService.getItemsLastNextBookingByUser(userId);
+    }*/
+    @GetMapping
+    public List<ItemLastNextDto> getItems(@RequestHeader(value = USER_ID_FROM_REQUEST, defaultValue = "-1") Long userId,
+                                          @RequestParam(name = "from", defaultValue = "0") int from,
+                                          @RequestParam(name = "size", defaultValue = "10") int size) {
+        log.info("Получен запрос на выдачу вещей пользователя с id = {}", userId);
+
+        return itemService.getItemsLastNextBookingByUser(userId, from, size);
     }
 
     @ExceptionHandler(UnsatisfiedServletRequestParameterException.class)

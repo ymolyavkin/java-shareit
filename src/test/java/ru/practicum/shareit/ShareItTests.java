@@ -37,7 +37,7 @@ class ShareItTests {
     @BeforeEach
     void setUp() {
         User requestor = new User(1L, "Name Requestor", "email@yandex.ru");
-       ItemRequest request = new ItemRequest("description", requestor.getId(), LocalDateTime.now());
+       ItemRequest request = new ItemRequest("description", requestor, LocalDateTime.now());
         /*Item item = new Item();
        item.setId(1L);
         item.setName("Name");
