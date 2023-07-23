@@ -31,9 +31,7 @@ class ItemServiceImplTest {
     BookingRepository bookingRepository;
     @Mock
     CommentRepository commentRepository;
-    /*
-        ItemServiceImplTest() {
-        }*/
+   
     private Item itemOne;
     private Item itemTwo;
 
