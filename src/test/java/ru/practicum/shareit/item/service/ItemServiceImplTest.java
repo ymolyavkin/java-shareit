@@ -17,7 +17,7 @@ import ru.practicum.shareit.item.repository.ItemRepository;
 import ru.practicum.shareit.user.repository.UserRepository;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class ItemServiceImplTest {
@@ -74,6 +74,7 @@ class ItemServiceImplTest {
                 .thenThrow(new NotFoundException("Вещь не найдена"));
 
         assertThrows(NotFoundException.class, () -> itemService.updateItem(incomingItemDto, 99L, 1L));
+        verify(itemRepository, never()).saveAndFlush(Mockito.any(Item.class));
     }
 
     @Test
