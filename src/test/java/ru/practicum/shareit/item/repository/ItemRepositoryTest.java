@@ -1,5 +1,6 @@
 package ru.practicum.shareit.item.repository;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
@@ -43,5 +44,10 @@ class ItemRepositoryTest {
         assertEquals(2, itemIds.size());
         assertTrue(itemIds.contains(1L));
         assertTrue(itemIds.contains(2L));
+    }
+    @AfterEach
+    void tearDown() {
+        itemRepository.deleteAll();
+        userRepository.deleteAll();
     }
 }

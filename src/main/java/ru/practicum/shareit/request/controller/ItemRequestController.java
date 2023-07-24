@@ -1,4 +1,4 @@
-package ru.practicum.shareit.request;
+package ru.practicum.shareit.request.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -6,13 +6,9 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.exception.NotFoundException;
-import ru.practicum.shareit.item.dto.ItemResponseDto;
 import ru.practicum.shareit.request.dto.IncomingItemRequestDto;
 import ru.practicum.shareit.request.dto.ItemRequestDto;
 import ru.practicum.shareit.request.service.ItemRequestService;
-import ru.practicum.shareit.user.dto.IncomingUserDto;
-import ru.practicum.shareit.user.model.User;
-import ru.practicum.shareit.user.service.UserService;
 import ru.practicum.shareit.validator.Marker;
 
 import static ru.practicum.shareit.util.Constants.USER_ID_FROM_REQUEST;
@@ -25,7 +21,7 @@ public class ItemRequestController {
     private final ItemRequestService itemRequestService;
 
     @PostMapping(consumes = "application/json")
-    public ItemResponseDto addItemRequest(@RequestHeader(value = USER_ID_FROM_REQUEST, defaultValue = "-1") Long userId,
+    public ItemRequestDto addItemRequest(@RequestHeader(value = USER_ID_FROM_REQUEST, defaultValue = "-1") Long userId,
                                           @Validated({Marker.OnCreate.class})
                                           @RequestBody IncomingItemRequestDto incomingItemRequestDto,
                                           BindingResult errors) {

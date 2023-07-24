@@ -1,6 +1,7 @@
 package ru.practicum.shareit.item.service;
 
 import org.jeasy.random.EasyRandom;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -31,7 +32,7 @@ class ItemServiceImplTest {
     BookingRepository bookingRepository;
     @Mock
     CommentRepository commentRepository;
-   
+
     private Item itemOne;
     private Item itemTwo;
 
@@ -81,5 +82,13 @@ class ItemServiceImplTest {
 
     @Test
     void addComment() {
+    }
+
+    @AfterEach
+    void tearDown() {
+        commentRepository.deleteAll();
+        bookingRepository.deleteAll();
+        itemRepository.deleteAll();
+        userRepository.deleteAll();
     }
 }

@@ -10,14 +10,22 @@ import ru.practicum.shareit.booking.dto.BookingResponseDto;
 import ru.practicum.shareit.booking.dto.IncomingBookingDto;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.repository.BookingRepository;
+import ru.practicum.shareit.item.dto.IncomingItemDto;
+import ru.practicum.shareit.item.dto.ItemMapper;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.repository.ItemRepository;
 import ru.practicum.shareit.item.service.ItemServiceImpl;
+import ru.practicum.shareit.user.dto.IncomingUserDto;
+import ru.practicum.shareit.user.dto.UserMapper;
+import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserRepository;
 
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
+
 @SpringBootTest
 class BookingServiceImplIntegrationTest {
     @Autowired
@@ -31,20 +39,48 @@ class BookingServiceImplIntegrationTest {
     private final EasyRandom easyRandom = new EasyRandom();
     private IncomingBookingDto bookingDtoOne;
     private IncomingBookingDto bookingDtoTwo;
+
     @BeforeEach
     void setUp() {
         bookingService = new BookingServiceImpl(itemRepository, userRepository, bookingRepository);
-        bookingDtoOne = easyRandom.nextObject(IncomingBookingDto.class);
-        bookingDtoTwo = easyRandom.nextObject(IncomingBookingDto.class);
+        bookingDtoOne = new IncomingBookingDto();
+        bookingDtoTwo = new IncomingBookingDto();
 
-        /*bookingOne.setId(1L);
-        bookingTwo.setId(2L);*/
-        /*bookingRepository.save(bookingOne);
-        bookingRepository.save(bookingTwo);*/
+        bookingDtoOne.setBookerId(2L);
+        bookingDtoTwo.setBookerId(2L);
+        bookingDtoOne.setItemId(1L);
+        bookingDtoTwo.setItemId(1L);
+
+        bookingDtoOne.setStart(LocalDateTime.now().plus(1, ChronoUnit.DAYS));
+        bookingDtoOne.setEnd(LocalDateTime.now().plus(2, ChronoUnit.DAYS));
+        bookingDtoTwo.setStart(LocalDateTime.now().plus(3, ChronoUnit.DAYS));
+        bookingDtoTwo.setEnd(LocalDateTime.now().plus(4, ChronoUnit.DAYS));
+
+
+        IncomingUserDto userDtoOne = easyRandom.nextObject(IncomingUserDto.class);
+        userDtoOne.setEmail("email@mail.ru");
+        User userOne = userRepository.save(UserMapper.mapToUser(userDtoOne));
+        //User userOne =UserMapper.mapToUser(userDtoOne);
+        userOne.setId(1L);
+        IncomingUserDto userDtoTwo = easyRandom.nextObject(IncomingUserDto.class);
+        userDtoTwo.setEmail("email@yandex.ru");
+
+
+        User userTwo = userRepository.save(UserMapper.mapToUser(userDtoTwo));
+      //  User userTwo =UserMapper.mapToUser(userDtoTwo);
+        userTwo.setId(2L);
+        IncomingItemDto itemDto = easyRandom.nextObject(IncomingItemDto.class);
+        itemDto.setOwnerId(1L);
+
+        Item item = itemRepository.save(ItemMapper.mapToItem(itemDto, userOne));
+
     }
 
-    @AfterEach
+   @AfterEach
     void tearDown() {
+        bookingRepository.deleteAll();
+        itemRepository.deleteAll();
+        userRepository.deleteAll();
     }
 
     @Test
