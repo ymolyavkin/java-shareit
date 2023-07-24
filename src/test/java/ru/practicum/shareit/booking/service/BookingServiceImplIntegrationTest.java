@@ -6,6 +6,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.DirtiesContext;
 import ru.practicum.shareit.booking.dto.BookingResponseDto;
 import ru.practicum.shareit.booking.dto.IncomingBookingDto;
 import ru.practicum.shareit.booking.model.Booking;
@@ -40,7 +41,7 @@ class BookingServiceImplIntegrationTest {
     private IncomingBookingDto bookingDtoOne;
     private IncomingBookingDto bookingDtoTwo;
 
-    @BeforeEach
+  //  @BeforeEach
     void setUp() {
         bookingService = new BookingServiceImpl(itemRepository, userRepository, bookingRepository);
         bookingDtoOne = new IncomingBookingDto();
@@ -63,7 +64,7 @@ class BookingServiceImplIntegrationTest {
         //User userOne =UserMapper.mapToUser(userDtoOne);
         userOne.setId(1L);
         IncomingUserDto userDtoTwo = easyRandom.nextObject(IncomingUserDto.class);
-        userDtoTwo.setEmail("email@yandex.ru");
+        userDtoTwo.setEmail("mail@yandex.ru");
 
 
         User userTwo = userRepository.save(UserMapper.mapToUser(userDtoTwo));
@@ -84,7 +85,9 @@ class BookingServiceImplIntegrationTest {
     }
 
     @Test
+    @DirtiesContext
     void getAll() {
+        setUp();
         BookingResponseDto bookingResponseDtoOne = bookingService.addBooking(bookingDtoOne);
         BookingResponseDto bookingResponseDtoTwo = bookingService.addBooking(bookingDtoTwo);
         List<Booking> bookings = bookingRepository.findAll();
@@ -93,30 +96,43 @@ class BookingServiceImplIntegrationTest {
     }
 
     @Test
+    @DirtiesContext
     void getBookingById() {
+        setUp();
+        BookingResponseDto bookingResponseDtoOne = bookingService.addBooking(bookingDtoOne);
+        BookingResponseDto bookingResponseDtoTwo = bookingService.addBooking(bookingDtoTwo);
+        List<Booking> bookings = bookingRepository.findAll();
+        assertNotNull(bookings);
+        assertEquals(2, bookings.size());
     }
 
     @Test
+    @DirtiesContext
     void getBookingsByOwner() {
     }
 
     @Test
+    @DirtiesContext
     void getBookingsByBooker() {
     }
 
     @Test
+    @DirtiesContext
     void addBooking() {
     }
 
     @Test
+    @DirtiesContext
     void isOverlapTime() {
     }
 
     @Test
+    @DirtiesContext
     void updateBooking() {
     }
 
     @Test
+    @DirtiesContext
     void approvingBooking() {
     }
 }
