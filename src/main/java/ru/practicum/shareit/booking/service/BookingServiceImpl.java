@@ -112,7 +112,7 @@ public class BookingServiceImpl implements BookingService {
                 .collect(Collectors.toList());
     }
 
-    @Transactional(readOnly = true)//1
+    @Transactional(readOnly = true)
     @Override
     public List<BookingResponseDto> getBookingsByBooker(Long bookerId, StateRequest state) {
         LocalDateTime dateTimeNow = LocalDateTime.now();

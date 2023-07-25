@@ -1,4 +1,4 @@
 package ru.practicum.shareit.request.dto;
 
-public interface RequestWithAnswerDto {
+public interface ItemRequestWithAnswerDto {
 }

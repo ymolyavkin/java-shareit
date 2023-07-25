@@ -2,7 +2,9 @@ package ru.practicum.shareit.request.dto;
 
 import lombok.experimental.UtilityClass;
 import ru.practicum.shareit.request.model.ItemRequest;
+import ru.practicum.shareit.user.model.User;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @UtilityClass
@@ -38,5 +40,14 @@ public class ItemRequestMapper {
                 .created(itemRequest.getCreated())
                 .answersToRequest(answers)
                 .build();
+    }
+
+    public static ItemRequest mapToItemRequest(IncomingItemRequestDto incomingItemRequestDto, User requester) {
+        return new ItemRequest(incomingItemRequestDto.getDescription(), requester, LocalDateTime.now());
+    }
+    public static ItemRequestResponseDto mapToItemRequestResponseDto(ItemRequest itemRequest){
+        ItemRequestResponseDto itemRequestResponseDto = new ItemRequestResponseDto(itemRequest.getId(), itemRequest.getDescription(), itemRequest.getCreated());
+        System.out.println("+++++++++++" + itemRequest.getDescription());
+        return itemRequestResponseDto;
     }
 }
