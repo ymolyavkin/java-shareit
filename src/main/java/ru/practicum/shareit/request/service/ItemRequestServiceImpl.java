@@ -5,7 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.request.dto.IncomingItemRequestDto;
-import ru.practicum.shareit.request.dto.ItemRequestDto;
+import ru.practicum.shareit.request.dto.ItemRequestAnswerDto;
 
 @Service
 @Slf4j
@@ -13,7 +13,7 @@ import ru.practicum.shareit.request.dto.ItemRequestDto;
 @RequiredArgsConstructor
 public class ItemRequestServiceImpl implements ItemRequestService {
     @Override
-    public ItemRequestDto addItemReqest(IncomingItemRequestDto incomingItemRequestDto, Long userId) {
+    public ItemRequestAnswerDto addItemReqest(IncomingItemRequestDto incomingItemRequestDto, Long userId) {
         return null;
     }
 }
