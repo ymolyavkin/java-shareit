@@ -1,12 +1,14 @@
 package ru.practicum.shareit.request.dto;
 
 import lombok.Builder;
+import lombok.Getter;
 
 @Builder
+@Getter
 public class ItemAnswerToRequestDto {
     private long itemId;
     private String name;
     private String description;
-    private long requestId;
+    private Long requestId;
     private boolean available;
 }

@@ -1,6 +1,7 @@
 package ru.practicum.shareit.request.dto;
 
 import lombok.experimental.UtilityClass;
+import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.request.model.ItemRequest;
 import ru.practicum.shareit.user.model.User;
 
@@ -9,7 +10,7 @@ import java.util.List;
 
 @UtilityClass
 public class ItemRequestMapper {
-    public static ItemRequestAnswerDto mapToItemRequestAnswerDto(ItemRequest itemRequest, List<ItemAnswerToRequestDto> answers) {
+    public static ItemRequestWithAnswersDto mapToItemRequestAnswerDto(ItemRequest itemRequest, List<ItemAnswerToRequestDto> answers) {
         /*ItemAnswerToRequestDto itemAnswerToRequestDto = new ItemAnswerToRequestDto() {
             private Long itemId= item.getId();
             private String itemName= item.getName();
@@ -35,19 +36,31 @@ public class ItemRequestMapper {
             }
         };*/
 
-        return ItemRequestAnswerDto.builder()
+        return ItemRequestWithAnswersDto.builder()
+                .id(itemRequest.getId())
                 .description(itemRequest.getDescription())
                 .created(itemRequest.getCreated())
-                .answersToRequest(answers)
+                .items(answers)
                 .build();
     }
 
     public static ItemRequest mapToItemRequest(IncomingItemRequestDto incomingItemRequestDto, User requester) {
         return new ItemRequest(incomingItemRequestDto.getDescription(), requester, LocalDateTime.now());
     }
-    public static ItemRequestResponseDto mapToItemRequestResponseDto(ItemRequest itemRequest){
+
+    public static ItemRequestResponseDto mapToItemRequestResponseDto(ItemRequest itemRequest) {
         ItemRequestResponseDto itemRequestResponseDto = new ItemRequestResponseDto(itemRequest.getId(), itemRequest.getDescription(), itemRequest.getCreated());
 
         return itemRequestResponseDto;
+    }
+
+    public static ItemAnswerToRequestDto mapToItemAnswerToRequestDto(Item item) {
+        return ItemAnswerToRequestDto.builder()
+                .itemId(item.getId())
+                .name(item.getName())
+                .description(item.getDescription())
+                .available(item.getAvailable())
+                .requestId(item.getRequestId())
+                .build();
     }
 }

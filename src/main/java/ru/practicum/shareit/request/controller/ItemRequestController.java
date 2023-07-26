@@ -7,6 +7,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.exception.BadRequestException;
 import ru.practicum.shareit.request.dto.IncomingItemRequestDto;
+import ru.practicum.shareit.request.dto.ItemRequestWithAnswersDto;
 import ru.practicum.shareit.request.dto.ItemRequestResponseDto;
 import ru.practicum.shareit.request.service.ItemRequestService;
 import ru.practicum.shareit.validator.Marker;
@@ -36,7 +37,7 @@ public class ItemRequestController {
     }
 
     @GetMapping
-    public List<ItemRequestResponseDto> getItemRequestsByAuthor(
+    public List<ItemRequestWithAnswersDto> getItemRequestsByAuthor(
             @RequestHeader(value = USER_ID_FROM_REQUEST, defaultValue = "-1") Long userId,
             @RequestParam(name = "from", defaultValue = "0") int from,
             @RequestParam(name = "size", defaultValue = "10") int size) {

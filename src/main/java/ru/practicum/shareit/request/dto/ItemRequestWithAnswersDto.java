@@ -7,8 +7,9 @@ import java.time.LocalDateTime;
 import java.util.List;
 @Builder
 @Data
-public class ItemRequestAnswerDto {
+public class ItemRequestWithAnswersDto {
+    private Long id;
     private String description;
     private LocalDateTime created;
-    private List<ItemAnswerToRequestDto> answersToRequest;
+    private List<ItemAnswerToRequestDto> items;
 }

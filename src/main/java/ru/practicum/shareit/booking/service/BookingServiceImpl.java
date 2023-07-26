@@ -21,6 +21,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static ru.practicum.shareit.util.Constants.SORT_BY_ASC;
 import static ru.practicum.shareit.util.Constants.SORT_BY_DESC;
 
 @Service
@@ -127,7 +128,7 @@ public class BookingServiceImpl implements BookingService {
                 bookings = bookingRepository.findAllByBooker_Id(bookerId, SORT_BY_DESC);
                 break;
             case CURRENT:
-                bookings = bookingRepository.findAllByBooker_IdAndStartBeforeAndEndAfter(bookerId, dateTimeNow, dateTimeNow, SORT_BY_DESC);
+                bookings = bookingRepository.findAllByBooker_IdAndStartBeforeAndEndAfter(bookerId, dateTimeNow, dateTimeNow, SORT_BY_ASC);
                 break;
             case FUTURE:
                 bookings = bookingRepository.findAllByBooker_IdAndStartAfter(bookerId, dateTimeNow, SORT_BY_DESC);

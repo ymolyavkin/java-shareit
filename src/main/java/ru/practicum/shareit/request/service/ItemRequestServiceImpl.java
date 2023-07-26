@@ -8,9 +8,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.exception.NotFoundException;
-import ru.practicum.shareit.request.dto.IncomingItemRequestDto;
-import ru.practicum.shareit.request.dto.ItemRequestMapper;
-import ru.practicum.shareit.request.dto.ItemRequestResponseDto;
+import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareit.item.repository.ItemRepository;
+import ru.practicum.shareit.request.dto.*;
 import ru.practicum.shareit.request.model.ItemRequest;
 import ru.practicum.shareit.request.repository.ItemRequestRepository;
 import ru.practicum.shareit.user.model.User;
@@ -24,7 +24,7 @@ import java.util.stream.Collectors;
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class ItemRequestServiceImpl implements ItemRequestService {
-    // private final ItemRepository itemRepository;
+    private final ItemRepository itemRepository;
     private final UserRepository userRepository;
     private final ItemRequestRepository itemRequestRepository;
 
@@ -37,10 +37,20 @@ public class ItemRequestServiceImpl implements ItemRequestService {
     }
 
     @Override
-    public List<ItemRequestResponseDto> getItemRequestsByAuthor(Long userId, int from, int size) {
+    public List<ItemRequestWithAnswersDto> getItemRequestsByAuthor(Long requesterId, int from, int size) {
+        User requester = userRepository.findById(requesterId)
+                .orElseThrow(() -> new NotFoundException(String.format("Пользователь с id %d не найден", requesterId)));
         Pageable firstPageWithTwoElements = PageRequest.of(from, size);
-        Page<ItemRequest> requests = itemRequestRepository.findAllByRequesterIdOrderByCreatedDesc(userId, firstPageWithTwoElements);
+        Page<ItemRequest> requests = itemRequestRepository.findAllByRequesterIdOrderByCreatedDesc(requesterId, firstPageWithTwoElements);
         List<ItemRequest> itemRequests = requests.getContent();
-        return itemRequests.stream().map(ItemRequestMapper::mapToItemRequestResponseDto).collect(Collectors.toList());
+        return itemRequests
+                .stream()
+                .map(itemRequest -> ItemRequestMapper.mapToItemRequestAnswerDto(itemRequest, getAnswersToRequest(itemRequest)))
+                .collect(Collectors.toList());
+    }
+
+    private List<ItemAnswerToRequestDto> getAnswersToRequest(ItemRequest itemRequest) {
+        List<Item> items = itemRepository.findAllByRequestId(itemRequest.getId());
+        return items.stream().map(ItemRequestMapper::mapToItemAnswerToRequestDto).collect(Collectors.toList());
     }
 }

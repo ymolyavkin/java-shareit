@@ -22,4 +22,6 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
 
     @Query(value = "SELECT id FROM ITEMS WHERE owner_id = ?1", nativeQuery = true)
     List<Long> findItemIdsByOwnerId(Long ownerId);
+
+    List<Item> findAllByRequestId(Long requestId);
 }
