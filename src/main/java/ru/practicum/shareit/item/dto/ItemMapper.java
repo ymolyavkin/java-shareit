@@ -24,6 +24,7 @@ public class ItemMapper {
                 .description(item.getDescription())
                 .isAvailable(item.getAvailable())
                 .ownerId(item.getOwnerId())
+                .requestId(item.getRequestId())
                 .numberOfTimesToRent(item.getNumberOfTimesToRent())
                 .build();
     }
@@ -34,6 +35,7 @@ public class ItemMapper {
         item.setDescription(incomingItemDto.getDescription());
         item.setAvailable(incomingItemDto.getAvailable());
         item.setOwner(owner);
+        item.setRequestId(incomingItemDto.getRequestId());
 
         return item;
     }
