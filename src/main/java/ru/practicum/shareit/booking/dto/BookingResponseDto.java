@@ -12,9 +12,9 @@ import java.time.LocalDateTime;
 @Data
 public class BookingResponseDto {
     private long id;
-    @JsonFormat(pattern="dd.MM.yyyy HH:mm")
+    @JsonFormat(pattern="yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime start;
-    @JsonFormat(pattern="dd.MM.yyyy HH:mm")
+    @JsonFormat(pattern="yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime end;
     private ItemIdNameDto item;
     private BookerDto booker;

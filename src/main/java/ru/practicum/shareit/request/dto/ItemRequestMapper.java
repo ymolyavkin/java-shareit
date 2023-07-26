@@ -47,7 +47,7 @@ public class ItemRequestMapper {
     }
     public static ItemRequestResponseDto mapToItemRequestResponseDto(ItemRequest itemRequest){
         ItemRequestResponseDto itemRequestResponseDto = new ItemRequestResponseDto(itemRequest.getId(), itemRequest.getDescription(), itemRequest.getCreated());
-        System.out.println("+++++++++++" + itemRequest.getDescription());
+
         return itemRequestResponseDto;
     }
 }
