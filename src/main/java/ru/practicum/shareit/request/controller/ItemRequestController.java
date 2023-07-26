@@ -45,4 +45,23 @@ public class ItemRequestController {
 
         return itemRequestService.getItemRequestsByAuthor(userId, from, size);
     }
+
+    @GetMapping("/all/{from}{size}")
+    public List<ItemRequestWithAnswersDto> getItemRequestsByOther(
+            @RequestHeader(value = USER_ID_FROM_REQUEST, defaultValue = "-1") Long userId,
+            @PathVariable(name = "from", required = false) Integer from,
+            @PathVariable(name = "size", required = false) Integer size) {
+        log.info("Получен запрос на выдачу всех запросов пользователя с id = {}", userId);
+
+        return itemRequestService.getItemRequestsByAuthor(userId, from, size);
+    }
+
+    @GetMapping("/{requestId}")
+    public List<ItemRequestWithAnswersDto> getItemOneRequests(
+            @RequestHeader(value = USER_ID_FROM_REQUEST, defaultValue = "-1") Long userId,
+            @PathVariable Long requestId) {
+        log.info("Получен запрос на выдачу всех запросов пользователя с id = {}", userId);
+
+        return itemRequestService.getItemOneRequests(userId, requestId);
+    }
 }

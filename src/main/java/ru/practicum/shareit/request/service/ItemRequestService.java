@@ -9,4 +9,6 @@ public interface ItemRequestService {
     ItemRequestResponseDto addItemRequest(IncomingItemRequestDto incomingItemRequestDto, Long requesterId);
 
     List<ItemRequestWithAnswersDto> getItemRequestsByAuthor(Long userId, int from, int size);
+
+    List<ItemRequestWithAnswersDto> getItemOneRequests(Long userId, Long requestId);
 }
