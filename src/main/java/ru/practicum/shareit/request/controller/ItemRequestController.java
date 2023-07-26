@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import ru.practicum.shareit.exception.BadRequestException;
 import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.request.dto.IncomingItemRequestDto;
 import ru.practicum.shareit.request.dto.ItemRequestAnswerDto;
@@ -28,7 +29,7 @@ public class ItemRequestController {
                                                  BindingResult errors) {
         //this is the validation barrier
         if (errors.hasErrors()) {
-            throw new NotFoundException("My exception");
+            throw new BadRequestException("Получены некорректные данные");
         }
         log.info("Получен запрос на добавление запроса на вещь");
 

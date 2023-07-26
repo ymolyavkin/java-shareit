@@ -38,7 +38,7 @@ public class ItemMapper {
         return item;
     }
 
-    public static ru.practicum.shareit.item.dto.ItemLastNextDto mapToItemLastNextDto(Item item, Booking lastBooking, Booking nextBooking, List<Comment> comments) {
+    public static ItemLastNextDto mapToItemLastNextDto(Item item, Booking lastBooking, Booking nextBooking, List<Comment> comments) {
         BookingLastNextDto last = (lastBooking == null) ? null : new BookingLastNextDto(lastBooking.getId(), lastBooking.getBookerId());
         BookingLastNextDto next = (nextBooking == null) ? null : new BookingLastNextDto(nextBooking.getId(), nextBooking.getBookerId());
         List<CommentDto> commentsOut = comments
@@ -53,6 +53,7 @@ public class ItemMapper {
                 .isAvailable(item.getAvailable())
                 .lastBooking(last)
                 .nextBooking(next)
+                .requestId(item.getRequestId())
                 .comments(commentsOut)
                 .build();
     }

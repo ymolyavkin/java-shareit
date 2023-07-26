@@ -54,6 +54,6 @@ class BookingResponseDtoTest {
         assertThat(result).hasJsonPath("$.start");
         assertThat(result).hasJsonPath("$.end");
 
-        assertThat(result).extractingJsonPathStringValue("$.start").isEqualTo("09.05.2023 16:00");
+        assertThat(result).extractingJsonPathStringValue("$.start").isEqualTo("2023-05-09T16:00:00");
     }
 }
