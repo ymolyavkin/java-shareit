@@ -49,6 +49,11 @@ public class ItemRequestServiceImpl implements ItemRequestService {
                 .collect(Collectors.toList());
     }
 
+    @Override
+    public List<ItemRequestWithAnswersDto> getItemOneRequests(Long userId, Long requestId) {
+        return null;
+    }
+
     private List<ItemAnswerToRequestDto> getAnswersToRequest(ItemRequest itemRequest) {
         List<Item> items = itemRepository.findAllByRequestId(itemRequest.getId());
         return items.stream().map(ItemRequestMapper::mapToItemAnswerToRequestDto).collect(Collectors.toList());

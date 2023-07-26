@@ -12,6 +12,7 @@ import ru.practicum.shareit.request.dto.ItemRequestResponseDto;
 import ru.practicum.shareit.request.service.ItemRequestService;
 import ru.practicum.shareit.validator.Marker;
 
+import javax.validation.constraints.Min;
 import java.util.List;
 
 import static ru.practicum.shareit.util.Constants.USER_ID_FROM_REQUEST;
@@ -46,11 +47,11 @@ public class ItemRequestController {
         return itemRequestService.getItemRequestsByAuthor(userId, from, size);
     }
 
-    @GetMapping("/all/{from}{size}")
+    @GetMapping("/all")
     public List<ItemRequestWithAnswersDto> getItemRequestsByOther(
             @RequestHeader(value = USER_ID_FROM_REQUEST, defaultValue = "-1") Long userId,
-            @PathVariable(name = "from", required = false) Integer from,
-            @PathVariable(name = "size", required = false) Integer size) {
+            @RequestParam(defaultValue = "0", required = false) @Min(0) Integer from,
+            @RequestParam(defaultValue = "10", required = false) @Min(1) Integer size) {
         log.info("Получен запрос на выдачу всех запросов пользователя с id = {}", userId);
 
         return itemRequestService.getItemRequestsByAuthor(userId, from, size);
