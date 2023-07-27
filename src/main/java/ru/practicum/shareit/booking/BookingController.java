@@ -18,28 +18,31 @@ import java.util.List;
 import static ru.practicum.shareit.util.Constants.USER_ID_FROM_REQUEST;
 
 @Slf4j
+@Validated
 @RequiredArgsConstructor
 @RestController
 @RequestMapping(path = "/bookings")
 public class BookingController {
     private final BookingService bookingService;
 
+    @Validated
     @GetMapping
-    public List<BookingResponseDto> getBookingsByBooker(@RequestHeader(value = USER_ID_FROM_REQUEST, defaultValue = "-1") Long bookerId,
-                                                        @Validated
-                                                        @RequestParam(required = false, defaultValue = "ALL") StateRequest state,
-                                                        @RequestParam(name = "from", defaultValue = "0", required = false) @Min(0) Integer from,
-                                                        @RequestParam(name = "size", defaultValue = "10", required = false) @Min(1) Integer size) {
+    public List<BookingResponseDto> getBookingsByBooker(
+            @RequestHeader(value = USER_ID_FROM_REQUEST, defaultValue = "-1") Long bookerId,
+            @RequestParam(required = false, defaultValue = "ALL") StateRequest state,
+            @RequestParam(name = "from", defaultValue = "0", required = false) @Min(0) int from,
+            @RequestParam(name = "size", defaultValue = "10", required = false) @Min(1) int size) {
         log.info("Получен запрос на выдачу вещей, забронированных пользователем с id = {}", bookerId);
         return bookingService.getBookingsByBooker(bookerId, state, from, size);
     }
 
+    @Validated
     @GetMapping("/owner")
-    public List<BookingResponseDto> getBookingsByOwner(@RequestHeader(value = USER_ID_FROM_REQUEST, defaultValue = "-1") Long ownerId,
-                                                       @Validated
-                                                       @RequestParam(required = false, defaultValue = "ALL") StateRequest state,
-                                                       @RequestParam(name = "from", defaultValue = "0", required = false) @Min(0) Integer from,
-                                                       @RequestParam(name = "size", defaultValue = "10", required = false) @Min(1) Integer size) {
+    public List<BookingResponseDto> getBookingsByOwner(
+            @RequestHeader(value = USER_ID_FROM_REQUEST, defaultValue = "-1") Long ownerId,
+            @RequestParam(required = false, defaultValue = "ALL") StateRequest state,
+            @RequestParam(name = "from", defaultValue = "0", required = false) @Min(0) int from,
+            @RequestParam(name = "size", defaultValue = "10", required = false) @Min(1) int size) {
         log.info("Получен запрос на выдачу вещей, принадлежащих пользователю с id = {}", ownerId);
         return bookingService.getBookingsByOwner(ownerId, state, from, size);
     }
