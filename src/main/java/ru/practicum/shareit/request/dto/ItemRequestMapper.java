@@ -56,7 +56,7 @@ public class ItemRequestMapper {
 
     public static ItemAnswerToRequestDto mapToItemAnswerToRequestDto(Item item) {
         return ItemAnswerToRequestDto.builder()
-                .itemId(item.getId())
+                .id(item.getId())
                 .name(item.getName())
                 .description(item.getDescription())
                 .available(item.getAvailable())

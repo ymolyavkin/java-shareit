@@ -59,11 +59,11 @@ public class ItemRequestController {
     }
 
     @GetMapping("/{requestId}")
-    public List<ItemRequestWithAnswersDto> getItemRequestById(
+    public ItemRequestWithAnswersDto getItemRequestById(
             @RequestHeader(value = USER_ID_FROM_REQUEST, defaultValue = "-1") Long userId,
             @PathVariable Long requestId) {
         log.info("Получен запрос на выдачу всех запросов пользователя с id = {}", userId);
 
-        return itemRequestService.getItemOneRequests(userId, requestId);
+        return itemRequestService.getItemRequestById(userId, requestId);
     }
 }

@@ -35,6 +35,7 @@ public class ItemRequestServiceImpl implements ItemRequestService {
 
         return ItemRequestMapper.mapToItemRequestResponseDto(itemRequest);
     }
+
     @Override
     public List<ItemRequestWithAnswersDto> getItemRequestsByAuthor(Long requesterId, int from, int size) {
         User requester = userRepository.findById(requesterId)
@@ -47,6 +48,7 @@ public class ItemRequestServiceImpl implements ItemRequestService {
                 .map(itemRequest -> ItemRequestMapper.mapToItemRequestAnswerDto(itemRequest, getAnswersToRequest(itemRequest)))
                 .collect(Collectors.toList());
     }
+
     @Override
     public List<ItemRequestWithAnswersDto> getItemRequestsByOther(Long requesterId, int from, int size) {
         User requester = userRepository.findById(requesterId)
@@ -61,8 +63,12 @@ public class ItemRequestServiceImpl implements ItemRequestService {
     }
 
     @Override
-    public List<ItemRequestWithAnswersDto> getItemOneRequests(Long userId, Long requestId) {
-        return null;
+    public ItemRequestWithAnswersDto getItemRequestById(Long userId, Long requestId) {
+        User requester = userRepository.findById(userId)
+                .orElseThrow(() -> new NotFoundException(String.format("Пользователь с id %d не найден", userId)));
+        return itemRequestRepository.findById(requestId)
+                .map(itemRequest -> ItemRequestMapper.mapToItemRequestAnswerDto(itemRequest, getAnswersToRequest(itemRequest)))
+                .orElse(null);
     }
 
     private List<ItemAnswerToRequestDto> getAnswersToRequest(ItemRequest itemRequest) {
