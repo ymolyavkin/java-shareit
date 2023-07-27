@@ -14,6 +14,4 @@ public class IncomingUserDto {
     @NotBlank(groups = Marker.OnCreate.class, message = "адрес электронной почты не должен быть пустым")
     @Pattern(regexp = "^.+@.+\\..+$", message = "Некорректный адрес электронной почты")
     private String email;
-
-
 }

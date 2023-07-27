@@ -74,7 +74,6 @@ public class BookingServiceImpl implements BookingService {
 
         Pageable pageable = PageRequest.of(from, size);
         Page<Booking> bookingPage = bookingRepository.findByItem_IdInOrderByStartDesc(itemIdsByOwner, pageable);
-       // List<Booking> bookingList = bookingRepository.findByItem_IdInOrderByStartDesc(itemIdsByOwner);
         List<Booking> bookingList = bookingPage.getContent();
         List<Booking> bookings;
         switch (state) {
@@ -136,7 +135,6 @@ public class BookingServiceImpl implements BookingService {
                 Page<Booking> bookingPage = bookingRepository.findAllByBooker_Id(bookerId, pageable);
 
                 bookings = bookingPage.getContent();
-               // bookings = bookingRepository.findAllByBooker_Id(bookerId, SORT_BY_DESC);
                 break;
             case CURRENT:
                 bookings = bookingRepository.findAllByBooker_IdAndStartBeforeAndEndAfter(bookerId, dateTimeNow, dateTimeNow, SORT_BY_ASC);

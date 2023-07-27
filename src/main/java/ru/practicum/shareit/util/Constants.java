@@ -1,9 +1,10 @@
 package ru.practicum.shareit.util;
 
+import lombok.experimental.UtilityClass;
 import org.springframework.data.domain.Sort;
 
 import java.time.LocalDateTime;
-
+@UtilityClass
 public class Constants {
     public static final String USER_ID_FROM_REQUEST = "x-sharer-user-id";
     public static final LocalDateTime DATE_TIME_NOW = LocalDateTime.now();

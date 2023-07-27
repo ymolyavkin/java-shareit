@@ -1,11 +1,12 @@
 package ru.practicum.shareit.validator;
 
+import lombok.experimental.UtilityClass;
 import ru.practicum.shareit.booking.dto.IncomingBookingDto;
 import ru.practicum.shareit.exception.BadRequestException;
 import ru.practicum.shareit.item.model.Item;
 
 import java.time.LocalDateTime;
-
+@UtilityClass
 public class BookingValidation {
     public static void bookingIsValid(IncomingBookingDto incomingBookingDto, Item item) {
         if (!item.getAvailable()) {

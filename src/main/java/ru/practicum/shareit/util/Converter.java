@@ -1,8 +1,10 @@
 package ru.practicum.shareit.util;
 
+import lombok.experimental.UtilityClass;
+
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
-
+@UtilityClass
 public class Converter {
     public static long stringToLong(String stringSource) {
         // Шаблон выбирает первое число из строки

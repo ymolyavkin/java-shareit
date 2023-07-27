@@ -24,13 +24,7 @@ class ShareItTests {
     void setUp() {
         User requestor = new User(1L, "Name Requestor", "email@yandex.ru");
         ItemRequest request = new ItemRequest("description", requestor, LocalDateTime.now());
-        /*Item item = new Item();
-       item.setId(1L);
-        item.setName("Name");
-        item.setDescription("descr");
-        item.setAvailable(true);
-        item.setOwnerId(1L);
-        item.setRequestId(1);*/
+
         Item item = Item.builder()
                 .id(1L)
                 .name("Name")
@@ -48,7 +42,7 @@ class ShareItTests {
                 .booker(booker)
                 .status(Status.WAITING)
                 .build();
-        // Long itemRequestId = item.getRequestId().getId();
+
         ItemDto itemDto = ItemDto.builder()
                 .id(0L)
                 .name("Name")
