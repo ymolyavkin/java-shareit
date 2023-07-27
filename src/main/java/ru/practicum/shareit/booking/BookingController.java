@@ -25,7 +25,6 @@ import static ru.practicum.shareit.util.Constants.USER_ID_FROM_REQUEST;
 public class BookingController {
     private final BookingService bookingService;
 
-    @Validated
     @GetMapping
     public List<BookingResponseDto> getBookingsByBooker(
             @RequestHeader(value = USER_ID_FROM_REQUEST, defaultValue = "-1") Long bookerId,
@@ -36,7 +35,6 @@ public class BookingController {
         return bookingService.getBookingsByBooker(bookerId, state, from, size);
     }
 
-    @Validated
     @GetMapping("/owner")
     public List<BookingResponseDto> getBookingsByOwner(
             @RequestHeader(value = USER_ID_FROM_REQUEST, defaultValue = "-1") Long ownerId,
@@ -47,7 +45,6 @@ public class BookingController {
         return bookingService.getBookingsByOwner(ownerId, state, from, size);
     }
 
-    @Validated
     @ExceptionHandler(UnsatisfiedServletRequestParameterException.class)
     @PostMapping
     public BookingResponseDto addBooking(@RequestHeader(value = USER_ID_FROM_REQUEST, defaultValue = "-1") Long bookerId,
@@ -61,7 +58,6 @@ public class BookingController {
         return bookingService.addBooking(incomingBookingDto);
     }
 
-    @Validated
     @PatchMapping(value = "/{bookingId}", consumes = "application/json")
     public BookingResponseDto updateBooking(@RequestHeader(value = USER_ID_FROM_REQUEST, defaultValue = "-1") Long ownerId,
                                             @RequestBody(required = false) IncomingBookingDto incomingBookingDto,

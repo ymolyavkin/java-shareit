@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.model.Booking;
@@ -131,7 +132,11 @@ public class BookingServiceImpl implements BookingService {
         List<Booking> bookings;
         switch (state) {
             case ALL:
-                bookings = bookingRepository.findAllByBooker_Id(bookerId, SORT_BY_DESC);
+                Pageable pageable = PageRequest.of(from / size, size, Sort.by("id").descending());
+                Page<Booking> bookingPage = bookingRepository.findAllByBooker_Id(bookerId, pageable);
+
+                bookings = bookingPage.getContent();
+               // bookings = bookingRepository.findAllByBooker_Id(bookerId, SORT_BY_DESC);
                 break;
             case CURRENT:
                 bookings = bookingRepository.findAllByBooker_IdAndStartBeforeAndEndAfter(bookerId, dateTimeNow, dateTimeNow, SORT_BY_ASC);
