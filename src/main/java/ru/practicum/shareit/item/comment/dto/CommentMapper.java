@@ -2,11 +2,7 @@ package ru.practicum.shareit.item.comment.dto;
 
 import lombok.experimental.UtilityClass;
 import ru.practicum.shareit.item.comment.Comment;
-<<<<<<< HEAD
 
-=======
-import ru.practicum.shareit.item.comment.IncomingCommentDto;
->>>>>>> 6cc5d081d5fc2f68fbe70910fb5eb6895ef10748
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.model.User;
 
@@ -31,8 +27,4 @@ public class CommentMapper {
         comment.setCreated(LocalDateTime.now());
         return comment;
     }
-<<<<<<< HEAD
 }
-=======
-}
->>>>>>> 6cc5d081d5fc2f68fbe70910fb5eb6895ef10748
