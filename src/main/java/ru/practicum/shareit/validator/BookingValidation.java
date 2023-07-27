@@ -1,12 +1,19 @@
 package ru.practicum.shareit.validator;
 
+<<<<<<< HEAD
 import lombok.experimental.UtilityClass;
+=======
+>>>>>>> 6cc5d081d5fc2f68fbe70910fb5eb6895ef10748
 import ru.practicum.shareit.booking.dto.IncomingBookingDto;
 import ru.practicum.shareit.exception.BadRequestException;
 import ru.practicum.shareit.item.model.Item;
 
 import java.time.LocalDateTime;
+<<<<<<< HEAD
 @UtilityClass
+=======
+
+>>>>>>> 6cc5d081d5fc2f68fbe70910fb5eb6895ef10748
 public class BookingValidation {
     public static void bookingIsValid(IncomingBookingDto incomingBookingDto, Item item) {
         if (!item.getAvailable()) {
@@ -26,4 +33,8 @@ public class BookingValidation {
             throw new BadRequestException("Указано окончание бронирования, совпадающее с датой начала бронирования");
         }
     }
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> 6cc5d081d5fc2f68fbe70910fb5eb6895ef10748

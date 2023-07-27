@@ -6,4 +6,8 @@ public enum State {
     FUTURE,
     WAITING,
     REJECTED
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> 6cc5d081d5fc2f68fbe70910fb5eb6895ef10748

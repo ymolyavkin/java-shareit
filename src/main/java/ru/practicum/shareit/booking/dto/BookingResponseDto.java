@@ -1,6 +1,7 @@
 package ru.practicum.shareit.booking.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+
 import lombok.Builder;
 import lombok.Data;
 import ru.practicum.shareit.booking.model.Status;
@@ -20,3 +21,4 @@ public class BookingResponseDto {
     private BookerDto booker;
     private Status status;
 }
+

@@ -1,7 +1,10 @@
 package ru.practicum.shareit.booking.repository;
 
+<<<<<<< HEAD
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+=======
+>>>>>>> 6cc5d081d5fc2f68fbe70910fb5eb6895ef10748
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -19,7 +22,10 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
                                                                        Status status);
 
     List<Booking> findAllByBooker_Id(Long bookerId, Sort sort);
+<<<<<<< HEAD
     Page<Booking> findAllByBooker_Id(Long bookerId, Pageable pageable);
+=======
+>>>>>>> 6cc5d081d5fc2f68fbe70910fb5eb6895ef10748
 
     List<Booking> findAllByBooker_IdAndStartBeforeAndEndAfter(Long bookerId, LocalDateTime dateTime,
                                                               LocalDateTime dateTime1, Sort sort);
@@ -57,11 +63,18 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
     int findByItemIdAndBookerId(Long itemId, Long bookerId);
 
     List<Booking> findByItem_IdInOrderByStartDesc(List<Long> ids);
+<<<<<<< HEAD
     Page<Booking> findByItem_IdInOrderByStartDesc(List<Long> ids, Pageable pageable);
+=======
+>>>>>>> 6cc5d081d5fc2f68fbe70910fb5eb6895ef10748
 
     Optional<Booking> findFirstByItem_IdAndStartBeforeAndStatusOrderByStartDesc(Long itemId, LocalDateTime localDate,
                                                                                 Status status);
 
     Optional<Booking> findFirstByItem_IdAndStartAfterAndStatusOrderByStartAsc(Long itemId, LocalDateTime localDate,
                                                                               Status status);
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> 6cc5d081d5fc2f68fbe70910fb5eb6895ef10748
