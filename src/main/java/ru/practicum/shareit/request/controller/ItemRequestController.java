@@ -49,9 +49,10 @@ public class ItemRequestController {
 
     @GetMapping("/all")
     public List<ItemRequestWithAnswersDto> getItemRequestsByOther(
+            @Validated
             @RequestHeader(value = USER_ID_FROM_REQUEST, defaultValue = "-1") Long userId,
-            @RequestParam(defaultValue = "0", required = false) @Min(0) Integer from,
-            @RequestParam(defaultValue = "10", required = false) @Min(1) Integer size) {
+            @RequestParam(name = "from", defaultValue = "0", required = false) @Min(0) Integer from,
+            @RequestParam(name = "size", defaultValue = "10", required = false) @Min(1) Integer size) {
         log.info("Получен запрос на выдачу всех запросов пользователя с id = {}", userId);
 
         return itemRequestService.getItemRequestsByAuthor(userId, from, size);
