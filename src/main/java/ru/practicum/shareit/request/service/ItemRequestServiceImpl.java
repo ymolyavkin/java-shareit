@@ -53,8 +53,8 @@ public class ItemRequestServiceImpl implements ItemRequestService {
     public List<ItemRequestWithAnswersDto> getItemRequestsByOther(Long requesterId, int from, int size) {
         User requester = userRepository.findById(requesterId)
                 .orElseThrow(() -> new NotFoundException(String.format("Пользователь с id %d не найден", requesterId)));
-        Pageable firstPageWithTwoElements = PageRequest.of(from, size);
-        Page<ItemRequest> requests = itemRequestRepository.findAllByRequesterIdNotOrderByCreatedDesc(requesterId, firstPageWithTwoElements);
+        Pageable pageable = PageRequest.of(from, size);
+        Page<ItemRequest> requests = itemRequestRepository.findAllByRequesterIdNotOrderByCreatedDesc(requesterId, pageable);
         List<ItemRequest> itemRequests = requests.getContent();
         return itemRequests
                 .stream()

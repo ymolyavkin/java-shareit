@@ -1,6 +1,9 @@
 package ru.practicum.shareit.booking.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.model.Booking;
@@ -68,7 +71,10 @@ public class BookingServiceImpl implements BookingService {
         }
         List<Long> itemIdsByOwner = itemsIdsByOwner(ownerId);
 
-        List<Booking> bookingList = bookingRepository.findByItem_IdInOrderByStartDesc(itemIdsByOwner);
+        Pageable pageable = PageRequest.of(from, size);
+        Page<Booking> bookingPage = bookingRepository.findByItem_IdInOrderByStartDesc(itemIdsByOwner, pageable);
+       // List<Booking> bookingList = bookingRepository.findByItem_IdInOrderByStartDesc(itemIdsByOwner);
+        List<Booking> bookingList = bookingPage.getContent();
         List<Booking> bookings;
         switch (state) {
             case ALL:
