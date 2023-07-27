@@ -11,31 +11,6 @@ import java.util.List;
 @UtilityClass
 public class ItemRequestMapper {
     public static ItemRequestWithAnswersDto mapToItemRequestAnswerDto(ItemRequest itemRequest, List<ItemAnswerToRequestDto> answers) {
-        /*ItemAnswerToRequestDto itemAnswerToRequestDto = new ItemAnswerToRequestDto() {
-            private Long itemId= item.getId();
-            private String itemName= item.getName();
-            private String itemDescription=item.getDescription();
-            private Long requestId=itemRequest.getId();
-            private boolean itemAvailable= item.getAvailable();
-
-            public Long getItemId() {
-                return itemId;
-            }
-
-            public String getItemName() {
-                return itemName;
-            }
-            public String getItemDescription() {
-                return itemDescription;
-            }
-            public Long getRequestId() {
-                return requestId;
-            }
-            public boolean getItemAvailable() {
-                return itemAvailable;
-            }
-        };*/
-
         return ItemRequestWithAnswersDto.builder()
                 .id(itemRequest.getId())
                 .description(itemRequest.getDescription())
@@ -49,7 +24,8 @@ public class ItemRequestMapper {
     }
 
     public static ItemRequestResponseDto mapToItemRequestResponseDto(ItemRequest itemRequest) {
-        ItemRequestResponseDto itemRequestResponseDto = new ItemRequestResponseDto(itemRequest.getId(), itemRequest.getDescription(), itemRequest.getCreated());
+        ItemRequestResponseDto itemRequestResponseDto =
+                new ItemRequestResponseDto(itemRequest.getId(), itemRequest.getDescription(), itemRequest.getCreated());
 
         return itemRequestResponseDto;
     }

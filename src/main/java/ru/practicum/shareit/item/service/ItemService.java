@@ -11,11 +11,8 @@ import java.util.List;
 public interface ItemService {
     ItemLastNextDto getItemById(Long id, Long userId);
 
-    List<ItemDto> searchItemsByText(String searchText);
+    List<ItemDto> searchItemsByText(String searchText, Integer from, Integer size);
 
-  //  List<ItemLastNextDto> getItemsLastNextBookingByUser(Long userId);
-
-    // public List<ItemLastNextDto> getItemsLastNextBookingByUser(Long userId) {
     List<ItemLastNextDto> getItemsLastNextBookingByUser(Long userId, int from, int size);
 
     List<ItemDto> getItemsByUser(Long userId);

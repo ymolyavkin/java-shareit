@@ -2,8 +2,7 @@ package ru.practicum.shareit.item.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.UnsatisfiedServletRequestParameterException;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.exception.NoneXSharerUserIdException;
@@ -15,6 +14,7 @@ import ru.practicum.shareit.item.dto.ItemLastNextDto;
 import ru.practicum.shareit.item.service.ItemService;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Min;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,16 +28,11 @@ import static ru.practicum.shareit.util.Constants.USER_ID_FROM_REQUEST;
 public class ItemController {
     private final ItemService itemService;
 
-    /*@GetMapping
-    public List<ItemLastNextDto> getItems(@RequestHeader(value = USER_ID_FROM_REQUEST, defaultValue = "-1") Long userId) {
-        log.info("Получен запрос на выдачу вещей пользователя с id = {}", userId);
-
-        return itemService.getItemsLastNextBookingByUser(userId);
-    }*/
     @GetMapping
     public List<ItemLastNextDto> getItems(@RequestHeader(value = USER_ID_FROM_REQUEST, defaultValue = "-1") Long userId,
-                                          @RequestParam(name = "from", defaultValue = "0") int from,
-                                          @RequestParam(name = "size", defaultValue = "10") int size) {
+                                          @Validated
+                                          @RequestParam(name = "from", defaultValue = "0", required = false) @Min(0) Integer from,
+                                          @RequestParam(name = "size", defaultValue = "10", required = false) @Min(1) Integer size) {
         log.info("Получен запрос на выдачу вещей пользователя с id = {}", userId);
 
         return itemService.getItemsLastNextBookingByUser(userId, from, size);
@@ -75,12 +70,15 @@ public class ItemController {
     }
 
     @GetMapping("/search")
-    public List<ItemDto> searchItems(@RequestParam String text) {
+    public List<ItemDto> searchItems(@Validated
+                                     @RequestParam String text,
+                                     @RequestParam(name = "from", defaultValue = "0", required = false) @Min(0) Integer from,
+                                     @RequestParam(name = "size", defaultValue = "10", required = false) @Min(1) Integer size) {
         log.info("Получен запрос на поиск вещей по ключевому слову \'{}\'", text);
         if (text.isBlank()) {
             return new ArrayList<>(0);
         }
-        return itemService.searchItemsByText(text);
+        return itemService.searchItemsByText(text, from, size);
     }
 
     @PostMapping(value = "/{itemId}/comment", consumes = "application/json")
