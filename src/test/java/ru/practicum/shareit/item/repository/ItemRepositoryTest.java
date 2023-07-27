@@ -45,6 +45,7 @@ class ItemRepositoryTest {
         assertTrue(itemIds.contains(1L));
         assertTrue(itemIds.contains(2L));
     }
+
     @AfterEach
     void tearDown() {
         itemRepository.deleteAll();

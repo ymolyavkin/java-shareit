@@ -8,10 +8,11 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class ItemMapperTest {
     private final EasyRandom generator = new EasyRandom();
+
     @Test
     void mapToItemDto() {
         Item item = generator.nextObject(Item.class);
-        ItemDto itemDto=ItemMapper.mapToItemDto(item);
+        ItemDto itemDto = ItemMapper.mapToItemDto(item);
 
         assertEquals(item.getId(), itemDto.getId());
         assertEquals(item.getName(), itemDto.getName());

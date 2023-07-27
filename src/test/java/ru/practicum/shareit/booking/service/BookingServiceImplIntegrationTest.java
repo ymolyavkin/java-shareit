@@ -2,7 +2,6 @@ package ru.practicum.shareit.booking.service;
 
 import org.jeasy.random.EasyRandom;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -41,7 +40,6 @@ class BookingServiceImplIntegrationTest {
     private IncomingBookingDto bookingDtoOne;
     private IncomingBookingDto bookingDtoTwo;
 
-  //  @BeforeEach
     void setUp() {
         bookingService = new BookingServiceImpl(itemRepository, userRepository, bookingRepository);
         bookingDtoOne = new IncomingBookingDto();
@@ -68,7 +66,7 @@ class BookingServiceImplIntegrationTest {
 
 
         User userTwo = userRepository.save(UserMapper.mapToUser(userDtoTwo));
-      //  User userTwo =UserMapper.mapToUser(userDtoTwo);
+        //  User userTwo =UserMapper.mapToUser(userDtoTwo);
         userTwo.setId(2L);
         IncomingItemDto itemDto = easyRandom.nextObject(IncomingItemDto.class);
         itemDto.setOwnerId(1L);
@@ -77,7 +75,7 @@ class BookingServiceImplIntegrationTest {
 
     }
 
-   @AfterEach
+    @AfterEach
     void tearDown() {
         bookingRepository.deleteAll();
         itemRepository.deleteAll();

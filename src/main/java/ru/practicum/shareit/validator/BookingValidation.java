@@ -6,6 +6,7 @@ import ru.practicum.shareit.exception.BadRequestException;
 import ru.practicum.shareit.item.model.Item;
 
 import java.time.LocalDateTime;
+
 @UtilityClass
 public class BookingValidation {
     public static void bookingIsValid(IncomingBookingDto incomingBookingDto, Item item) {

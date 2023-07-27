@@ -1,6 +1,5 @@
 package ru.practicum.shareit.util;
 
-import lombok.experimental.UtilityClass;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 

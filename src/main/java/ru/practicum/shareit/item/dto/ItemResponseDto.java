@@ -5,6 +5,7 @@ import ru.practicum.shareit.booking.dto.BookingLastNextDto;
 import ru.practicum.shareit.item.comment.dto.CommentDto;
 
 import java.util.List;
+
 @Data
 public class ItemResponseDto {
     private long id;
