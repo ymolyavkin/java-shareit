@@ -35,13 +35,24 @@ public class ItemRequestServiceImpl implements ItemRequestService {
 
         return ItemRequestMapper.mapToItemRequestResponseDto(itemRequest);
     }
-
     @Override
     public List<ItemRequestWithAnswersDto> getItemRequestsByAuthor(Long requesterId, int from, int size) {
         User requester = userRepository.findById(requesterId)
                 .orElseThrow(() -> new NotFoundException(String.format("Пользователь с id %d не найден", requesterId)));
         Pageable firstPageWithTwoElements = PageRequest.of(from, size);
         Page<ItemRequest> requests = itemRequestRepository.findAllByRequesterIdOrderByCreatedDesc(requesterId, firstPageWithTwoElements);
+        List<ItemRequest> itemRequests = requests.getContent();
+        return itemRequests
+                .stream()
+                .map(itemRequest -> ItemRequestMapper.mapToItemRequestAnswerDto(itemRequest, getAnswersToRequest(itemRequest)))
+                .collect(Collectors.toList());
+    }
+    @Override
+    public List<ItemRequestWithAnswersDto> getItemRequestsByOther(Long requesterId, int from, int size) {
+        User requester = userRepository.findById(requesterId)
+                .orElseThrow(() -> new NotFoundException(String.format("Пользователь с id %d не найден", requesterId)));
+        Pageable firstPageWithTwoElements = PageRequest.of(from, size);
+        Page<ItemRequest> requests = itemRequestRepository.findAllByRequesterIdNotOrderByCreatedDesc(requesterId, firstPageWithTwoElements);
         List<ItemRequest> itemRequests = requests.getContent();
         return itemRequests
                 .stream()

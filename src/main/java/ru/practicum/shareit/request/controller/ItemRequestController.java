@@ -55,11 +55,11 @@ public class ItemRequestController {
             @RequestParam(name = "size", defaultValue = "10", required = false) @Min(1) Integer size) {
         log.info("Получен запрос на выдачу всех запросов пользователя с id = {}", userId);
 
-        return itemRequestService.getItemRequestsByAuthor(userId, from, size);
+        return itemRequestService.getItemRequestsByOther(userId, from, size);
     }
 
     @GetMapping("/{requestId}")
-    public List<ItemRequestWithAnswersDto> getItemOneRequests(
+    public List<ItemRequestWithAnswersDto> getItemRequestById(
             @RequestHeader(value = USER_ID_FROM_REQUEST, defaultValue = "-1") Long userId,
             @PathVariable Long requestId) {
         log.info("Получен запрос на выдачу всех запросов пользователя с id = {}", userId);
