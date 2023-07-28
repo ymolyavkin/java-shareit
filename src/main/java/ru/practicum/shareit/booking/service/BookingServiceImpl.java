@@ -137,7 +137,7 @@ public class BookingServiceImpl implements BookingService {
                 bookings = bookingPage.getContent();
                 break;
             case CURRENT:
-                bookings = bookingRepository.findAllByBooker_IdAndStartBeforeAndEndAfter(bookerId, dateTimeNow, dateTimeNow, SORT_BY_ASC);
+                bookings = bookingRepository.findAllByBooker_IdAndStartBeforeAndEndAfter(bookerId, dateTimeNow, dateTimeNow, SORT_BY_DESC);
                 break;
             case FUTURE:
                 bookings = bookingRepository.findAllByBooker_IdAndStartAfter(bookerId, dateTimeNow, SORT_BY_DESC);

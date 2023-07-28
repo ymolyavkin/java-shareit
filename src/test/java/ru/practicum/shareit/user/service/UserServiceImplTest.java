@@ -1,5 +1,6 @@
 package ru.practicum.shareit.user.service;
 
+import org.jeasy.random.EasyRandom;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -8,6 +9,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import ru.practicum.shareit.exception.NotFoundException;
+import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareit.user.dto.IncomingUserDto;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.dto.UserMapper;
 import ru.practicum.shareit.user.model.User;
@@ -24,6 +27,7 @@ class UserServiceImplTest {
     private UserRepository userRepository;
     @InjectMocks
     private UserServiceImpl userService;
+    private final EasyRandom easyRandom = new EasyRandom();
 
     @BeforeEach
     void setUp() {
@@ -34,7 +38,15 @@ class UserServiceImplTest {
     }
 
     @Test
-    void addUser() {
+    void addUser_whenUserValid_thenSavedUser() {
+        IncomingUserDto incomingUserDto = easyRandom.nextObject(IncomingUserDto.class);
+        User userToSave = UserMapper.mapToUser(incomingUserDto);
+
+        when(userRepository.save(userToSave)).thenReturn(userToSave);
+
+        User addedUser = userService.addUser(incomingUserDto);
+
+        assertEquals(addedUser, userToSave);
     }
 
     @Test
@@ -68,7 +80,7 @@ class UserServiceImplTest {
         when(userRepository.findById(userId))
                 .thenReturn(Optional.empty());
 
-        assertThrows(NotFoundException.class, ()->userService.getUserById(userId));
+        assertThrows(NotFoundException.class, () -> userService.getUserById(userId));
     }
 
     @Test
