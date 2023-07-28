@@ -12,6 +12,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import ru.practicum.shareit.booking.dto.BookerDto;
+import ru.practicum.shareit.booking.dto.BookingMapper;
 import ru.practicum.shareit.booking.dto.BookingResponseDto;
 import ru.practicum.shareit.booking.dto.IncomingBookingDto;
 import ru.practicum.shareit.booking.model.StateRequest;
@@ -42,26 +43,16 @@ class BookingControllerTest {
     ObjectMapper objectMapper;
     private final EasyRandom generator = new EasyRandom();
     private BookingResponseDto bookingResponseDto;
-
-    @Test
-    void getBookingsByBookerTest() throws Exception {
-        List<BookingResponseDto> bookings = List.of(bookingResponseDto);
-
-        when(bookingService.getBookingsByBooker(Mockito.anyLong(), Mockito.any(StateRequest.class), Mockito.anyInt(), Mockito.anyInt()))
-                .thenReturn(bookings);
-        mockMvc.perform(get("/bookings")
-                        .header(USER_ID_FROM_REQUEST, 1)
-                        .accept(MediaType.ALL))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].id").value(1));
-               // .andExpect(jsonPath("$.id", is("1"), Integer.class));
-
-        verify(bookingService, times(1))
-                .getBookingsByBooker(Mockito.anyLong(), Mockito.any(StateRequest.class), Mockito.anyInt(), Mockito.anyInt());
-    }
+    private IncomingBookingDto incomingBookingDto;
 
     @BeforeEach
     void setUp() {
+        incomingBookingDto = new IncomingBookingDto();
+        incomingBookingDto.setItemId(1L);
+        incomingBookingDto.setStart(LocalDateTime.now().plus(1, ChronoUnit.DAYS));
+        incomingBookingDto.setEnd(LocalDateTime.now().plus(2, ChronoUnit.DAYS));
+
+        incomingBookingDto.setBookerId(1L);
         ItemIdNameDto itemIdNameDto = new ItemIdNameDto() {
             private Long id = 1l;
             private String name = "ItemName";
@@ -91,6 +82,21 @@ class BookingControllerTest {
                 .build();
     }
 
+    @Test
+    void getBookingsByBookerTest() throws Exception {
+        List<BookingResponseDto> bookings = List.of(bookingResponseDto);
+
+        when(bookingService.getBookingsByBooker(Mockito.anyLong(), Mockito.any(StateRequest.class), Mockito.anyInt(), Mockito.anyInt()))
+                .thenReturn(bookings);
+        mockMvc.perform(get("/bookings")
+                        .header(USER_ID_FROM_REQUEST, 1)
+                        .accept(MediaType.ALL))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].id").value(1));
+
+        verify(bookingService, times(1))
+                .getBookingsByBooker(Mockito.anyLong(), Mockito.any(StateRequest.class), Mockito.anyInt(), Mockito.anyInt());
+    }
 
     @Test
     void getBookingsByOwner() {
@@ -98,39 +104,17 @@ class BookingControllerTest {
 
     @Test
     void addBooking() throws Exception {
-        /*
-        public BookingResponseDto addBooking(@RequestHeader(value = USER_ID_FROM_REQUEST, defaultValue = "-1") Long bookerId,
-                                         @Valid @RequestBody IncomingBookingDto incomingBookingDto) {
-        log.info("Получен запрос на бронирование вещи пользователем с id = {}", bookerId);
-        if (bookerId.equals(-1L)) {
-            throw new NoneXSharerUserIdException("Не указан инициатор бронирования вещи");
-        }
-        incomingBookingDto.setBookerId(bookerId);
-
-        return bookingService.addBooking(incomingBookingDto);
-         */
-        IncomingBookingDto incomingBookingDto = new IncomingBookingDto();//generator.nextObject(IncomingBookingDto.class);
-        incomingBookingDto.setItemId(1L);
-        incomingBookingDto.setStart(LocalDateTime.now().plus(1, ChronoUnit.DAYS));
-        incomingBookingDto.setEnd(LocalDateTime.now().plus(2, ChronoUnit.DAYS));
-
-        incomingBookingDto.setBookerId(1L);
-
         when(bookingService.addBooking(Mockito.any(IncomingBookingDto.class)))
-                .thenAnswer(invocationOnMock -> {
-                    BookingResponseDto bookingResponseDto = invocationOnMock.getArgument(0, BookingResponseDto.class);
-                    // incomingDto.setItemId(1L);
-                    bookingResponseDto.setId(1L);
-                    return bookingResponseDto;
-                });
+                .thenReturn(bookingResponseDto);
+
         mockMvc.perform(post("/bookings")
                         .header(USER_ID_FROM_REQUEST, 1)
-                        .content(objectMapper.writeValueAsString((incomingBookingDto)))
+                        .content(objectMapper.writeValueAsString(incomingBookingDto))
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id", is(1L)));
+                .andExpect(jsonPath("$.id", is(1)));
     }
 
     @Test

@@ -14,6 +14,10 @@ import ru.practicum.shareit.item.dto.IncomingItemDto;
 import ru.practicum.shareit.item.dto.ItemMapper;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.repository.ItemRepository;
+import ru.practicum.shareit.request.dto.IncomingItemRequestDto;
+import ru.practicum.shareit.request.dto.ItemRequestMapper;
+import ru.practicum.shareit.request.model.ItemRequest;
+import ru.practicum.shareit.request.repository.ItemRequestRepository;
 import ru.practicum.shareit.user.dto.IncomingUserDto;
 import ru.practicum.shareit.user.dto.UserMapper;
 import ru.practicum.shareit.user.model.User;
@@ -31,6 +35,8 @@ class BookingServiceImplIntegrationTest {
     BookingService bookingService;
     @Autowired
     ItemRepository itemRepository;
+    @Autowired
+    ItemRequestRepository itemRequestRepository;
     @Autowired
     UserRepository userRepository;
     @Autowired
@@ -69,17 +75,23 @@ class BookingServiceImplIntegrationTest {
         userTwo.setId(2L);
         IncomingItemDto itemDto = easyRandom.nextObject(IncomingItemDto.class);
         itemDto.setOwnerId(1L);
+        itemDto.setRequestId(1L);
+
+        IncomingItemRequestDto incomingItemRequestDto = new IncomingItemRequestDto();
+        incomingItemRequestDto.setDescription("Description");
+
+        ItemRequest itemRequest = itemRequestRepository.save(ItemRequestMapper.mapToItemRequest(incomingItemRequestDto, userOne));
 
         Item item = itemRepository.save(ItemMapper.mapToItem(itemDto, userOne));
 
     }
 
-    @AfterEach
-    void tearDown() {
-        bookingRepository.deleteAll();
-        itemRepository.deleteAll();
-        userRepository.deleteAll();
-    }
+//    @AfterEach
+//    void tearDown() {
+//        bookingRepository.deleteAll();
+//        itemRepository.deleteAll();
+//        userRepository.deleteAll();
+//    }
 
     @Test
     @DirtiesContext
