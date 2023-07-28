@@ -12,7 +12,6 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import ru.practicum.shareit.booking.dto.BookerDto;
-import ru.practicum.shareit.booking.dto.BookingMapper;
 import ru.practicum.shareit.booking.dto.BookingResponseDto;
 import ru.practicum.shareit.booking.dto.IncomingBookingDto;
 import ru.practicum.shareit.booking.model.StateRequest;
@@ -54,7 +53,7 @@ class BookingControllerTest {
 
         incomingBookingDto.setBookerId(1L);
         ItemIdNameDto itemIdNameDto = new ItemIdNameDto() {
-            private Long id = 1l;
+            private Long id = 1L;
             private String name = "ItemName";
 
             public Long getId() {
