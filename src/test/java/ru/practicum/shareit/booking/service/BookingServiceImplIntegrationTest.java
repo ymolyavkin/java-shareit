@@ -1,6 +1,8 @@
 package ru.practicum.shareit.booking.service;
 
 import org.jeasy.random.EasyRandom;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -8,6 +10,7 @@ import org.springframework.test.annotation.DirtiesContext;
 import ru.practicum.shareit.booking.dto.BookingResponseDto;
 import ru.practicum.shareit.booking.dto.IncomingBookingDto;
 import ru.practicum.shareit.booking.model.Booking;
+import ru.practicum.shareit.booking.model.State;
 import ru.practicum.shareit.booking.repository.BookingRepository;
 import ru.practicum.shareit.item.dto.IncomingItemDto;
 import ru.practicum.shareit.item.dto.ItemMapper;
@@ -44,6 +47,7 @@ class BookingServiceImplIntegrationTest {
     private IncomingBookingDto bookingDtoOne;
     private IncomingBookingDto bookingDtoTwo;
 
+    @BeforeEach
     void setUp() {
         bookingService = new BookingServiceImpl(itemRepository, userRepository, bookingRepository);
         bookingDtoOne = new IncomingBookingDto();
@@ -63,14 +67,12 @@ class BookingServiceImplIntegrationTest {
         IncomingUserDto userDtoOne = easyRandom.nextObject(IncomingUserDto.class);
         userDtoOne.setEmail("email@mail.ru");
         User userOne = userRepository.save(UserMapper.mapToUser(userDtoOne));
-        //User userOne =UserMapper.mapToUser(userDtoOne);
         userOne.setId(1L);
         IncomingUserDto userDtoTwo = easyRandom.nextObject(IncomingUserDto.class);
         userDtoTwo.setEmail("mail@yandex.ru");
 
 
         User userTwo = userRepository.save(UserMapper.mapToUser(userDtoTwo));
-        //  User userTwo =UserMapper.mapToUser(userDtoTwo);
         userTwo.setId(2L);
         IncomingItemDto itemDto = easyRandom.nextObject(IncomingItemDto.class);
         itemDto.setOwnerId(1L);
@@ -95,7 +97,6 @@ class BookingServiceImplIntegrationTest {
     @Test
     @DirtiesContext
     void getAllTest() {
-        setUp();
         BookingResponseDto bookingResponseDtoOne = bookingService.addBooking(bookingDtoOne);
         BookingResponseDto bookingResponseDtoTwo = bookingService.addBooking(bookingDtoTwo);
         List<Booking> bookings = bookingRepository.findAll();
@@ -106,7 +107,6 @@ class BookingServiceImplIntegrationTest {
     @Test
     @DirtiesContext
     void getBookingByIdTest() {
-        setUp();
         BookingResponseDto bookingResponseDtoOne = bookingService.addBooking(bookingDtoOne);
         BookingResponseDto bookingResponseDtoTwo = bookingService.addBooking(bookingDtoTwo);
         List<Booking> bookings = bookingRepository.findAll();
@@ -117,6 +117,10 @@ class BookingServiceImplIntegrationTest {
     @Test
     @DirtiesContext
     void getBookingsByOwnerTest() {
+        //List<BookingResponseDto> getBookingsByOwner(Long ownerId, StateRequest state, Integer from, Integer size) {
+        BookingResponseDto bookingResponseDtoOne = bookingService.addBooking(bookingDtoOne);
+        BookingResponseDto bookingResponseDtoTwo = bookingService.addBooking(bookingDtoTwo);
+       // List<BookingResponseDto> getBookingsByOwner(1L, State.ALL, 0, 2)
     }
 
     @Test
