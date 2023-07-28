@@ -65,14 +65,14 @@ class BookingControllerTest {
             }
         };
         BookerDto bookerDto = new BookerDto() {
-            private Long id = 1l;
+            private Long id = 1L;
 
             public Long getId() {
                 return id;
             }
         };
         bookingResponseDto = BookingResponseDto.builder()
-                .id(1l)
+                .id(1L)
                 .start(LocalDateTime.now())
                 .end(LocalDateTime.now().plus(1, ChronoUnit.DAYS))
                 .item(itemIdNameDto)
