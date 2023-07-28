@@ -17,7 +17,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @JsonTest
 class BookingResponseDtoTest {
     @Autowired
-    JacksonTester<BookingResponseDto> jacksonTester;
+    private JacksonTester<BookingResponseDto> jacksonTester;
 
     @Test
     public void testDateTimeFormat() throws IOException {
