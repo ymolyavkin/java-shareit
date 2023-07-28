@@ -94,7 +94,7 @@ class BookingServiceImplIntegrationTest {
 
     @Test
     @DirtiesContext
-    void getAll() {
+    void getAllTest() {
         setUp();
         BookingResponseDto bookingResponseDtoOne = bookingService.addBooking(bookingDtoOne);
         BookingResponseDto bookingResponseDtoTwo = bookingService.addBooking(bookingDtoTwo);
@@ -105,7 +105,7 @@ class BookingServiceImplIntegrationTest {
 
     @Test
     @DirtiesContext
-    void getBookingById() {
+    void getBookingByIdTest() {
         setUp();
         BookingResponseDto bookingResponseDtoOne = bookingService.addBooking(bookingDtoOne);
         BookingResponseDto bookingResponseDtoTwo = bookingService.addBooking(bookingDtoTwo);
@@ -116,31 +116,31 @@ class BookingServiceImplIntegrationTest {
 
     @Test
     @DirtiesContext
-    void getBookingsByOwner() {
+    void getBookingsByOwnerTest() {
     }
 
     @Test
     @DirtiesContext
-    void getBookingsByBooker() {
+    void getBookingsByBookerTest() {
     }
 
     @Test
     @DirtiesContext
-    void addBooking() {
+    void addBookingTest() {
     }
 
     @Test
     @DirtiesContext
-    void isOverlapTime() {
+    void isOverlapTimeTest() {
     }
 
     @Test
     @DirtiesContext
-    void updateBooking() {
+    void updateBookingTest() {
     }
 
     @Test
     @DirtiesContext
-    void approvingBooking() {
+    void approvingBookingTest() {
     }
 }

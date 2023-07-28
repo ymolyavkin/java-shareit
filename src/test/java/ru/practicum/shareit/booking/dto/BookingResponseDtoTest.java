@@ -20,7 +20,7 @@ class BookingResponseDtoTest {
     private JacksonTester<BookingResponseDto> jacksonTester;
 
     @Test
-    public void testDateTimeFormat() throws IOException {
+    public void dateTimeFormatTest() throws IOException {
         BookerDto bookerDto = new BookerDto() {
             private Long id = 1L;
 
