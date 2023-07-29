@@ -40,6 +40,22 @@ class UserServiceImplTest {
         assertEquals(UserMapper.mapToUserDto(userToSave), actualUser);
         verify(userRepository).save(userToSave);
     }
+    @Test
+    void addUser(){
+        IncomingUserDto incomingUserDto = easyRandom.nextObject(IncomingUserDto.class);
+        User userToSave = UserMapper.mapToUser(incomingUserDto);
+
+        when(userService.addUser(incomingUserDto)).thenReturn(userToSave);
+
+        UserDto actualUser = userService.saveUser(incomingUserDto);
+
+        assertEquals(UserMapper.mapToUserDto(userToSave), actualUser);
+        verify(userRepository).save(userToSave);
+    }
+    /*
+    public User addUser(IncomingUserDto incomingUserDto) {
+        return userRepository.save(UserMapper.mapToUser(incomingUserDto));
+     */
 
     @Test
     void getAllUsers() {
@@ -63,6 +79,7 @@ class UserServiceImplTest {
 
         assertEquals(UserMapper.mapToUserDto(userToSave), actualUser);
         verify(userRepository).save(userToSave);
+        verify(userRepository, times(1)).save(userToSave);
     }
 
     @Test
