@@ -1,8 +1,6 @@
 package ru.practicum.shareit.user.service;
 
 import org.jeasy.random.EasyRandom;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -15,6 +13,8 @@ import ru.practicum.shareit.user.dto.UserMapper;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserRepository;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -27,14 +27,6 @@ class UserServiceImplTest {
     @InjectMocks
     private UserServiceImpl userService;
     private final EasyRandom easyRandom = new EasyRandom();
-
-    @BeforeEach
-    void setUp() {
-    }
-
-    @AfterEach
-    void tearDown() {
-    }
 
     @Test
     void addUser_whenUserValid_thenSavedUser() {
@@ -51,6 +43,14 @@ class UserServiceImplTest {
 
     @Test
     void getAllUsers() {
+        List<UserDto> expectedUsers = Collections.emptyList();
+
+        when(userService.getAllUsers()).thenReturn(Collections.emptyList());
+        System.out.println();
+
+        List<UserDto> actualUsers = userService.getAllUsers();
+
+        assertEquals(expectedUsers.size(), actualUsers.size());
     }
 
     @Test
