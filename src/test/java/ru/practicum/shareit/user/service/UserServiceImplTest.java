@@ -43,9 +43,10 @@ class UserServiceImplTest {
 
         when(userRepository.save(userToSave)).thenReturn(userToSave);
 
-        User addedUser = userService.addUser(incomingUserDto);
+        UserDto actualUser = userService.saveUser(incomingUserDto);
 
-        assertEquals(addedUser, userToSave);
+        assertEquals(UserMapper.mapToUserDto(userToSave), actualUser);
+        verify(userRepository).save(userToSave);
     }
 
     @Test
@@ -66,6 +67,24 @@ class UserServiceImplTest {
 
     @Test
     void updateUser() {
+        Long userId = 1L;
+        IncomingUserDto incomingUserDto = easyRandom.nextObject(IncomingUserDto.class);
+        User oldUser = UserMapper.mapToUser(incomingUserDto);
+        oldUser.setId(userId);
+
+        incomingUserDto.setEmail("newEmail@mail.ru");
+        incomingUserDto.setName("newName@mail.ru");
+        User newUser = UserMapper.mapToUser(incomingUserDto);
+        newUser.setId(userId);
+
+        when(userRepository.findById(userId)).thenReturn(Optional.of(oldUser));
+
+        UserDto actualUserDto = userService.updateUser(incomingUserDto, userId);
+
+        verify(userRepository).saveAndFlush(newUser);
+        assertEquals(actualUserDto.getEmail(), newUser.getEmail());
+        assertEquals(actualUserDto.getName(), newUser.getName());
+        assertEquals(actualUserDto.getId(), newUser.getId());
     }
 
     @Test
