@@ -1,7 +1,6 @@
 package ru.practicum.shareit.booking.service;
 
 import org.jeasy.random.EasyRandom;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,7 +9,6 @@ import org.springframework.test.annotation.DirtiesContext;
 import ru.practicum.shareit.booking.dto.BookingResponseDto;
 import ru.practicum.shareit.booking.dto.IncomingBookingDto;
 import ru.practicum.shareit.booking.model.Booking;
-import ru.practicum.shareit.booking.model.State;
 import ru.practicum.shareit.booking.repository.BookingRepository;
 import ru.practicum.shareit.item.dto.IncomingItemDto;
 import ru.practicum.shareit.item.dto.ItemMapper;
@@ -120,7 +118,7 @@ class BookingServiceImplIntegrationTest {
         //List<BookingResponseDto> getBookingsByOwner(Long ownerId, StateRequest state, Integer from, Integer size) {
         BookingResponseDto bookingResponseDtoOne = bookingService.addBooking(bookingDtoOne);
         BookingResponseDto bookingResponseDtoTwo = bookingService.addBooking(bookingDtoTwo);
-       // List<BookingResponseDto> getBookingsByOwner(1L, State.ALL, 0, 2)
+        // List<BookingResponseDto> getBookingsByOwner(1L, State.ALL, 0, 2)
     }
 
     @Test

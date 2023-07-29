@@ -25,7 +25,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static ru.practicum.shareit.util.Constants.SORT_BY_ASC;
 import static ru.practicum.shareit.util.Constants.SORT_BY_DESC;
 
 @Service

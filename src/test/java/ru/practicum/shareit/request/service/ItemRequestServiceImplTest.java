@@ -12,11 +12,9 @@ import ru.practicum.shareit.request.dto.ItemRequestMapper;
 import ru.practicum.shareit.request.model.ItemRequest;
 import ru.practicum.shareit.request.repository.ItemRequestRepository;
 import ru.practicum.shareit.user.dto.IncomingUserDto;
-import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.dto.UserMapper;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserRepository;
-import ru.practicum.shareit.user.service.UserServiceImpl;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
