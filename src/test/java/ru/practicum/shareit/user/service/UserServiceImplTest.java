@@ -19,7 +19,7 @@ import ru.practicum.shareit.user.repository.UserRepository;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class UserServiceImplTest {
@@ -55,6 +55,14 @@ class UserServiceImplTest {
 
     @Test
     void saveUser() {
+        IncomingUserDto incomingUserDto = easyRandom.nextObject(IncomingUserDto.class);
+        User userToSave = UserMapper.mapToUser(incomingUserDto);
+        when(userRepository.save(userToSave)).thenReturn(userToSave);
+
+        UserDto actualUser = userService.saveUser(incomingUserDto);
+
+        assertEquals(UserMapper.mapToUserDto(userToSave), actualUser);
+        verify(userRepository).save(userToSave);
     }
 
     @Test
