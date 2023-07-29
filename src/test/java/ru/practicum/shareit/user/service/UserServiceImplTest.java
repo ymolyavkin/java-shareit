@@ -110,6 +110,24 @@ class UserServiceImplTest {
     }
 
     @Test
-    void deleteUserById() {
+    void deleteUserById_WhenUserNotFound_thenExceptionThrown() {
+        long userId = 1L;
+        when(userRepository.findById(userId))
+                .thenReturn(Optional.empty());
+
+        assertThrows(NotFoundException.class, () -> userService.getUserById(userId));
+    }
+
+    @Test
+    void deleteUserById_WhenUserFound_thenDelete() {
+        long userId = 1L;
+        User expectUser = new User();
+        expectUser.setId(userId);
+
+        when(userRepository.findById(userId)).thenReturn(Optional.of(expectUser));
+
+        userService.deleteUserById(userId);
+
+        verify(userRepository, times(1)).deleteById(userId);
     }
 }
