@@ -1,5 +1,6 @@
 package ru.practicum.shareit.user.dto;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import ru.practicum.shareit.validator.Marker;
 
@@ -7,6 +8,7 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
 
 @Data
+@AllArgsConstructor
 public class IncomingUserDto {
     @NotBlank(groups = Marker.OnCreate.class)
     private String name;

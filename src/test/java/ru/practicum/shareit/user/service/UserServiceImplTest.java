@@ -1,8 +1,12 @@
 package ru.practicum.shareit.user.service;
 
+import junitparams.JUnitParamsRunner;
 import org.jeasy.random.EasyRandom;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -20,6 +24,7 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+@RunWith(JUnitParamsRunner.class)
 @ExtendWith(MockitoExtension.class)
 class UserServiceImplTest {
     @Mock
@@ -77,6 +82,33 @@ class UserServiceImplTest {
         assertEquals(UserMapper.mapToUserDto(userToSave), actualUser);
         verify(userRepository).save(userToSave);
         verify(userRepository, times(1)).save(userToSave);
+    }
+
+    @ParameterizedTest
+    @MethodSource("ru.practicum.shareit.util.TestData#argsProviderFactory")
+    void updateUserWithParameters(Long userId, IncomingUserDto incomingUserDto, User user, boolean needsToBeChanged) {
+        if (userId.equals(99L)) {
+            when(userRepository.findById(userId))
+                    .thenReturn(Optional.empty());
+
+            assertThrows(NotFoundException.class, () -> userService.updateUser(incomingUserDto, userId));
+        }
+        if (incomingUserDto.getName() == null || incomingUserDto.getEmail() == null) {
+            when(userRepository.findById(userId))
+                    .thenReturn(Optional.of(user));
+            userService.updateUser(incomingUserDto, userId);
+
+            verify(userRepository, times(0)).save(user);
+        } else {
+            when(userRepository.findById(userId)).thenReturn(Optional.of(user));
+
+            UserDto actualUserDto = userService.updateUser(incomingUserDto, userId);
+            User newUser = UserMapper.mapToUser(incomingUserDto);
+
+            assertEquals(actualUserDto.getEmail(), newUser.getEmail());
+            assertEquals(actualUserDto.getName(), newUser.getName());
+            assertEquals(actualUserDto.getId(), newUser.getId());
+        }
     }
 
     @Test
