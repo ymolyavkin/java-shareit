@@ -1,10 +1,12 @@
 package ru.practicum.shareit.request.dto;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import java.time.LocalDateTime;
 
 @Data
+@EqualsAndHashCode
 public class ItemRequestResponseDto {
     private Long id;
     private String description;

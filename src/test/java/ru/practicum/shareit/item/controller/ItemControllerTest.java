@@ -1,15 +1,9 @@
 package ru.practicum.shareit.item.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -17,10 +11,11 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
-import static org.hamcrest.Matchers.is;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import ru.practicum.shareit.item.comment.Comment;
 
+import ru.practicum.shareit.item.comment.dto.CommentDto;
+import ru.practicum.shareit.item.comment.dto.CommentMapper;
+import ru.practicum.shareit.item.comment.dto.IncomingCommentDto;
 import ru.practicum.shareit.item.dto.IncomingItemDto;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.ItemLastNextDto;
@@ -30,18 +25,20 @@ import ru.practicum.shareit.item.service.ItemService;
 import ru.practicum.shareit.user.model.User;
 
 import java.nio.charset.StandardCharsets;
+import java.util.Collections;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static ru.practicum.shareit.util.Constants.USER_ID_FROM_REQUEST;
 
 @WebMvcTest(controllers = ItemController.class)
 @AutoConfigureMockMvc
-//@ExtendWith(MockitoExtension.class)
 class ItemControllerTest {
     @Autowired
     private ObjectMapper objectMapper;
@@ -66,28 +63,48 @@ class ItemControllerTest {
         incomingItemDto = new IncomingItemDto();
         incomingItemDto.setName("Name");
         incomingItemDto.setDescription("Description");
+        Long userId = 1L;
+        incomingItemDto.setOwnerId(userId);
+        incomingItemDto.setAvailable(true);
 
         owner = new User(1L, "Owner", "owner@email.ru");
     }
 
-    @AfterEach
-    void tearDown() {
-    }
-
     @Test
-    void getItems() {
+    void getItems() throws Exception {
         List<ItemLastNextDto> expectedItems = List.of(itemLastNextDto);
-        Mockito.when(itemService.getItemsLastNextBookingByUser(1L, 0, 2))
+        when(itemService.getItemsLastNextBookingByUser(1L, 0, 2))
                 .thenReturn(expectedItems);
 
-        List<ItemLastNextDto> items = itemController.getItems(1L, 0, 2);
-
-        assertEquals(items.size(), 1);
-        assertEquals(expectedItems, items);
+        mockMvc.perform(get("/items")
+                        .header(USER_ID_FROM_REQUEST, 1))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(content().json("[]"));
     }
 
     @Test
-    void addItem() {
+    void addItem() throws Exception {
+        Item itemToAdd = ItemMapper.mapToItem(incomingItemDto, owner);
+        itemToAdd.setId(1L);
+        itemToAdd.setAvailable(true);
+        ItemDto itemDto = ItemMapper.mapToItemDto(itemToAdd);
+
+        when(itemService.addItem(incomingItemDto)).thenReturn(itemDto);
+
+        String result = mockMvc.perform(post("/items")
+                        .header(USER_ID_FROM_REQUEST, 1)
+                        .content(objectMapper.writeValueAsString(incomingItemDto))
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.ALL))
+                .andExpect(status().isOk())
+                .andDo(print())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        assertEquals(objectMapper.writeValueAsString(itemDto), result);
     }
 
     @Test
@@ -117,14 +134,55 @@ class ItemControllerTest {
     }
 
     @Test
-    void getItemById() {
+    void getItemById() throws Exception {
+        Long itemId = 1L;
+        Long userId = 1L;
+        mockMvc.perform(get("/items/{id}", itemId)
+                        .header(USER_ID_FROM_REQUEST, 1))
+                .andDo(print())
+                .andExpect(status().isOk());
+        verify(itemService).getItemById(itemId, userId);
     }
 
     @Test
-    void searchItems() {
+    void searchItems() throws Exception {
+        when(itemService.searchItemsByText("", 0, 2)).thenReturn(Collections.emptyList());
+
+        mockMvc.perform(get("/items")
+                        .header(USER_ID_FROM_REQUEST, 1))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(content().json("[]"));
     }
 
     @Test
-    void addComment() {
+    void addComment() throws Exception {
+        Long commentId = 1L;
+        Long itemId = 1L;
+        Long ownerId = owner.getId();
+        IncomingCommentDto incomingCommentDto = new IncomingCommentDto();
+        incomingCommentDto.setText("Text comment");
+
+        Item item = ItemMapper.mapToItem(incomingItemDto, owner);
+        item.setId(itemId);
+        Comment comment = CommentMapper.mapToComment(incomingCommentDto, owner, item);
+        comment.setId(commentId);
+        CommentDto commentDto = CommentMapper.mapToCommentDto(comment);
+
+        when(itemService.addComment(incomingCommentDto, ownerId, itemId)).thenReturn(commentDto);
+
+        String result = mockMvc.perform(post("/items/{itemId}/comment", itemId)
+                        .header(USER_ID_FROM_REQUEST, 1)
+                        .content(objectMapper.writeValueAsString(incomingCommentDto))
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.ALL))
+                .andExpect(status().isOk())
+                .andDo(print())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        assertEquals(objectMapper.writeValueAsString(commentDto), result);
     }
 }
