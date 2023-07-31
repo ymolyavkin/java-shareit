@@ -85,13 +85,6 @@ class BookingServiceImplIntegrationTest {
 
     }
 
-//    @AfterEach
-//    void tearDown() {
-//        bookingRepository.deleteAll();
-//        itemRepository.deleteAll();
-//        userRepository.deleteAll();
-//    }
-
     @Test
     @DirtiesContext
     void getAllTest() {
@@ -115,10 +108,8 @@ class BookingServiceImplIntegrationTest {
     @Test
     @DirtiesContext
     void getBookingsByOwnerTest() {
-        //List<BookingResponseDto> getBookingsByOwner(Long ownerId, StateRequest state, Integer from, Integer size) {
         BookingResponseDto bookingResponseDtoOne = bookingService.addBooking(bookingDtoOne);
         BookingResponseDto bookingResponseDtoTwo = bookingService.addBooking(bookingDtoTwo);
-        // List<BookingResponseDto> getBookingsByOwner(1L, State.ALL, 0, 2)
     }
 
     @Test
