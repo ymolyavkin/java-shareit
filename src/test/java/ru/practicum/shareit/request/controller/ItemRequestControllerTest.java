@@ -1,6 +1,5 @@
 package ru.practicum.shareit.request.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -11,7 +10,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import ru.practicum.shareit.item.dto.IncomingItemDto;
 import ru.practicum.shareit.item.dto.ItemLastNextDto;
 import ru.practicum.shareit.request.dto.IncomingItemRequestDto;
 import ru.practicum.shareit.request.dto.ItemRequestMapper;
@@ -55,7 +53,7 @@ class ItemRequestControllerTest {
     void setUp() {
         requester = new User(1L, "Owner", "owner@email.ru");
 
-        itemRequest=new ItemRequest();
+        itemRequest = new ItemRequest();
         itemRequest.setId(1L);
         itemRequest.setRequester(requester);
         itemRequest.setCreated(LocalDateTime.now());
@@ -93,20 +91,21 @@ class ItemRequestControllerTest {
 
         assertEquals(objectMapper.writeValueAsString(itemRequestResponseDto), result);
     }
-/*
- @PostMapping(consumes = "application/json")
-    public ItemRequestResponseDto addItemRequest(@RequestHeader(value = USER_ID_FROM_REQUEST, defaultValue = "-1") Long userId,
-                                                 @Validated({Marker.OnCreate.class})
-                                                 @RequestBody IncomingItemRequestDto incomingItemRequestDto,
-                                                 BindingResult errors) {
-        if (errors.hasErrors()) {
-            throw new BadRequestException("Получены некорректные данные");
-        }
-        log.info("Получен запрос на добавление запроса на вещь");
 
-        return itemRequestService.addItemRequest(incomingItemRequestDto, userId);
-    }
- */
+    /*
+     @PostMapping(consumes = "application/json")
+        public ItemRequestResponseDto addItemRequest(@RequestHeader(value = USER_ID_FROM_REQUEST, defaultValue = "-1") Long userId,
+                                                     @Validated({Marker.OnCreate.class})
+                                                     @RequestBody IncomingItemRequestDto incomingItemRequestDto,
+                                                     BindingResult errors) {
+            if (errors.hasErrors()) {
+                throw new BadRequestException("Получены некорректные данные");
+            }
+            log.info("Получен запрос на добавление запроса на вещь");
+
+            return itemRequestService.addItemRequest(incomingItemRequestDto, userId);
+        }
+     */
     @Test
     void getItemRequestsByAuthor() throws Exception {
         Long userId = 1L;
