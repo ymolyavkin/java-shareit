@@ -17,8 +17,10 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
+import static org.hamcrest.Matchers.is;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+
 import ru.practicum.shareit.item.dto.IncomingItemDto;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.ItemLastNextDto;
@@ -32,6 +34,8 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static ru.practicum.shareit.util.Constants.USER_ID_FROM_REQUEST;
 
@@ -90,7 +94,6 @@ class ItemControllerTest {
     void updateItem() throws Exception {
         Long itemId = 1L;
         Long ownerId = owner.getId();
-        //incomingItemDto.setName(null);
         Item itemToUpdate = ItemMapper.mapToItem(incomingItemDto, owner);
         itemToUpdate.setId(1L);
         itemToUpdate.setAvailable(true);
@@ -98,14 +101,14 @@ class ItemControllerTest {
 
         when(itemService.updateItem(incomingItemDto, itemId, ownerId)).thenReturn(itemDto);
 
-        String result = mockMvc.perform(patch("/items/{id}", ownerId)
+        String result = mockMvc.perform(patch("/items/{itemId}", itemId)
                         .header(USER_ID_FROM_REQUEST, 1)
-                       // .contentType("application/json")
+                        .content(objectMapper.writeValueAsString(incomingItemDto))
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(itemDto)))
+                        .accept(MediaType.ALL))
                 .andExpect(status().isOk())
+                .andDo(print())
                 .andReturn()
                 .getResponse()
                 .getContentAsString();
