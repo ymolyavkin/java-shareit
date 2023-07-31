@@ -1,11 +1,11 @@
 package ru.practicum.shareit.booking.repository;
 
 import org.jeasy.random.EasyRandom;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.test.annotation.DirtiesContext;
 import ru.practicum.shareit.booking.dto.BookingMapper;
 import ru.practicum.shareit.booking.dto.IncomingBookingDto;
 import ru.practicum.shareit.booking.model.Booking;
@@ -26,6 +26,7 @@ import java.time.temporal.ChronoUnit;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 @DataJpaTest
 class BookingRepositoryTest {
     @Autowired
@@ -166,8 +167,11 @@ class BookingRepositoryTest {
     void findFirstByItem_IdAndStartAfterAndStatusOrderByStartAsc() {
     }
 
-    @AfterEach
-    void tearDown() {
-        bookingRepository.deleteAll();
-    }
+//    @AfterEach
+//    void tearDown() {
+//        bookingRepository.deleteAll();
+//        itemRepository.deleteAll();
+//        itemRequestRepository.deleteAll();
+//        userRepository.deleteAll();
+//    }
 }
