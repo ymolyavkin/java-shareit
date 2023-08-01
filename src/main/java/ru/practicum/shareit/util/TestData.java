@@ -1,6 +1,7 @@
 package ru.practicum.shareit.util;
 
 import lombok.experimental.UtilityClass;
+import ru.practicum.shareit.booking.model.StateRequest;
 import ru.practicum.shareit.user.dto.IncomingUserDto;
 import ru.practicum.shareit.user.model.User;
 
@@ -33,6 +34,46 @@ public class TestData {
                         false
                 }
 
+        };
+    }
+    static Object[] argsProviderFactoryBookingsByBooker() {
+        return new Object[]{
+                new Object[]{
+                        1L,
+                        StateRequest.ALL
+                },
+                new Object[]{
+                        99L,
+                        StateRequest.ALL
+                },
+                new Object[]{
+                        1L,
+                        StateRequest.CURRENT
+                },
+                new Object[]{
+                        1L,
+                        StateRequest.PAST
+                },
+                new Object[]{
+                        1L,
+                        StateRequest.FUTURE
+                },
+                new Object[]{
+                        1L,
+                        StateRequest.WAITING
+                },
+                new Object[]{
+                        1L,
+                        StateRequest.REJECTED
+                },
+                new Object[]{
+                        1L,
+                        StateRequest.UNSUPPORTED_STATUS
+                }
+//                new Object[]{
+//                        1L,
+//                        null
+//                },
         };
     }
 }

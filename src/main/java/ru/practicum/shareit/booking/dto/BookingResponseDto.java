@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 
 import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import ru.practicum.shareit.booking.model.Status;
 import ru.practicum.shareit.item.dto.ItemIdNameDto;
 
@@ -17,7 +18,9 @@ public class BookingResponseDto {
     private LocalDateTime start;
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime end;
+    @EqualsAndHashCode.Exclude
     private ItemIdNameDto item;
+    @EqualsAndHashCode.Exclude
     private BookerDto booker;
     private Status status;
 }
