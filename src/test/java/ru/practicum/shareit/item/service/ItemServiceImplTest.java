@@ -84,11 +84,11 @@ class ItemServiceImplTest {
     void addComment() {
     }
 
-    @AfterEach
-    void tearDown() {
-        commentRepository.deleteAll();
-        bookingRepository.deleteAll();
-        itemRepository.deleteAll();
-        userRepository.deleteAll();
-    }
+//    @AfterEach
+//    void tearDown() {
+//        commentRepository.deleteAll();
+//        bookingRepository.deleteAll();
+//        itemRepository.deleteAll();
+//        userRepository.deleteAll();
+//    }
 }

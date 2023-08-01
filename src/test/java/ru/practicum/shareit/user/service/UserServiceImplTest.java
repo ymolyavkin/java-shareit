@@ -10,6 +10,7 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.test.annotation.DirtiesContext;
 import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.user.dto.IncomingUserDto;
 import ru.practicum.shareit.user.dto.UserDto;
@@ -26,6 +27,7 @@ import static org.mockito.Mockito.*;
 
 @RunWith(JUnitParamsRunner.class)
 @ExtendWith(MockitoExtension.class)
+//@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
 class UserServiceImplTest {
     @Mock
     private UserRepository userRepository;
