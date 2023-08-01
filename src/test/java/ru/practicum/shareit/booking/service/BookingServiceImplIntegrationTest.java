@@ -9,7 +9,6 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.*;
 import org.springframework.test.annotation.DirtiesContext;
 import ru.practicum.shareit.booking.dto.BookingMapper;
@@ -68,7 +67,6 @@ class BookingServiceImplIntegrationTest {
     private BookingResponseDto bookingResponseDto;
 
 
-
     @BeforeEach
     void setUp() {
         bookingService = new BookingServiceImpl(itemRepository, userRepository, bookingRepository);
@@ -114,7 +112,7 @@ class BookingServiceImplIntegrationTest {
         bookingResponseDto.setId(1L);
     }
 
-   // @BeforeEach
+    // @BeforeEach
     void setUp1() {
         bookingService = new BookingServiceImpl(itemRepository, userRepository, bookingRepository);
         bookingDtoOne = new IncomingBookingDto();
@@ -185,6 +183,7 @@ class BookingServiceImplIntegrationTest {
     @DirtiesContext
     void getBookingsByBookerTest() {
     }
+
     @DirtiesContext
     @ParameterizedTest
     @MethodSource("ru.practicum.shareit.util.TestData#argsProviderFactoryBookingsByBooker")
