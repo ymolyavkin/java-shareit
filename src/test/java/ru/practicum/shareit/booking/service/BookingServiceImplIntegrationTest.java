@@ -32,6 +32,7 @@ import ru.practicum.shareit.user.repository.UserRepository;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -171,43 +172,25 @@ class BookingServiceImplIntegrationTest {
 
                     assertEquals(expected, result);
                     break;
-//            case CURRENT:
-//                bookings = bookingRepository.findAllByBooker_IdAndStartBeforeAndEndAfter(bookerId, dateTimeNow, dateTimeNow, SORT_BY_DESC);
-//                break;
-//            case FUTURE:
-//                bookings = bookingRepository.findAllByBooker_IdAndStartAfter(bookerId, dateTimeNow, SORT_BY_DESC);
-//                break;
-//            case PAST:
-//                bookings = bookingRepository.findAllByBooker_IdAndEndBefore(bookerId, dateTimeNow, SORT_BY_DESC);
-//                break;
-//            case WAITING:
-//                bookings = bookingRepository.findAllByBooker_IdAndStatus(bookerId, Status.WAITING, SORT_BY_DESC);
-//                break;
-//            case REJECTED:
-//                when(userRepository.findById(bookerId)).thenReturn(Optional.of(user));
-//                when(bookingRepository.findAllByBooker_Id(bookerId, pageable)).thenReturn(bookingPage);
-//                expected = bookingPage.getContent()
-//                        .stream()
-//                        .map(bookingResponse -> BookingMapper.mapToBookingResponseDto(bookingResponse, item))
-//                        .collect(Collectors.toList());
-//                result = bookingService.getBookingsByBooker(bookerId, state, from, size);
-//
-//                assertEquals(expected, result);
-//                    break;
+                case CURRENT:
+                case FUTURE:
+                case PAST:
+                case WAITING:
+                case REJECTED:
                 default:
-//                when(bookingRepository.findAllByBooker_Id(bookerId, pageable)).thenReturn(bookingPage);
-//
-//                result = bookingService.getBookingsByBooker(bookerId, state, from, size);
-//
-//                assertEquals(bookingPage.getContent(), result);
+                    expectedListBookings = Collections.emptyList();
+                    bookingPage = new PageImpl<>(expectedListBookings);
+                    when(userRepository.findById(bookerId)).thenReturn(Optional.of(user));
+                    when(bookingRepository.findAllByBooker_Id(bookerId, pageable)).thenReturn(bookingPage);
+                    expected = bookingPage.getContent()
+                            .stream()
+                            .map(bookingResponse -> BookingMapper.mapToBookingResponseDto(bookingResponse, item))
+                            .collect(Collectors.toList());
+                    result = bookingService.getBookingsByBooker(bookerId, state, from, size);
+
+                    assertEquals(expected, result);
+                    break;
             }
-//        ItemLastNextDto itemResponse = itemService.getItemById(1L, 1L);
-//        assertEquals(1L, itemResponse.getId());
-//        BookingResponseDto bookingResponseDtoOne = bookingService.addBooking(bookingDtoOne);
-//        BookingResponseDto bookingResponseDtoTwo = bookingService.addBooking(bookingDtoTwo);
-//        List<Booking> bookings = bookingRepository.findAll();
-//        assertNotNull(bookings);
-//        assertEquals(2, bookings.size());
         }
     }
     /*
