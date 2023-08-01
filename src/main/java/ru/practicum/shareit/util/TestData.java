@@ -36,6 +36,7 @@ public class TestData {
 
         };
     }
+
     static Object[] argsProviderFactoryBookingsByBooker() {
         return new Object[]{
                 new Object[]{
@@ -70,10 +71,6 @@ public class TestData {
                         1L,
                         StateRequest.UNSUPPORTED_STATUS
                 }
-//                new Object[]{
-//                        1L,
-//                        null
-//                },
         };
     }
 }
