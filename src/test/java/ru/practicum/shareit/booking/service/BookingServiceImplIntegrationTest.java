@@ -225,7 +225,7 @@ class BookingServiceImplIntegrationTest {
                 case PAST:
                 case WAITING:
                 case REJECTED:
-                default:
+                    //default:
                     expectedListBookings = Collections.emptyList();
                     bookingPage = new PageImpl<>(expectedListBookings);
                     Mockito.when(userRepository.findById(bookerId)).thenReturn(Optional.of(user));
@@ -238,6 +238,9 @@ class BookingServiceImplIntegrationTest {
 
                     assertEquals(expected, result);
                     break;
+                default:
+                    result = Collections.emptyList();
+                    assertEquals(0, result.size());
             }
         }
     }
