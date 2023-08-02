@@ -1,7 +1,6 @@
 package ru.practicum.shareit.booking.service;
 
 import org.jeasy.random.EasyRandom;
-import org.junit.Assert;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -22,7 +21,6 @@ import ru.practicum.shareit.booking.repository.BookingRepository;
 import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.exception.UnsupportedStatusException;
 import ru.practicum.shareit.item.dto.IncomingItemDto;
-import ru.practicum.shareit.item.dto.ItemLastNextDto;
 import ru.practicum.shareit.item.dto.ItemMapper;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.repository.ItemRepository;
