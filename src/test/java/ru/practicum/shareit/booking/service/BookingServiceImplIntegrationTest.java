@@ -20,6 +20,7 @@ import ru.practicum.shareit.booking.repository.BookingRepository;
 import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.exception.UnsupportedStatusException;
 import ru.practicum.shareit.item.dto.IncomingItemDto;
+import ru.practicum.shareit.item.dto.ItemLastNextDto;
 import ru.practicum.shareit.item.dto.ItemMapper;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.repository.ItemRepository;
@@ -40,6 +41,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.when;
 
 @SpringBootTest
 class BookingServiceImplIntegrationTest {
@@ -159,11 +161,12 @@ class BookingServiceImplIntegrationTest {
     @Test
     @DirtiesContext
     void getAllTest() {
-//        BookingResponseDto bookingResponseDtoOne = bookingService.addBooking(bookingDtoOne);
-//        BookingResponseDto bookingResponseDtoTwo = bookingService.addBooking(bookingDtoTwo);
-//        List<Booking> bookings = bookingRepository.findAll();
-//        assertNotNull(bookings);
-//        assertEquals(2, bookings.size());
+        List<Booking> expectedListBookings = Collections.emptyList();
+        when(bookingRepository.findAll())
+                .thenReturn(expectedListBookings);
+        List<Booking> actualListBooking = bookingService.getAll();
+
+        assertEquals(expectedListBookings, actualListBooking);
     }
 
     @Test
@@ -208,11 +211,10 @@ class BookingServiceImplIntegrationTest {
 //            result = bookingService.getBookingsByOwner(ownerId, state, FROM, SIZE);
 //
 //            assertEquals(expected, result);
-           // List<Booking> bookings;
+            // List<Booking> bookings;
             switch (state) {
                 case UNSUPPORTED_STATUS:
                     Mockito.when(userRepository.findById(ownerId)).thenReturn(Optional.of(booker));
-
                     assertThrows(UnsupportedStatusException.class, () -> bookingService.getBookingsByOwner(ownerId, state, from, size));
                     break;
                 case ALL:
