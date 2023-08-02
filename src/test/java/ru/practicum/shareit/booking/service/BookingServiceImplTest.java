@@ -54,6 +54,7 @@ class BookingServiceImplTest {
     private BookingResponseDto bookingResponseDto;
     private int from = 0;
     private int size = 10;
+
     @BeforeEach
     void setUp() {
         Long bookerId = 1L;
@@ -62,7 +63,7 @@ class BookingServiceImplTest {
         Long itemId = 1L;
         Long requestId = 1L;
         Long bookingId = 1L;
-     //   bookingService = new BookingServiceImpl(itemRepository, userRepository, bookingRepository);
+        //   bookingService = new BookingServiceImpl(itemRepository, userRepository, bookingRepository);
 
         incomingBookingDtoOne = new IncomingBookingDto();
         incomingBookingDtoTwo = new IncomingBookingDto();
@@ -100,6 +101,7 @@ class BookingServiceImplTest {
         booking.setId(bookingId);
         bookingResponseDto = BookingMapper.mapToBookingResponseDto(booking, item);
     }
+
     @Test
     void getBookingByIdWithWrongBookingIdTest() {
         Long bookingId = 9999L;
@@ -116,6 +118,7 @@ class BookingServiceImplTest {
 
         assertThrows(NotFoundException.class, () -> bookingService.getBookingById(userId, bookingId));
     }
+
     @Test
     void getBookingsByOwner() {
     }
