@@ -1,9 +1,11 @@
 package ru.practicum.shareit.booking.service;
 
 import org.jeasy.random.EasyRandom;
+import org.junit.Assert;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -169,16 +171,66 @@ class BookingServiceImplIntegrationTest {
         assertEquals(expectedListBookings, actualListBooking);
     }
 
-    @Test
+    /*
+    @ParameterizedTest
+    @CsvSource({
+        "alex, 30, HR, Active",
+        "brian, 35, Technology, Active",
+        "charles, 40, Finance, Purged"
+    })
+    void testWithCsvSource(String name, int age, String department, String status)
+     */
     @DirtiesContext
-    void getBookingByIdTest() {
-//        BookingResponseDto bookingResponseDtoOne = bookingService.addBooking(bookingDtoOne);
-//        BookingResponseDto bookingResponseDtoTwo = bookingService.addBooking(bookingDtoTwo);
-//        List<Booking> bookings = bookingRepository.findAll();
-//        assertNotNull(bookings);
-//        assertEquals(2, bookings.size());
+    @ParameterizedTest
+    @CsvSource({
+            "1, 1, 1",
+            "1, 99, 1"
+    })
+    void getBookingByIdTest(long bookingId, long userId, long itemId) {
+        System.out.println();
+        if (bookingId != booking.getId()) {
+            Mockito.when(bookingRepository.getReferenceById(bookingId))
+                    .thenThrow(new NotFoundException(String.format("Бронирование с id %d не найдено", bookingId)));
+            assertThrows(NotFoundException.class, () -> bookingService.getBookingById(bookingId, userId));
+        } else if (itemId != item.getId()) {
+            Mockito.when(itemRepository.findById(itemId)).thenReturn(Optional.empty());
+            Mockito.when(itemRepository.findById(itemId))
+                    .thenThrow(new NotFoundException(String.format("Вещь с id %d не найдена", itemId)));
+            assertThrows(NotFoundException.class, () -> bookingService.getBookingById(bookingId, userId));
+        }
+        if (userId != 1 && userId != 3) {
+            Mockito.when(bookingRepository.getReferenceById(bookingId)).thenReturn(booking);
+            Mockito.when(itemRepository.findById(itemId)).thenReturn(Optional.of(item));
+            Throwable thrown = assertThrows(NotFoundException.class, () -> {
+                bookingService.getBookingById(bookingId, userId);
+            });
+            assertNotNull(thrown.getMessage());
+
+
+            // assertEquals("Пользователь с id 99 не не автор бронирования и не владелец вещи, данные о бронировании недоступны", exception.getMessage());
+        } else {
+            Mockito.when(itemRepository.findById(itemId)).thenReturn(Optional.of(item));
+            Mockito.when(bookingRepository.findById(bookingId)).thenReturn(Optional.of(booking));
+
+            Mockito.when(bookingRepository.getReferenceById(booking.getId())).thenReturn(booking);
+            BookingResponseDto actual = bookingService.getBookingById(bookingId, userId);
+            BookingResponseDto expected = BookingMapper.mapToBookingResponseDto(booking, item);
+            assertEquals(expected, actual);
+        }
     }
 
+    /*
+    public BookingResponseDto getBookingById(Long id, Long userId) {
+            Booking booking = bookingRepository.getReferenceById(id);
+            Item item = itemRepository.findById(booking.getItemId())
+                    .orElseThrow(() -> new NotFoundException(String.format("Вещь с id %d не найдена", booking.getItemId())));
+            if (!booking.getBookerId().equals(userId) && !item.getOwnerId().equals(userId)) {
+                throw new NotFoundException(String.format("Пользователь с id %d не не автор бронирования и не владелец вещи, данные о бронировании недоступны", userId));
+            }
+
+            return BookingMapper.mapToBookingResponseDto(booking, item);
+        }
+     */
     @Test
     @DirtiesContext
     void getBookingsByOwnerTest() {
