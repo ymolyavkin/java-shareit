@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +19,7 @@ import ru.practicum.shareit.booking.dto.IncomingBookingDto;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.StateRequest;
 import ru.practicum.shareit.booking.repository.BookingRepository;
+import ru.practicum.shareit.exception.NoneXSharerUserIdException;
 import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.exception.UnsupportedStatusException;
 import ru.practicum.shareit.item.dto.IncomingItemDto;
@@ -41,6 +43,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 
 @SpringBootTest
@@ -192,9 +195,12 @@ class BookingServiceImplIntegrationTest {
             assertThrows(NotFoundException.class, () -> bookingService.getBookingById(bookingId, userId));
         } else if (itemId != item.getId()) {
             Mockito.when(itemRepository.findById(itemId)).thenReturn(Optional.empty());
-            Mockito.when(itemRepository.findById(itemId))
-                    .thenThrow(new NotFoundException(String.format("Вещь с id %d не найдена", itemId)));
+            doThrow(NotFoundException.class).when(itemRepository).findById(itemId);
+
             assertThrows(NotFoundException.class, () -> bookingService.getBookingById(bookingId, userId));
+//            Mockito.when(itemRepository.findById(itemId))
+//                    .thenThrow(new NotFoundException(String.format("Вещь с id %d не найдена", itemId)));
+//            assertThrows(NotFoundException.class, () -> bookingService.getBookingById(bookingId, userId));
         }
         if (userId != 1 && userId != 3) {
             Mockito.when(bookingRepository.getReferenceById(bookingId)).thenReturn(booking);
@@ -229,12 +235,6 @@ class BookingServiceImplIntegrationTest {
             return BookingMapper.mapToBookingResponseDto(booking, item);
         }
      */
-    @Test
-    @DirtiesContext
-    void getBookingsByOwnerTest() {
-
-    }
-
     @DirtiesContext
     @ParameterizedTest
     @MethodSource("ru.practicum.shareit.util.TestData#argsProviderFactoryBookingsByOwner")
@@ -282,7 +282,10 @@ class BookingServiceImplIntegrationTest {
                     List<Booking> bookingList = bookingPage.getContent();
                     Mockito.when(userRepository.findById(ownerId)).thenReturn(Optional.of(booker));
                     Mockito.when(bookingRepository.findByItem_IdInOrderByStartDesc(itemIdsByOwner, pageable)).thenReturn(bookingPage);
-                    expected = bookingList.stream().map(bookingResponse -> BookingMapper.mapToBookingResponseDto(bookingResponse, item)).collect(Collectors.toList());
+                    expected = bookingList
+                            .stream()
+                            .map(bookingResponse -> BookingMapper.mapToBookingResponseDto(bookingResponse, item))
+                            .collect(Collectors.toList());
                     result = bookingService.getBookingsByOwner(ownerId, state, from, size);
 
                     assertEquals(expected, result);
@@ -291,11 +294,6 @@ class BookingServiceImplIntegrationTest {
                     assertEquals(0, result.size());
             }
         }
-    }
-
-    @Test
-    @DirtiesContext
-    void getBookingsByBookerTest() {
     }
 
     @DirtiesContext
@@ -325,7 +323,10 @@ class BookingServiceImplIntegrationTest {
                     bookingPage = new PageImpl<>(expectedListBookings);
                     Mockito.when(userRepository.findById(bookerId)).thenReturn(Optional.of(booker));
                     Mockito.when(bookingRepository.findAllByBooker_Id(bookerId, pageable)).thenReturn(bookingPage);
-                    expected = bookingPage.getContent().stream().map(bookingResponse -> BookingMapper.mapToBookingResponseDto(bookingResponse, item)).collect(Collectors.toList());
+                    expected = bookingPage.getContent()
+                            .stream()
+                            .map(bookingResponse -> BookingMapper.mapToBookingResponseDto(bookingResponse, item))
+                            .collect(Collectors.toList());
                     result = bookingService.getBookingsByBooker(bookerId, state, from, size);
 
                     assertEquals(expected, result);
@@ -340,7 +341,10 @@ class BookingServiceImplIntegrationTest {
                     bookingPage = new PageImpl<>(expectedListBookings);
                     Mockito.when(userRepository.findById(bookerId)).thenReturn(Optional.of(booker));
                     Mockito.when(bookingRepository.findAllByBooker_Id(bookerId, pageable)).thenReturn(bookingPage);
-                    expected = bookingPage.getContent().stream().map(bookingResponse -> BookingMapper.mapToBookingResponseDto(bookingResponse, item)).collect(Collectors.toList());
+                    expected = bookingPage.getContent()
+                            .stream()
+                            .map(bookingResponse -> BookingMapper.mapToBookingResponseDto(bookingResponse, item))
+                            .collect(Collectors.toList());
                     result = bookingService.getBookingsByBooker(bookerId, state, from, size);
 
                     assertEquals(expected, result);
@@ -352,15 +356,68 @@ class BookingServiceImplIntegrationTest {
         }
     }
 
-    @Test
     @DirtiesContext
-    void addBookingTest() {
-    }
+    @ParameterizedTest
+    @ValueSource(ints = {1, -1, 99})
+    void addBookingTest(int bookerId) {
+        item.setOwner(owner);
+        //bookingRepository.save(booking);
+        // userRepository.save(booker);
+        switch (bookerId) {
+            case 1:
+//                System.out.println(item);
+//                System.out.println();
+//                Mockito.when(userRepository.findById((long) bookerId)).thenReturn(Optional.of(booker));
+//                Mockito.when(itemRepository.findById(1L)).thenReturn(Optional.of(item));
+//                BookingResponseDto actualBooking = bookingService.addBooking(incomingBookingDtoOne);
+                break;
+            case -1:
+                Mockito.when(userRepository.findById((long) bookerId)).thenReturn(Optional.of(booker));
+                doThrow(NotFoundException.class).when(userRepository).findById((long) bookerId);
+//                Throwable thrown = assertThrows(NoneXSharerUserIdException.class, () -> {
+//                    bookingService.addBooking(incomingBookingDtoOne);
+//                });
+//                assertNotNull(thrown.getMessage());
+                break;
+            default:
+                Mockito.when(userRepository.findById((long) bookerId)).thenReturn(Optional.empty());
+                doThrow(NotFoundException.class).when(userRepository).findById((long) bookerId);
 
-    @Test
-    @DirtiesContext
-    void isOverlapTimeTest() {
+                assertThrows(NotFoundException.class, () -> bookingService.addBooking(incomingBookingDtoOne));
+        }
+
     }
+    /*
+    public BookingResponseDto addBooking(IncomingBookingDto incomingBookingDto) {
+        if (incomingBookingDto.getBookerId().equals(-1L)) {
+            throw new NoneXSharerUserIdException("Не указан инициатор бронирования");
+        }
+        Long bookerId = incomingBookingDto.getBookerId();
+        Long itemId = incomingBookingDto.getItemId();
+        User booker = userRepository.findById(bookerId)
+                .orElseThrow(() -> new NotFoundException(String.format("Пользователь с id %d не найден", bookerId)));
+        Item item = itemRepository.findById(itemId)
+                .orElseThrow(() -> new NotFoundException(String.format("Вещь с id %d не найдена", itemId)));
+        if (bookerId.equals(item.getOwnerId())) {
+            throw new NotFoundException("Инициатор бронирования и владелец запрашиваемой вещи совпадают");
+        }
+        BookingValidation.bookingIsValid(incomingBookingDto, item);
+        Booking resultBooking = BookingMapper.mapToBooking(incomingBookingDto, item, booker);
+        List<Booking> allBookingsByItem = bookingRepository.findByItem_Id(itemId);
+
+        boolean isOverlap = allBookingsByItem
+                .stream()
+                .map(booking -> isOverlapTime(booking, resultBooking))
+                .reduce(Boolean::logicalOr).orElse(false);
+
+        if (isOverlap) {
+            throw new NotFoundException("Данная вещь на этот период недоступна");
+        }
+        Booking booking = bookingRepository.save(resultBooking);
+
+        return BookingMapper.mapToBookingResponseDto(booking, item);
+    }
+     */
 
     @Test
     @DirtiesContext
