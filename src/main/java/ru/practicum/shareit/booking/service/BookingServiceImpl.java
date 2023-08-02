@@ -1,10 +1,7 @@
 package ru.practicum.shareit.booking.service;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.model.Booking;
@@ -73,6 +70,10 @@ public class BookingServiceImpl implements BookingService {
 
         Pageable pageable = PageRequest.of(from, size);
         Page<Booking> bookingPage = bookingRepository.findByItem_IdInOrderByStartDesc(itemIdsByOwner, pageable);
+        if (bookingPage == null) {
+            List<BookingResponseDto> emptyList = Collections.emptyList();
+            return emptyList;
+        }
         List<Booking> bookingList = bookingPage.getContent();
         List<Booking> bookings;
         switch (state) {

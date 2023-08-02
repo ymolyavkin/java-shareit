@@ -73,4 +73,40 @@ public class TestData {
                 }
         };
     }
+    /*static Object[] argsProviderFactoryBookingsByOwner() {
+        return new Object[]{
+                new Object[]{
+                        1L,
+                        StateRequest.ALL
+                },
+                new Object[]{
+                        99L,
+                        StateRequest.ALL
+                },
+                new Object[]{
+                        1L,
+                        StateRequest.CURRENT
+                },
+                new Object[]{
+                        1L,
+                        StateRequest.PAST
+                },
+                new Object[]{
+                        1L,
+                        StateRequest.FUTURE
+                },
+                new Object[]{
+                        1L,
+                        StateRequest.WAITING
+                },
+                new Object[]{
+                        1L,
+                        StateRequest.REJECTED
+                },
+                new Object[]{
+                        1L,
+                        StateRequest.UNSUPPORTED_STATUS
+                }
+        };
+    }*/
 }

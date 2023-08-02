@@ -149,7 +149,6 @@ class BookingServiceImplIntegrationTest {
         ItemRequest itemRequest = itemRequestRepository.save(ItemRequestMapper.mapToItemRequest(incomingItemRequestDto, userOne));
 
         Item item = itemRepository.save(ItemMapper.mapToItem(itemDto, userOne));
-
     }
 
     @Test
@@ -175,8 +174,72 @@ class BookingServiceImplIntegrationTest {
     @Test
     @DirtiesContext
     void getBookingsByOwnerTest() {
-//        BookingResponseDto bookingResponseDtoOne = bookingService.addBooking(bookingDtoOne);
-//        BookingResponseDto bookingResponseDtoTwo = bookingService.addBooking(bookingDtoTwo);
+
+    }
+
+    @DirtiesContext
+    @ParameterizedTest
+    @MethodSource("ru.practicum.shareit.util.TestData#argsProviderFactoryBookingsByBooker")
+    void getBookingsByOwnerParameterTest(Long ownerId, StateRequest state) {
+        List<Booking> expectedListBookings;
+        List<BookingResponseDto> result;
+
+        int from = 0;
+        int size = 10;
+        Pageable pageable = PageRequest.of(from / size, size, Sort.by("id").descending());
+        Page<Booking> bookingPage;
+        if (ownerId.equals(99L)) {
+            Mockito.when(userRepository.findById(ownerId)).thenThrow(new NotFoundException(String.format("Пользователь с id %d не найден", ownerId)));
+            assertThrows(NotFoundException.class, () -> bookingService.getBookingsByOwner(ownerId, state, from, size));
+        } else {
+            List<BookingResponseDto> expected;
+            List<Long> itemIdsByOwner = List.of(1L);
+            expectedListBookings = List.of(booking);
+            bookingPage = new PageImpl<>(expectedListBookings);
+
+            List<Booking> bookingList = bookingPage.getContent();
+            Mockito.when(userRepository.findById(ownerId)).thenReturn(Optional.of(user));
+            Mockito.when(bookingRepository.findByItem_IdInOrderByStartDesc(itemIdsByOwner, pageable)).thenReturn(bookingPage);
+            expected = bookingList.stream().map(bookingResponse -> BookingMapper.mapToBookingResponseDto(bookingResponse, item)).collect(Collectors.toList());
+            result = bookingService.getBookingsByOwner(ownerId, state, from, size);
+
+            assertEquals(expected, result);
+            List<Booking> bookings;
+            switch (state) {
+                case UNSUPPORTED_STATUS:
+                    Mockito.when(userRepository.findById(ownerId)).thenReturn(Optional.of(user));
+
+                    assertThrows(UnsupportedStatusException.class, () -> bookingService.getBookingsByOwner(ownerId, state, from, size));
+                    break;
+                case ALL:
+//                    Mockito.when(userRepository.findById(ownerId)).thenReturn(Optional.of(user));
+//                    Mockito.when(bookingRepository.findByItem_IdInOrderByStartDesc(itemIdsByOwner, pageable))
+//                    .thenReturn(bookingPage);
+
+                    break;
+                case CURRENT:
+                case FUTURE:
+                case PAST:
+                case WAITING:
+                case REJECTED:
+
+//                    expectedListBookings = Collections.emptyList();
+//                    bookingPage = new PageImpl<>(expectedListBookings);
+//                    Mockito.when(userRepository.findById(bookerId)).thenReturn(Optional.of(user));
+//                    Mockito.when(bookingRepository.findAllByBooker_Id(bookerId, pageable)).thenReturn(bookingPage);
+//                    expected = bookingPage.getContent()
+//                            .stream()
+//                            .map(bookingResponse -> BookingMapper.mapToBookingResponseDto(bookingResponse, item))
+//                            .collect(Collectors.toList());
+//                    result = bookingService.getBookingsByBooker(bookerId, state, from, size);
+//
+//                    assertEquals(expected, result);
+//                    break;
+                default:
+                    result = Collections.emptyList();
+                    assertEquals(0, result.size());
+            }
+        }
     }
 
     @Test
@@ -196,8 +259,7 @@ class BookingServiceImplIntegrationTest {
         Pageable pageable = PageRequest.of(from / size, size, Sort.by("id").descending());
         Page<Booking> bookingPage;
         if (bookerId.equals(99L)) {
-            Mockito.when(userRepository.findById(bookerId))
-                    .thenThrow(new NotFoundException(String.format("Пользователь с id %d не найден", bookerId)));
+            Mockito.when(userRepository.findById(bookerId)).thenThrow(new NotFoundException(String.format("Пользователь с id %d не найден", bookerId)));
             assertThrows(NotFoundException.class, () -> bookingService.getBookingsByBooker(bookerId, state, from, size));
         } else {
             List<BookingResponseDto> expected;
@@ -212,10 +274,7 @@ class BookingServiceImplIntegrationTest {
                     bookingPage = new PageImpl<>(expectedListBookings);
                     Mockito.when(userRepository.findById(bookerId)).thenReturn(Optional.of(user));
                     Mockito.when(bookingRepository.findAllByBooker_Id(bookerId, pageable)).thenReturn(bookingPage);
-                    expected = bookingPage.getContent()
-                            .stream()
-                            .map(bookingResponse -> BookingMapper.mapToBookingResponseDto(bookingResponse, item))
-                            .collect(Collectors.toList());
+                    expected = bookingPage.getContent().stream().map(bookingResponse -> BookingMapper.mapToBookingResponseDto(bookingResponse, item)).collect(Collectors.toList());
                     result = bookingService.getBookingsByBooker(bookerId, state, from, size);
 
                     assertEquals(expected, result);
@@ -230,10 +289,7 @@ class BookingServiceImplIntegrationTest {
                     bookingPage = new PageImpl<>(expectedListBookings);
                     Mockito.when(userRepository.findById(bookerId)).thenReturn(Optional.of(user));
                     Mockito.when(bookingRepository.findAllByBooker_Id(bookerId, pageable)).thenReturn(bookingPage);
-                    expected = bookingPage.getContent()
-                            .stream()
-                            .map(bookingResponse -> BookingMapper.mapToBookingResponseDto(bookingResponse, item))
-                            .collect(Collectors.toList());
+                    expected = bookingPage.getContent().stream().map(bookingResponse -> BookingMapper.mapToBookingResponseDto(bookingResponse, item)).collect(Collectors.toList());
                     result = bookingService.getBookingsByBooker(bookerId, state, from, size);
 
                     assertEquals(expected, result);
