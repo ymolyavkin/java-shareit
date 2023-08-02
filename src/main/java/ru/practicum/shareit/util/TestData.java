@@ -73,10 +73,10 @@ public class TestData {
                 }
         };
     }
-    /*static Object[] argsProviderFactoryBookingsByOwner() {
+    static Object[] argsProviderFactoryBookingsByOwner() {
         return new Object[]{
                 new Object[]{
-                        1L,
+                        3L,
                         StateRequest.ALL
                 },
                 new Object[]{
@@ -84,29 +84,29 @@ public class TestData {
                         StateRequest.ALL
                 },
                 new Object[]{
-                        1L,
+                        3L,
                         StateRequest.CURRENT
                 },
                 new Object[]{
-                        1L,
+                        3L,
                         StateRequest.PAST
                 },
                 new Object[]{
-                        1L,
+                        3L,
                         StateRequest.FUTURE
                 },
                 new Object[]{
-                        1L,
+                        3L,
                         StateRequest.WAITING
                 },
                 new Object[]{
-                        1L,
+                       3L,
                         StateRequest.REJECTED
                 },
                 new Object[]{
-                        1L,
+                        3L,
                         StateRequest.UNSUPPORTED_STATUS
                 }
         };
-    }*/
+    }
 }
