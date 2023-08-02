@@ -38,8 +38,10 @@ public class BookingServiceImpl implements BookingService {
 
     @Transactional(readOnly = true)
     @Override
-    public BookingResponseDto getBookingById(Long id, Long userId) {
-        Booking booking = bookingRepository.getReferenceById(id);
+    public BookingResponseDto getBookingById(Long bookingId, Long userId) {
+        //Booking booking = bookingRepository.getReferenceById(id);
+        Booking booking = bookingRepository.findById(bookingId)
+                .orElseThrow(() -> new NotFoundException(String.format("Бронирование с id %d не найдено", bookingId)));
         Item item = itemRepository.findById(booking.getItemId())
                 .orElseThrow(() -> new NotFoundException(String.format("Вещь с id %d не найдена", booking.getItemId())));
         if (!booking.getBookerId().equals(userId) && !item.getOwnerId().equals(userId)) {

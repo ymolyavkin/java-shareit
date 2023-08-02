@@ -171,15 +171,6 @@ class BookingServiceImplIntegrationTest {
         assertEquals(expectedListBookings, actualListBooking);
     }
 
-    /*
-    @ParameterizedTest
-    @CsvSource({
-        "alex, 30, HR, Active",
-        "brian, 35, Technology, Active",
-        "charles, 40, Finance, Purged"
-    })
-    void testWithCsvSource(String name, int age, String department, String status)
-     */
     @DirtiesContext
     @ParameterizedTest
     @CsvSource({
