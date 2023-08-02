@@ -66,8 +66,8 @@ class BookingServiceImplIntegrationTest {
     private Item item;
     private Booking booking;
     private BookingResponseDto bookingResponseDto;
-    private int FROM = 0;
-    private int SIZE = 10;
+    private int from = 0;
+    private int size = 10;
 
 
     @BeforeEach
@@ -189,11 +189,11 @@ class BookingServiceImplIntegrationTest {
         List<Booking> expectedListBookings;
         List<BookingResponseDto> result;
 
-        Pageable pageable = PageRequest.of(FROM / SIZE, SIZE, Sort.by("id").descending());
+        Pageable pageable = PageRequest.of(from / size, size, Sort.by("id").descending());
         Page<Booking> bookingPage;
         if (ownerId.equals(99L)) {
             Mockito.when(userRepository.findById(ownerId)).thenThrow(new NotFoundException(String.format("Пользователь с id %d не найден", ownerId)));
-            assertThrows(NotFoundException.class, () -> bookingService.getBookingsByOwner(ownerId, state, FROM, SIZE));
+            assertThrows(NotFoundException.class, () -> bookingService.getBookingsByOwner(ownerId, state, from, size));
         } else {
 //            List<BookingResponseDto> expected;
 //            List<Long> itemIdsByOwner = List.of(ownerId);
@@ -213,7 +213,7 @@ class BookingServiceImplIntegrationTest {
                 case UNSUPPORTED_STATUS:
                     Mockito.when(userRepository.findById(ownerId)).thenReturn(Optional.of(booker));
 
-                    assertThrows(UnsupportedStatusException.class, () -> bookingService.getBookingsByOwner(ownerId, state, FROM, SIZE));
+                    assertThrows(UnsupportedStatusException.class, () -> bookingService.getBookingsByOwner(ownerId, state, from, size));
                     break;
                 case ALL:
                 case CURRENT:
@@ -231,7 +231,7 @@ class BookingServiceImplIntegrationTest {
                     Mockito.when(userRepository.findById(ownerId)).thenReturn(Optional.of(booker));
                     Mockito.when(bookingRepository.findByItem_IdInOrderByStartDesc(itemIdsByOwner, pageable)).thenReturn(bookingPage);
                     expected = bookingList.stream().map(bookingResponse -> BookingMapper.mapToBookingResponseDto(bookingResponse, item)).collect(Collectors.toList());
-                    result = bookingService.getBookingsByOwner(ownerId, state, FROM, SIZE);
+                    result = bookingService.getBookingsByOwner(ownerId, state, from, size);
 
                     assertEquals(expected, result);
                 default:

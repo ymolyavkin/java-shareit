@@ -73,6 +73,7 @@ public class TestData {
                 }
         };
     }
+
     static Object[] argsProviderFactoryBookingsByOwner() {
         return new Object[]{
                 new Object[]{
@@ -100,7 +101,7 @@ public class TestData {
                         StateRequest.WAITING
                 },
                 new Object[]{
-                       3L,
+                        3L,
                         StateRequest.REJECTED
                 },
                 new Object[]{
