@@ -15,6 +15,7 @@ import ru.practicum.shareit.exception.OwnerMismatchException;
 import ru.practicum.shareit.item.comment.CommentRepository;
 import ru.practicum.shareit.item.dto.IncomingItemDto;
 import ru.practicum.shareit.item.dto.ItemLastNextDto;
+import ru.practicum.shareit.item.dto.ItemMapper;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.repository.ItemRepository;
 import ru.practicum.shareit.request.dto.IncomingItemRequestDto;
@@ -40,6 +41,7 @@ class ItemServiceImplTest {
     @Mock
     CommentRepository commentRepository;
 
+    private Item item;
     private Item itemOne;
     private Item itemTwo;
     private User userOwner;
@@ -47,7 +49,7 @@ class ItemServiceImplTest {
     private IncomingItemDto incomingItemDto;
     private IncomingItemRequestDto incomingItemRequestDto;
     private Long requesterId = 1L;
-    private Long ownerId = 1L;
+    private Long ownerId;
 
     @BeforeEach
     public void setUp() {
@@ -69,6 +71,7 @@ class ItemServiceImplTest {
         incomingItemDto.setDescription("DescriptionItem");
         incomingItemDto.setAvailable(true);
         incomingItemDto.setOwnerId(ownerId);
+        item = ItemMapper.mapToItem(incomingItemDto, userOwner);
     }
 
     @Test
@@ -105,6 +108,7 @@ class ItemServiceImplTest {
         assertThrows(NotFoundException.class, () -> itemService.updateItem(incomingItemDto, 99L, 1L));
         verify(itemRepository, never()).saveAndFlush(Mockito.any(Item.class));
     }
+
     @Test
     void updateItem_whenUserNotEqualsOwner_thenThrown() {
         incomingItemDto.setOwnerId(userOwner.getId());
@@ -118,33 +122,105 @@ class ItemServiceImplTest {
         });
         assertNotNull(thrown.getMessage());
     }
-/*
- public ItemDto updateItem(IncomingItemDto incomingItemDto, Long itemId, Long userId) {
-        Item item = itemRepository.findById(itemId).orElseThrow(() -> new NotFoundException("Вещь с id = {} не найдена"));
 
-        if (!userId.equals(item.getOwnerId())) {
-            throw new OwnerMismatchException("Указанный пользователь не является владельцем вещи");
-        }
-        boolean needsToBeChanged = false;
-        if (incomingItemDto.getName() != null && !incomingItemDto.getName().equals(item.getName())) {
-            item.setName(incomingItemDto.getName());
-            needsToBeChanged = true;
-        }
-        if (incomingItemDto.getDescription() != null && !incomingItemDto.getDescription().equals(item.getDescription())) {
-            item.setDescription(incomingItemDto.getDescription());
-            needsToBeChanged = true;
-        }
-        if (incomingItemDto.getAvailable() != null && !incomingItemDto.getAvailable().equals(item.getAvailable())) {
-            item.setAvailable(incomingItemDto.getAvailable());
-            needsToBeChanged = true;
-        }
-        if (needsToBeChanged) {
-            itemRepository.saveAndFlush(item);
-        }
-        return ItemMapper.mapToItemDto(item);
+    @Test
+    void updateItem_whenUserEqualsOwner_thenUpdate() {
+       /* incomingItemDto.setOwnerId(userOwner.getId());
+        Long userId = userOwner.getId();
+        Long itemId = item.getId();
+        // Mockito.lenient().when(itemRepository.findById(itemId)).thenReturn(Optional.of(item));
+        //Mockito.when(itemRepository.findById(itemId)).thenReturn(Optional.of(item));
+        //  Mockito.lenient().when(userRepository.findById(userId)).thenReturn(Optional.of(userAuthor));
+        Mockito.when(userRepository.findById(userId)).thenReturn(Optional.of(userOwner));
+
+        Mockito.when(itemRepository.findById(itemId)).thenReturn(Optional.of(item));
+        ItemDto actualItem = itemService.updateItem(incomingItemDto, itemId, userId);
+        ItemDto expectedItem = ItemMapper.mapToItemDto(item);
+        //UserDto actualUserDto = userService.updateUser(incomingUserDto, userId);
+        //User newUser = UserMapper.mapToUser(incomingUserDto);
+// itemRepository.saveAndFlush(item);
+        assertEquals(actualItem, expectedItem);
+//        assertEquals(actualUserDto.getName(), newUser.getName());
+//        assertEquals(actualUserDto.getId(), newUser.getId());
+assertEquals(expected, actual);
+            assertNotNull(actual);
+
+            verify(itemRequestRepository, times(1)).findAllByRequesterIdNotOrderByCreatedDesc(anyLong(), any());
+*/
     }
 
- */
+    @Test
+    void updateItemByIdNewNameTest() {
+//        Long itemId = item.getId();
+//        Long userId = user.getId();
+//
+//        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
+//        when(itemRepository.findById(itemId)).thenReturn(Optional.of(item));
+//        when(itemRepository.save(any())).thenReturn(item);
+//
+//        userRepository.findById(userId);
+//        itemShortDto.setName("new_name");
+//        ItemDto itemDto = itemService.updateItemById(itemShortDto, itemId, userId);
+//        assertThat(itemDto.getName()).isEqualTo("new_name");
+    }
+
+    @Test
+    void updateItemByIdNewAvailableTeat() {
+//        Long itemId = item.getId();
+//        Long userId = user.getId();
+//
+//        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
+//        when(itemRepository.findById(itemId)).thenReturn(Optional.of(item));
+//        when(itemRepository.save(any())).thenReturn(item);
+//
+//        userRepository.findById(userId);
+//        itemShortDto.setAvailable(false);
+//        ItemDto itemDto = itemService.updateItemById(itemShortDto, itemId, userId);
+//        assertThat(itemDto.getAvailable().equals(false));
+    }
+
+    @Test
+    void updateItemByIdNewDescriptionTest() {
+//        Long itemId = item.getId();
+//        Long userId = user.getId();
+//
+//        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
+//        when(itemRepository.findById(itemId)).thenReturn(Optional.of(item));
+//        when(itemRepository.save(any())).thenReturn(item);
+//
+//        userRepository.findById(userId);
+//        itemShortDto.setDescription("Newest_description");
+//        ItemDto itemDto = itemService.updateItemById(itemShortDto, itemId, userId);
+//        assertThat(itemDto.getDescription().equals("Newest_description"));
+    }
+
+    /*
+     public ItemDto updateItem(IncomingItemDto incomingItemDto, Long itemId, Long userId) {
+            Item item = itemRepository.findById(itemId).orElseThrow(() -> new NotFoundException("Вещь с id = {} не найдена"));
+
+            if (!userId.equals(item.getOwnerId())) {
+                throw new OwnerMismatchException("Указанный пользователь не является владельцем вещи");
+            }
+            boolean needsToBeChanged = false;
+            if (incomingItemDto.getName() != null && !incomingItemDto.getName().equals(item.getName())) {
+                item.setName(incomingItemDto.getName());
+                needsToBeChanged = true;
+            }
+            if (incomingItemDto.getDescription() != null && !incomingItemDto.getDescription().equals(item.getDescription())) {
+                item.setDescription(incomingItemDto.getDescription());
+                needsToBeChanged = true;
+            }
+            if (incomingItemDto.getAvailable() != null && !incomingItemDto.getAvailable().equals(item.getAvailable())) {
+                item.setAvailable(incomingItemDto.getAvailable());
+                needsToBeChanged = true;
+            }
+            if (needsToBeChanged) {
+                itemRepository.saveAndFlush(item);
+            }
+            return ItemMapper.mapToItemDto(item);
+        }
+
+     */
     @Test
     void searchItemsByText() {
     }
