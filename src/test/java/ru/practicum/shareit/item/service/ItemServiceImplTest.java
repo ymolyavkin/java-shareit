@@ -4,17 +4,23 @@ import org.jeasy.random.EasyRandom;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import ru.practicum.shareit.booking.repository.BookingRepository;
+import ru.practicum.shareit.exception.NoneXSharerUserIdException;
 import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.item.comment.CommentRepository;
 import ru.practicum.shareit.item.dto.IncomingItemDto;
 import ru.practicum.shareit.item.dto.ItemLastNextDto;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.repository.ItemRepository;
+import ru.practicum.shareit.request.dto.IncomingItemRequestDto;
+import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserRepository;
+
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -22,6 +28,7 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 class ItemServiceImplTest {
     private final EasyRandom easyRandom = new EasyRandom();
+    @InjectMocks
     private ItemServiceImpl itemService;
     @Mock
     ItemRepository itemRepository;
@@ -34,14 +41,25 @@ class ItemServiceImplTest {
 
     private Item itemOne;
     private Item itemTwo;
+    private User userOwner;
+    private User userRequester;
+    private IncomingItemDto incomingItemDto;
+    private IncomingItemRequestDto incomingItemRequestDto;
+    private Long requesterId = 1L;
+    private Long ownerId = 1L;
 
     @BeforeEach
     public void setUp() {
-        itemService = new ItemServiceImpl(itemRepository, userRepository, bookingRepository, commentRepository);
+        // itemService = new ItemServiceImpl(itemRepository, userRepository, bookingRepository, commentRepository);
         itemOne = easyRandom.nextObject(Item.class);
         itemTwo = easyRandom.nextObject(Item.class);
         itemOne.setId(1L);
         itemTwo.setId(2L);
+        incomingItemDto = new IncomingItemDto();
+        incomingItemDto.setName("ItemName");
+        incomingItemDto.setDescription("DescriptionItem");
+        incomingItemDto.setAvailable(true);
+        incomingItemDto.setOwnerId(ownerId);
     }
 
     @Test
@@ -63,6 +81,11 @@ class ItemServiceImplTest {
 
     @Test
     void addItem() {
+        incomingItemDto.setOwnerId(-1L);
+        Throwable thrown = assertThrows(NoneXSharerUserIdException.class, () -> {
+            itemService.addItem(incomingItemDto);
+        });
+        assertNotNull(thrown.getMessage());
     }
 
     @Test

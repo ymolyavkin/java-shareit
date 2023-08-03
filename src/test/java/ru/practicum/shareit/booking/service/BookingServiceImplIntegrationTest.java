@@ -353,8 +353,6 @@ class BookingServiceImplIntegrationTest {
         // userRepository.save(booker);
         switch (bookerId) {
             case 1:
-                System.out.println(item);
-                System.out.println();
                 Mockito.when(userRepository.findById((long) bookerId)).thenReturn(Optional.of(booker));
                 Mockito.when(itemRepository.findById(1L)).thenReturn(Optional.of(item));
                 Mockito.when(bookingRepository.save(Mockito.any())).thenReturn(booking);
