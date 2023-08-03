@@ -79,10 +79,6 @@ class ItemRequestServiceImplTest {
         incomingItemRequestDto.setDescription("incomingItemRequestDtoDescription");
         itemRequest = ItemRequestMapper.mapToItemRequest(incomingItemRequestDto, userRequester);
         itemRequest.setId(itemRequestId);
-        //  IncomingUserDto incomingUserDto = easyRandom.nextObject(IncomingUserDto.class);
-        //   User requester = UserMapper.mapToUser(incomingUserDto);
-        //  IncomingItemRequestDto incomingItemRequestDto = easyRandom.nextObject(IncomingItemRequestDto.class);
-        //ItemRequest itemRequestToSave = ItemRequestMapper.mapToItemRequest(incomingItemRequestDto, requester);
     }
 
     @Test
@@ -101,10 +97,6 @@ class ItemRequestServiceImplTest {
         verify(itemRequestRepository, atMost(5)).save(itemRequestToSave);
     }
 
-    /*
-        @Test
-        void getItemRequestsByAuthor() {
-        }*/
     @ParameterizedTest
     @ValueSource(longs = {1, 99})
     void getItemRequestsByOther(Long requesterId) {
@@ -118,33 +110,25 @@ class ItemRequestServiceImplTest {
             List<ItemRequest> listItemRequests = Collections.emptyList();
 
             Page<ItemRequest> requestPage = new PageImpl<>(listItemRequests);
-            //  Page<ItemRequest> requests = itemRequestRepository.findAllByRequesterIdNotOrderByCreatedDesc(requesterId, pageable);
 
             when(itemRequestRepository.findAllByRequesterIdNotOrderByCreatedDesc(requesterId, pageable)).thenReturn(requestPage);
             List<ItemRequest> itemRequests = requestPage.getContent();
             List<ItemAnswerToRequestDto> answers = Collections.emptyList();
-            //   ItemRequestWithAnswersDto expected = ItemRequestMapper.mapToItemRequestAnswerDto(itemRequest, answers);
+
             List<ItemRequestWithAnswersDto> expected = itemRequests
                     .stream()
                     .map(itemRequest -> ItemRequestMapper.mapToItemRequestAnswerDto(itemRequest, answers))
                     .collect(Collectors.toList());
             List<ItemRequestWithAnswersDto> actual = itemRequestService.getItemRequestsByOther(requesterId, from, size);
+
+            assertEquals(expected, actual);
+            assertNotNull(actual);
+           
+            verify(itemRequestRepository, times(1)).findAllByRequesterIdNotOrderByCreatedDesc(anyLong(), any());
         }
 
     }
 
-    /*
-    public List<ItemRequestWithAnswersDto> getItemRequestsByOther(Long requesterId, int from, int size) {
-            User requester = userRepository.findById(requesterId)
-                    .orElseThrow(() -> new NotFoundException(String.format("Пользователь с id %d не найден", requesterId)));
-            Pageable pageable = PageRequest.of(from, size);
-            Page<ItemRequest> requests = itemRequestRepository.findAllByRequesterIdNotOrderByCreatedDesc(requesterId, pageable);
-            List<ItemRequest> itemRequests = requests.getContent();
-            return itemRequests
-                    .stream()
-                    .map(itemRequest -> ItemRequestMapper.mapToItemRequestAnswerDto(itemRequest, getAnswersToRequest(itemRequest)))
-                    .collect(Collectors.toList());
-     */
     @ParameterizedTest
     @CsvSource({
             "1, 1",
