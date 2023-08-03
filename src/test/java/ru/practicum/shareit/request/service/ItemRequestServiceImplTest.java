@@ -6,9 +6,14 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.item.dto.IncomingItemDto;
 import ru.practicum.shareit.item.dto.ItemDto;
@@ -25,6 +30,7 @@ import ru.practicum.shareit.user.service.UserService;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -95,14 +101,50 @@ class ItemRequestServiceImplTest {
         verify(itemRequestRepository, atMost(5)).save(itemRequestToSave);
     }
 
-    @Test
-    void getItemRequestsByAuthor() {
+    /*
+        @Test
+        void getItemRequestsByAuthor() {
+        }*/
+    @ParameterizedTest
+    @ValueSource(longs = {1, 99})
+    void getItemRequestsByOther(Long requesterId) {
+        if (!requesterId.equals(userRequester.getId())) {
+            doThrow(NotFoundException.class).when(userRepository).findById(requesterId);
+
+            assertThrows(NotFoundException.class, () -> itemRequestService.getItemRequestById(requesterId, itemRequestId));
+        } else {
+            when(userRepository.findById(requesterId)).thenReturn(Optional.of(userRequester));
+            Pageable pageable = PageRequest.of(from, size);
+            List<ItemRequest> listItemRequests = Collections.emptyList();
+
+            Page<ItemRequest> requestPage = new PageImpl<>(listItemRequests);
+            //  Page<ItemRequest> requests = itemRequestRepository.findAllByRequesterIdNotOrderByCreatedDesc(requesterId, pageable);
+
+            when(itemRequestRepository.findAllByRequesterIdNotOrderByCreatedDesc(requesterId, pageable)).thenReturn(requestPage);
+            List<ItemRequest> itemRequests = requestPage.getContent();
+            List<ItemAnswerToRequestDto> answers = Collections.emptyList();
+            //   ItemRequestWithAnswersDto expected = ItemRequestMapper.mapToItemRequestAnswerDto(itemRequest, answers);
+            List<ItemRequestWithAnswersDto> expected = itemRequests
+                    .stream()
+                    .map(itemRequest -> ItemRequestMapper.mapToItemRequestAnswerDto(itemRequest, answers))
+                    .collect(Collectors.toList());
+            List<ItemRequestWithAnswersDto> actual = itemRequestService.getItemRequestsByOther(requesterId, from, size);
+        }
+
     }
 
-    @Test
-    void getItemRequestsByOther() {
-    }
-
+    /*
+    public List<ItemRequestWithAnswersDto> getItemRequestsByOther(Long requesterId, int from, int size) {
+            User requester = userRepository.findById(requesterId)
+                    .orElseThrow(() -> new NotFoundException(String.format("Пользователь с id %d не найден", requesterId)));
+            Pageable pageable = PageRequest.of(from, size);
+            Page<ItemRequest> requests = itemRequestRepository.findAllByRequesterIdNotOrderByCreatedDesc(requesterId, pageable);
+            List<ItemRequest> itemRequests = requests.getContent();
+            return itemRequests
+                    .stream()
+                    .map(itemRequest -> ItemRequestMapper.mapToItemRequestAnswerDto(itemRequest, getAnswersToRequest(itemRequest)))
+                    .collect(Collectors.toList());
+     */
     @ParameterizedTest
     @CsvSource({
             "1, 1",
