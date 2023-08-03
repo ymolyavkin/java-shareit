@@ -12,7 +12,7 @@ class ConverterTest {
     @Test
     void stringToLongContentNumber() {
         String stringSourceContentNumber = "45asw";
-                Pattern pattern = Pattern.compile(".*?(\\d+).*");
+        Pattern pattern = Pattern.compile(".*?(\\d+).*");
         Matcher matcherContentNumber = pattern.matcher(stringSourceContentNumber);
         String number = "-1";
         if (matcherContentNumber.find()) {
@@ -21,6 +21,7 @@ class ConverterTest {
         Long actual = Long.parseLong(number);
         assertEquals(actual, 45L);
     }
+
     @Test
     void stringToLongWithoutNumber() {
         String stringSourceContentNumber = "45asw";
