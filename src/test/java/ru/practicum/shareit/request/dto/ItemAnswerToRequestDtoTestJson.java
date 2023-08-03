@@ -17,7 +17,7 @@ class ItemAnswerToRequestDtoTestJson {
     private JacksonTester<ItemAnswerToRequestDto> json;
 
     @Test
-    void ItemAnswerToRequestDtoTest() throws IOException {
+    void itemAnswerToRequestDtoTest() throws IOException {
         User user = new User();
         user.setEmail("email@email.ru");
         user.setName("Name");
