@@ -16,12 +16,12 @@ import java.time.format.DateTimeFormatter;
 class BookingDtoTest {
     @Autowired
     private JacksonTester<BookingDto> json;
-    private static final String TIME_PATTERN_TEST = "yyyy-MM-dd'T'HH:mm:ss.SSSSSSS";
+    private static final String TIME_PATTERN_TEST = "yyyy-MM-dd'T'HH:mm:ss.SSSSSSSS";
     private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern(TIME_PATTERN_TEST);
 
     @Test
     void bookingCreationDtoTest() throws IOException {
-        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime now = LocalDateTime.parse("2019-02-14T11:04:52.78423108");
         BookingDto bookingDto = BookingDto.builder()
                 .id(1L)
                 .status(Status.WAITING)
