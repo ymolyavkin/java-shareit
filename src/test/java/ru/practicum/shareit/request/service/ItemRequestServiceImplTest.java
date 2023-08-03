@@ -4,6 +4,8 @@ import org.jeasy.random.EasyRandom;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -11,9 +13,7 @@ import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.item.dto.IncomingItemDto;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.repository.ItemRepository;
-import ru.practicum.shareit.request.dto.IncomingItemRequestDto;
-import ru.practicum.shareit.request.dto.ItemRequestMapper;
-import ru.practicum.shareit.request.dto.ItemRequestResponseDto;
+import ru.practicum.shareit.request.dto.*;
 import ru.practicum.shareit.request.model.ItemRequest;
 import ru.practicum.shareit.request.repository.ItemRequestRepository;
 import ru.practicum.shareit.user.dto.IncomingUserDto;
@@ -22,6 +22,8 @@ import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserRepository;
 import ru.practicum.shareit.user.service.UserService;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -61,6 +63,7 @@ class ItemRequestServiceImplTest {
         incomingRequester = new IncomingUserDto("Requester", "email@reqmail.ru");
         userOwner = UserMapper.mapToUser(incomingOwner);
         userRequester = UserMapper.mapToUser(incomingRequester);
+        userRequester.setId(requesterId);
         incomingItemDto = new IncomingItemDto();
         incomingItemDto.setName("ItemName");
         incomingItemDto.setDescription("DescriptionItem");
@@ -70,6 +73,10 @@ class ItemRequestServiceImplTest {
         incomingItemRequestDto.setDescription("incomingItemRequestDtoDescription");
         itemRequest = ItemRequestMapper.mapToItemRequest(incomingItemRequestDto, userRequester);
         itemRequest.setId(itemRequestId);
+        //  IncomingUserDto incomingUserDto = easyRandom.nextObject(IncomingUserDto.class);
+        //   User requester = UserMapper.mapToUser(incomingUserDto);
+        //  IncomingItemRequestDto incomingItemRequestDto = easyRandom.nextObject(IncomingItemRequestDto.class);
+        //ItemRequest itemRequestToSave = ItemRequestMapper.mapToItemRequest(incomingItemRequestDto, requester);
     }
 
     @Test
@@ -78,6 +85,7 @@ class ItemRequestServiceImplTest {
         User requester = UserMapper.mapToUser(incomingUserDto);
         IncomingItemRequestDto incomingItemRequestDto = easyRandom.nextObject(IncomingItemRequestDto.class);
         ItemRequest itemRequestToSave = ItemRequestMapper.mapToItemRequest(incomingItemRequestDto, requester);
+
         doThrow(NotFoundException.class).when(userRepository).findById(99L);
 
         assertThrows(NotFoundException.class, () -> itemRequestService.addItemRequest(incomingItemRequestDto, 99L));
@@ -95,8 +103,42 @@ class ItemRequestServiceImplTest {
     void getItemRequestsByOther() {
     }
 
-    @Test
-    void getItemRequestById() {
+    @ParameterizedTest
+    @CsvSource({
+            "1, 1",
+            "1, 99",
+            "99, 1"
+    })
+    void getItemRequestById(Long requesterId, Long itemRequestId) {
+        if (!requesterId.equals(userRequester.getId())) {
+            doThrow(NotFoundException.class).when(userRepository).findById(requesterId);
+
+            assertThrows(NotFoundException.class, () -> itemRequestService.getItemRequestById(requesterId, itemRequestId));
+        } else if (!itemRequestId.equals(itemRequest.getId())) {
+            when(userRepository.findById(requesterId)).thenReturn(Optional.of(userRequester));
+
+            doThrow(NotFoundException.class).when(itemRequestRepository).findById(itemRequestId);
+            assertThrows(NotFoundException.class, () -> itemRequestService.getItemRequestById(requesterId, itemRequestId));
+        } else {
+            when(userRepository.findById(requesterId)).thenReturn(Optional.of(userRequester));
+            when(itemRequestRepository.findById(anyLong())).thenReturn(Optional.of(itemRequest));
+            ItemAnswerToRequestDto itemAnswerToRequestDto = ItemAnswerToRequestDto.builder()
+                    .id(1L)
+                    .name("Name")
+                    .requestId(itemRequestId)
+                    .description("Description")
+                    .available(true)
+                    .build();
+
+            List<ItemAnswerToRequestDto> answers = Collections.emptyList();
+            ItemRequestWithAnswersDto expected = ItemRequestMapper.mapToItemRequestAnswerDto(itemRequest, answers);
+            ItemRequestWithAnswersDto actual = itemRequestService.getItemRequestById(requesterId, itemRequestId);
+
+            assertEquals(expected.getId(), actual.getId());
+            assertEquals(expected.getDescription(), actual.getDescription());
+            assertEquals(expected.getCreated(), actual.getCreated());
+            assertEquals(expected.getItems(), actual.getItems());
+        }
     }
 
     @Test
