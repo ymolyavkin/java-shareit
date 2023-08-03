@@ -123,7 +123,6 @@ class UserServiceImplTest {
         incomingUserDto.setName("newName@mail.ru");
         User newUser = UserMapper.mapToUser(incomingUserDto);
         newUser.setId(userId);
-
         when(userRepository.findById(userId)).thenReturn(Optional.of(oldUser));
 
         UserDto actualUserDto = userService.updateUser(incomingUserDto, userId);
