@@ -123,7 +123,7 @@ class ItemRequestServiceImplTest {
 
             assertEquals(expected, actual);
             assertNotNull(actual);
-           
+
             verify(itemRequestRepository, times(1)).findAllByRequesterIdNotOrderByCreatedDesc(anyLong(), any());
         }
 
