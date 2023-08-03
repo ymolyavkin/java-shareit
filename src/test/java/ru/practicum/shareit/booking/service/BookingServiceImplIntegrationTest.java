@@ -122,7 +122,7 @@ class BookingServiceImplIntegrationTest {
     }
 
     // @BeforeEach
-    void setUp1() {
+   /* void setUp1() {
         bookingService = new BookingServiceImpl(itemRepository, userRepository, bookingRepository);
         bookingDtoOne = new IncomingBookingDto();
         bookingDtoTwo = new IncomingBookingDto();
@@ -159,7 +159,7 @@ class BookingServiceImplIntegrationTest {
 
         Item item = itemRepository.save(ItemMapper.mapToItem(itemDto, userOne));
     }
-
+*/
     @Test
     @DirtiesContext
     void getAllTest() {
