@@ -12,7 +12,7 @@ import ru.practicum.shareit.user.model.User;
 import java.io.IOException;
 
 @JsonTest
-class ItemAnswerToRequestDtoTest {
+class ItemAnswerToRequestDtoTestJson {
     @Autowired
     private JacksonTester<ItemAnswerToRequestDto> json;
 

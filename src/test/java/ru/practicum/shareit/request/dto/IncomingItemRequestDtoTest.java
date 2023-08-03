@@ -16,6 +16,7 @@ class IncomingItemRequestDtoTest {
 
         assertThat(descriptionOne, equalTo(descriptionTwo));
     }
+
     @Test
     void testHashCode() {
         String descriptionOne = "Description";
