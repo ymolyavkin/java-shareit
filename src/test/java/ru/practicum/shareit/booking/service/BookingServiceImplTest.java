@@ -104,7 +104,7 @@ class BookingServiceImplTest {
 
     @Test
     void getBookingByIdWithWrongBookingIdTest() {
-        Long bookingId = 9999L;
+        Long bookingId = 99L;
         when(bookingRepository.findById(anyLong())).thenReturn(Optional.empty());
 
         assertThrows(NotFoundException.class, () -> bookingService.getBookingById(booker.getId(), bookingId));
@@ -113,7 +113,7 @@ class BookingServiceImplTest {
     @Test
     void getBookingByIdWithWrongUserIdTest() {
         Long bookingId = 1L;
-        Long userId = 9999L;
+        Long userId = 99L;
         when(bookingRepository.findById(anyLong())).thenReturn(Optional.of(booking));
 
         assertThrows(NotFoundException.class, () -> bookingService.getBookingById(userId, bookingId));
