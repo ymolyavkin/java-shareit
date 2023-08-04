@@ -14,6 +14,7 @@ import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.exception.OwnerMismatchException;
 import ru.practicum.shareit.item.comment.CommentRepository;
 import ru.practicum.shareit.item.dto.IncomingItemDto;
+import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.ItemLastNextDto;
 import ru.practicum.shareit.item.dto.ItemMapper;
 import ru.practicum.shareit.item.model.Item;
@@ -24,6 +25,7 @@ import ru.practicum.shareit.user.repository.UserRepository;
 
 import java.util.Optional;
 
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -72,6 +74,7 @@ class ItemServiceImplTest {
         incomingItemDto.setAvailable(true);
         incomingItemDto.setOwnerId(ownerId);
         item = ItemMapper.mapToItem(incomingItemDto, userOwner);
+        item.setId(1L);
     }
 
     @Test
@@ -125,102 +128,67 @@ class ItemServiceImplTest {
 
     @Test
     void updateItem_whenUserEqualsOwner_thenUpdate() {
-       /* incomingItemDto.setOwnerId(userOwner.getId());
+        incomingItemDto.setOwnerId(userOwner.getId());
         Long userId = userOwner.getId();
         Long itemId = item.getId();
-        // Mockito.lenient().when(itemRepository.findById(itemId)).thenReturn(Optional.of(item));
-        //Mockito.when(itemRepository.findById(itemId)).thenReturn(Optional.of(item));
-        //  Mockito.lenient().when(userRepository.findById(userId)).thenReturn(Optional.of(userAuthor));
-        Mockito.when(userRepository.findById(userId)).thenReturn(Optional.of(userOwner));
+
+        Mockito.lenient().when(userRepository.findById(userId)).thenReturn(Optional.of(userAuthor));
+        Mockito.when(itemRepository.findById(itemId)).thenReturn(Optional.of(item));
 
         Mockito.when(itemRepository.findById(itemId)).thenReturn(Optional.of(item));
         ItemDto actualItem = itemService.updateItem(incomingItemDto, itemId, userId);
         ItemDto expectedItem = ItemMapper.mapToItemDto(item);
-        //UserDto actualUserDto = userService.updateUser(incomingUserDto, userId);
-        //User newUser = UserMapper.mapToUser(incomingUserDto);
-// itemRepository.saveAndFlush(item);
-        assertEquals(actualItem, expectedItem);
-//        assertEquals(actualUserDto.getName(), newUser.getName());
-//        assertEquals(actualUserDto.getId(), newUser.getId());
-assertEquals(expected, actual);
-            assertNotNull(actual);
 
-            verify(itemRequestRepository, times(1)).findAllByRequesterIdNotOrderByCreatedDesc(anyLong(), any());
-*/
+        assertEquals(actualItem, expectedItem);
+
+        verify(itemRepository, times(1)).saveAndFlush(any());
     }
 
     @Test
     void updateItemByIdNewNameTest() {
-//        Long itemId = item.getId();
-//        Long userId = user.getId();
-//
-//        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
-//        when(itemRepository.findById(itemId)).thenReturn(Optional.of(item));
-//        when(itemRepository.save(any())).thenReturn(item);
-//
-//        userRepository.findById(userId);
-//        itemShortDto.setName("new_name");
-//        ItemDto itemDto = itemService.updateItemById(itemShortDto, itemId, userId);
-//        assertThat(itemDto.getName()).isEqualTo("new_name");
+        Long itemId = item.getId();
+        Long userId = userOwner.getId();
+
+        when(userRepository.findById(userId)).thenReturn(Optional.of(userOwner));
+        when(itemRepository.findById(itemId)).thenReturn(Optional.of(item));
+        when(itemRepository.saveAndFlush(any())).thenReturn(item);
+
+        userRepository.findById(userId);
+        incomingItemDto.setName("new_name");
+        ItemDto itemDto = itemService.updateItem(incomingItemDto, itemId, userId);
+        assertThat(itemDto.getName()).isEqualTo("new_name");
     }
 
     @Test
     void updateItemByIdNewAvailableTeat() {
-//        Long itemId = item.getId();
-//        Long userId = user.getId();
-//
-//        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
-//        when(itemRepository.findById(itemId)).thenReturn(Optional.of(item));
-//        when(itemRepository.save(any())).thenReturn(item);
-//
-//        userRepository.findById(userId);
-//        itemShortDto.setAvailable(false);
-//        ItemDto itemDto = itemService.updateItemById(itemShortDto, itemId, userId);
-//        assertThat(itemDto.getAvailable().equals(false));
+        Long itemId = item.getId();
+        Long userId = userOwner.getId();
+
+        when(userRepository.findById(userId)).thenReturn(Optional.of(userOwner));
+        when(itemRepository.findById(itemId)).thenReturn(Optional.of(item));
+        when(itemRepository.saveAndFlush(any())).thenReturn(item);
+
+        userRepository.findById(userId);
+        incomingItemDto.setAvailable(false);
+        ItemDto itemDto = itemService.updateItem(incomingItemDto, itemId, userId);
+        assertFalse(itemDto.isAvailable());
     }
 
     @Test
     void updateItemByIdNewDescriptionTest() {
-//        Long itemId = item.getId();
-//        Long userId = user.getId();
-//
-//        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
-//        when(itemRepository.findById(itemId)).thenReturn(Optional.of(item));
-//        when(itemRepository.save(any())).thenReturn(item);
-//
-//        userRepository.findById(userId);
-//        itemShortDto.setDescription("Newest_description");
-//        ItemDto itemDto = itemService.updateItemById(itemShortDto, itemId, userId);
-//        assertThat(itemDto.getDescription().equals("Newest_description"));
+        Long itemId = item.getId();
+        Long userId = userOwner.getId();
+
+        when(userRepository.findById(userId)).thenReturn(Optional.of(userOwner));
+        when(itemRepository.findById(itemId)).thenReturn(Optional.of(item));
+        when(itemRepository.saveAndFlush(any())).thenReturn(item);
+
+        userRepository.findById(userId);
+        incomingItemDto.setDescription("Newest_description");
+        ItemDto itemDto = itemService.updateItem(incomingItemDto, itemId, userId);
+        assertThat(itemDto.getDescription().equals("Newest_description"));
     }
 
-    /*
-     public ItemDto updateItem(IncomingItemDto incomingItemDto, Long itemId, Long userId) {
-            Item item = itemRepository.findById(itemId).orElseThrow(() -> new NotFoundException("Вещь с id = {} не найдена"));
-
-            if (!userId.equals(item.getOwnerId())) {
-                throw new OwnerMismatchException("Указанный пользователь не является владельцем вещи");
-            }
-            boolean needsToBeChanged = false;
-            if (incomingItemDto.getName() != null && !incomingItemDto.getName().equals(item.getName())) {
-                item.setName(incomingItemDto.getName());
-                needsToBeChanged = true;
-            }
-            if (incomingItemDto.getDescription() != null && !incomingItemDto.getDescription().equals(item.getDescription())) {
-                item.setDescription(incomingItemDto.getDescription());
-                needsToBeChanged = true;
-            }
-            if (incomingItemDto.getAvailable() != null && !incomingItemDto.getAvailable().equals(item.getAvailable())) {
-                item.setAvailable(incomingItemDto.getAvailable());
-                needsToBeChanged = true;
-            }
-            if (needsToBeChanged) {
-                itemRepository.saveAndFlush(item);
-            }
-            return ItemMapper.mapToItemDto(item);
-        }
-
-     */
     @Test
     void searchItemsByText() {
     }
@@ -228,12 +196,4 @@ assertEquals(expected, actual);
     @Test
     void addComment() {
     }
-
-//    @AfterEach
-//    void tearDown() {
-//        commentRepository.deleteAll();
-//        bookingRepository.deleteAll();
-//        itemRepository.deleteAll();
-//        userRepository.deleteAll();
-//    }
 }
