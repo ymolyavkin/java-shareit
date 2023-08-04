@@ -78,14 +78,14 @@ public class ItemServiceImpl implements ItemService {
         return items.stream().map(item -> toItemLastNextDto(item)).collect(Collectors.toList());
     }
 
-    @Override
+ /*   @Override
     public List<ItemDto> getItemsByUser(Long userId) {
         List<Item> items = itemRepository.findAllByOwnerId(userId);
         return items
                 .stream()
                 .map(ItemMapper::mapToItemDto)
                 .collect(Collectors.toList());
-    }
+    }*/
 
     @Override
     public ItemDto addItem(IncomingItemDto incomingItemDto) {

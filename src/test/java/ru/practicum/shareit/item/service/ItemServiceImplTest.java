@@ -8,10 +8,13 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import ru.practicum.shareit.booking.model.Booking;
+import ru.practicum.shareit.booking.model.Status;
 import ru.practicum.shareit.booking.repository.BookingRepository;
 import ru.practicum.shareit.exception.NoneXSharerUserIdException;
 import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.exception.OwnerMismatchException;
+import ru.practicum.shareit.item.comment.Comment;
 import ru.practicum.shareit.item.comment.CommentRepository;
 import ru.practicum.shareit.item.dto.IncomingItemDto;
 import ru.practicum.shareit.item.dto.ItemDto;
@@ -23,6 +26,8 @@ import ru.practicum.shareit.request.dto.IncomingItemRequestDto;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserRepository;
 
+import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -55,6 +60,8 @@ class ItemServiceImplTest {
     private final int size = 10;
     private Long requesterId = 1L;
     private Long ownerId;
+    private Booking lastBooking;
+    private Booking nextBooking;
 
     @BeforeEach
     public void setUp() {
@@ -78,6 +85,8 @@ class ItemServiceImplTest {
         incomingItemDto.setOwnerId(userOwner.getId());
         item = ItemMapper.mapToItem(incomingItemDto, userOwner);
         item.setId(1L);
+        lastBooking = new Booking(1L, LocalDateTime.now(), LocalDateTime.now().plusDays(1), item, userAuthor, Status.WAITING);
+        nextBooking = new Booking(2L, LocalDateTime.now().plusDays(2), LocalDateTime.now().plusDays(3), item, userAuthor, Status.WAITING);
     }
 
     @Test
@@ -89,12 +98,33 @@ class ItemServiceImplTest {
     }
 
     @Test
-    void getItemsLastNextBookingByUser() {
+    void getItemByIdWithLastNextBooking() {
+        Long itemId = 2L;
+        Long ownerId = 4L;
+        item.setId(itemId);
+        userOwner.setId(ownerId);
 
+        Mockito.lenient().when(itemRepository.getReferenceById(Mockito.anyLong()))
+                .thenReturn(item);
+
+        List<Booking> bookings = Collections.emptyList();
+        when(bookingRepository.findByItem_IdAndStartBeforeAndStatusOrderByStartDesc(anyLong(), any(), any()))
+                .thenReturn(bookings);
+        ItemLastNextDto itemResponse = itemService.getItemById(itemId, ownerId);
+        assertEquals(itemId, itemResponse.getId());
     }
 
     @Test
-    void getItemsByUser() {
+    void getItemsLastNextBookingByUser() {
+        List<Item> items = List.of(item);
+        when(itemRepository.findAllByOwnerId(anyLong())).thenReturn(items);
+        List<Comment> comments = Collections.emptyList();
+
+        List<ItemLastNextDto> expected = List.of(ItemMapper.mapToItemLastNextDto(item, null, null, comments));
+        List<ItemLastNextDto> actual = itemService.getItemsLastNextBookingByUser(userOwner.getId(), from, size);
+
+        assertTrue(actual.size() > 0);
+        assertEquals(expected, actual);
     }
 
     @Test
@@ -130,18 +160,6 @@ class ItemServiceImplTest {
         assertEquals(incomingItemDto.getRequestId(), actualDto.getRequestId());
         assertThat(actualDto).hasFieldOrProperty("id");
     }
-    /*
-    public ItemDto addItem(IncomingItemDto incomingItemDto) {
-        if (incomingItemDto.getOwnerId().equals(-1L)) {
-            throw new NoneXSharerUserIdException("Не указан владелец вещи");
-        }
-        Long userId = incomingItemDto.getOwnerId();
-        User owner = userRepository.findById(userId)
-                .orElseThrow(() -> new NotFoundException(String.format("Пользователь с id %d не найден", userId)));
-        Item item = itemRepository.save(ItemMapper.mapToItem(incomingItemDto, owner));
-
-        return ItemMapper.mapToItemDto(item);
-     */
 
     @Test
     void updateItem_whenWrongUser_thenThrown() {

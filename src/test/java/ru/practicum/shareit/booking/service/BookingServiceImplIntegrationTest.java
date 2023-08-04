@@ -40,8 +40,8 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.never;
 
 @SpringBootTest
 class BookingServiceImplIntegrationTest {
@@ -408,13 +408,81 @@ class BookingServiceImplIntegrationTest {
 
     @Test
     @DirtiesContext
-    void updateBookingTest() {
+    void updateBooking_whenUnknownUser_thenThrown() {
+        when(bookingRepository.getReferenceById(anyLong()))
+                .thenThrow(new NotFoundException("Бронирование не найдено"));
+
+        assertThrows(NotFoundException.class, () -> bookingService.updateBooking(incomingBookingDtoOne, 99L, 1L));
+        verify(bookingRepository, never()).saveAndFlush(Mockito.any(Booking.class));
     }
+    @Test
+    @DirtiesContext
+    void updateBooking_whenUnknownItem_thenThrown() {
+       Mockito.lenient().when(bookingRepository.getReferenceById(anyLong()))
+                .thenReturn(booking);
+        when(itemRepository.findById(anyLong()))
+                .thenThrow(new NotFoundException(String.format("Вещь с id %d не найдена", booking.getItemId())));
+
+        assertThrows(NotFoundException.class, () -> bookingService.updateBooking(incomingBookingDtoOne, 99L, 1L));
+        verify(bookingRepository, never()).saveAndFlush(Mockito.any(Booking.class));
+    }
+    @Test
+    @DirtiesContext
+    void updateBooking_whenCorrectAll_thenUpdate() {
+        Mockito.lenient().when(bookingRepository.getReferenceById(anyLong()))
+                .thenReturn(booking);
+        Mockito.lenient().when(itemRepository.findById(anyLong()))
+                .thenReturn(Optional.ofNullable(item));
+
+        when(bookingRepository.saveAndFlush(booking)).thenReturn(booking);
+        BookingResponseDto expected = BookingMapper.mapToBookingResponseDto(booking, item);
+        BookingResponseDto actual = bookingService.updateBooking(incomingBookingDtoOne, booking.getId(), 1L);
+
+        assertEquals(expected, actual);
+        verify(bookingRepository, times(1)).saveAndFlush(Mockito.any(Booking.class));
+    }
+    /*
+     public BookingResponseDto updateBooking(IncomingBookingDto incomingBookingDto, Long bookingId, Long bookerId) {
+        Booking booking = bookingRepository.getReferenceById(bookingId);
+        Item item = itemRepository.findById(booking.getItemId())
+                .orElseThrow(() -> new NotFoundException(String.format("Вещь с id %d не найдена", booking.getItemId())));
+
+        booking.setStart(incomingBookingDto.getStart());
+        booking.setEnd(incomingBookingDto.getEnd());
+        booking.setStatus(incomingBookingDto.getStatus());
+        bookingRepository.saveAndFlush(booking);
+
+        return BookingMapper.mapToBookingResponseDto(booking, item);
+     */
 
     @Test
     @DirtiesContext
     void approvingBookingTest() {
     }
+    /*
+    public BookingResponseDto approvingBooking(Long bookingId, Long ownerId, Boolean approved) {
+        Booking booking = bookingRepository.findById(bookingId)
+                .orElseThrow(() -> new NotFoundException(String.format("Бронирование с id %d не найдено", bookingId)));
+        Item item = itemRepository.findById(booking.getItemId())
+                .orElseThrow(() -> new NotFoundException(String.format("Вещь с id %d не найдена", booking.getItemId())));
+        if (!ownerId.equals(item.getOwnerId())) {
+            throw new NotFoundException("Подтвержение может быть выполнено только владельцем вещи");
+        }
+        if (approved != null) {
+            if (approved) {
+                if (booking.getStatus() == Status.APPROVED) {
+                    throw new BadRequestException("Status is already approved");
+                }
+                booking.setStatus(Status.APPROVED);
+            } else {
+                booking.setStatus(Status.REJECTED);
+            }
+            bookingRepository.saveAndFlush(booking);
+        }
+        return BookingMapper.mapToBookingResponseDto(booking, item);
+    }
+}
+     */
 }
 //package ru.practicum.shareit.booking.service;
 //
