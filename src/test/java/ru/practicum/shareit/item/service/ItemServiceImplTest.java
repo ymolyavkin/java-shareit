@@ -23,6 +23,7 @@ import ru.practicum.shareit.request.dto.IncomingItemRequestDto;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserRepository;
 
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
@@ -50,6 +51,8 @@ class ItemServiceImplTest {
     private User userAuthor;
     private IncomingItemDto incomingItemDto;
     private IncomingItemRequestDto incomingItemRequestDto;
+    private final int from = 0;
+    private final int size = 10;
     private Long requesterId = 1L;
     private Long ownerId;
 
@@ -191,6 +194,15 @@ class ItemServiceImplTest {
 
     @Test
     void searchItemsByText() {
+        when(itemRepository
+                .findByNameIsContainingIgnoreCaseOrDescriptionIsContainingIgnoreCase("searchText", "searchText"))
+                .thenReturn(List.of(item));
+        List<ItemDto> exppectedItemDtoList = List.of(ItemMapper.mapToItemDto(item));
+        List<ItemDto> actualItemDtoList = itemService.searchItemsByText("searchText", from, size);
+
+        assertEquals(exppectedItemDtoList.get(0).getId(), actualItemDtoList.get(0).getId());
+        assertEquals(exppectedItemDtoList.get(0).getDescription(), actualItemDtoList.get(0).getDescription());
+        assertEquals(exppectedItemDtoList.get(0).getName(), actualItemDtoList.get(0).getName());
     }
 
     @Test
