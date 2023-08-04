@@ -107,22 +107,25 @@ public class ItemServiceImpl implements ItemService {
         if (!userId.equals(item.getOwnerId())) {
             throw new OwnerMismatchException("Указанный пользователь не является владельцем вещи");
         }
-        boolean needsToBeChanged = false;
-        if (incomingItemDto.getName() != null && !incomingItemDto.getName().equals(item.getName())) {
+     //   boolean needsToBeChanged = false;
+      //  if (incomingItemDto.getName() != null && !incomingItemDto.getName().equals(item.getName())) {
+        if (incomingItemDto.getName() != null && !incomingItemDto.getName().isBlank()) {
             item.setName(incomingItemDto.getName());
-            needsToBeChanged = true;
+           // needsToBeChanged = true;
         }
-        if (incomingItemDto.getDescription() != null && !incomingItemDto.getDescription().equals(item.getDescription())) {
+      //  if (incomingItemDto.getDescription() != null && !incomingItemDto.getDescription().equals(item.getDescription())) {
+        if (incomingItemDto.getDescription() != null && !incomingItemDto.getDescription().isBlank()) {
             item.setDescription(incomingItemDto.getDescription());
-            needsToBeChanged = true;
+          //  needsToBeChanged = true;
         }
-        if (incomingItemDto.getAvailable() != null && !incomingItemDto.getAvailable().equals(item.getAvailable())) {
+      //  if (incomingItemDto.getAvailable() != null && !incomingItemDto.getAvailable().equals(item.getAvailable())) {
+        if (incomingItemDto.getAvailable() != null) {
             item.setAvailable(incomingItemDto.getAvailable());
-            needsToBeChanged = true;
+          //  needsToBeChanged = true;
         }
-        if (needsToBeChanged) {
+       // if (needsToBeChanged) {
             itemRepository.saveAndFlush(item);
-        }
+       // }
         return ItemMapper.mapToItemDto(item);
     }
 
