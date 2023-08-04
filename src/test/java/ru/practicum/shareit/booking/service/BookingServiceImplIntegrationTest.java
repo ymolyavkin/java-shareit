@@ -415,10 +415,11 @@ class BookingServiceImplIntegrationTest {
         assertThrows(NotFoundException.class, () -> bookingService.updateBooking(incomingBookingDtoOne, 99L, 1L));
         verify(bookingRepository, never()).saveAndFlush(Mockito.any(Booking.class));
     }
+
     @Test
     @DirtiesContext
     void updateBooking_whenUnknownItem_thenThrown() {
-       Mockito.lenient().when(bookingRepository.getReferenceById(anyLong()))
+        Mockito.lenient().when(bookingRepository.getReferenceById(anyLong()))
                 .thenReturn(booking);
         when(itemRepository.findById(anyLong()))
                 .thenThrow(new NotFoundException(String.format("Вещь с id %d не найдена", booking.getItemId())));
@@ -426,6 +427,7 @@ class BookingServiceImplIntegrationTest {
         assertThrows(NotFoundException.class, () -> bookingService.updateBooking(incomingBookingDtoOne, 99L, 1L));
         verify(bookingRepository, never()).saveAndFlush(Mockito.any(Booking.class));
     }
+
     @Test
     @DirtiesContext
     void updateBooking_whenCorrectAll_thenUpdate() {
@@ -441,23 +443,50 @@ class BookingServiceImplIntegrationTest {
         assertEquals(expected, actual);
         verify(bookingRepository, times(1)).saveAndFlush(Mockito.any(Booking.class));
     }
-    /*
-     public BookingResponseDto updateBooking(IncomingBookingDto incomingBookingDto, Long bookingId, Long bookerId) {
-        Booking booking = bookingRepository.getReferenceById(bookingId);
-        Item item = itemRepository.findById(booking.getItemId())
-                .orElseThrow(() -> new NotFoundException(String.format("Вещь с id %d не найдена", booking.getItemId())));
-
-        booking.setStart(incomingBookingDto.getStart());
-        booking.setEnd(incomingBookingDto.getEnd());
-        booking.setStatus(incomingBookingDto.getStatus());
-        bookingRepository.saveAndFlush(booking);
-
-        return BookingMapper.mapToBookingResponseDto(booking, item);
-     */
 
     @Test
     @DirtiesContext
     void approvingBookingTest() {
+        when(bookingRepository.findById(anyLong()))
+                .thenThrow(new NotFoundException("Бронирование не найдено"));
+
+        assertThrows(NotFoundException.class, () -> bookingService.updateBooking(incomingBookingDtoOne, 99L, 1L));
+        verify(bookingRepository, never()).saveAndFlush(Mockito.any(Booking.class));
+    }
+
+    @Test
+    @DirtiesContext
+    void approvingBooking_whenUnknownBooking_thenThrown() {
+        when(bookingRepository.findById(anyLong()))
+                .thenThrow(new NotFoundException("Бронирование не найдено"));
+
+        assertThrows(NotFoundException.class, () -> bookingService.approvingBooking(99L, 99L, true));
+        verify(bookingRepository, never()).saveAndFlush(Mockito.any(Booking.class));
+    }
+
+    @Test
+    @DirtiesContext
+    void approvingBooking_whenUnknownItem_thenThrown() {
+        Mockito.lenient().when(bookingRepository.findById(anyLong())).thenReturn(Optional.of(booking));
+        when(itemRepository.findById(anyLong()))
+                .thenThrow(new NotFoundException(String.format("Вещь с id %d не найдена", booking.getItemId())));
+
+        assertThrows(NotFoundException.class, () -> bookingService.approvingBooking(99L, 99L, true));
+        verify(bookingRepository, never()).saveAndFlush(Mockito.any(Booking.class));
+    }
+
+    @Test
+    @DirtiesContext
+    void approvingBooking_whenNotOwner_thenThrown() {
+        Mockito.lenient().when(bookingRepository.findById(anyLong())).thenReturn(Optional.of(booking));
+        Mockito.lenient().when(itemRepository.findById(anyLong())).thenReturn(Optional.of(item));
+
+        Throwable thrown = assertThrows(NotFoundException.class, () -> {
+            bookingService.approvingBooking(1L, 2L, true);
+        });
+        assertNotNull(thrown.getMessage());
+
+        verify(bookingRepository, never()).saveAndFlush(Mockito.any(Booking.class));
     }
     /*
     public BookingResponseDto approvingBooking(Long bookingId, Long ownerId, Boolean approved) {
