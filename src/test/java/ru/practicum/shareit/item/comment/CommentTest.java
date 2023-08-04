@@ -64,6 +64,7 @@ class CommentTest {
         Comment comment2 = (Comment) commentTwo;
 
         assertEquals(comment1.getId(), comment2.getId());
+        assertTrue(comment2.equals(comment1));
     }
 
     @Test

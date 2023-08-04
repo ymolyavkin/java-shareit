@@ -65,6 +65,7 @@ class ItemTest {
     void testEqualsOneItem() {
         Item item1 = item;
         Item item2 = (Item) itemTwo;
+
         assertEquals(item1.getId(), item2.getId());
         assertEquals(item1.getName(), item2.getName());
         assertTrue(item2.equals(item1));
