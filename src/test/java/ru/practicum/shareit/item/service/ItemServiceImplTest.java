@@ -75,7 +75,7 @@ class ItemServiceImplTest {
         incomingItemDto.setName("ItemName");
         incomingItemDto.setDescription("DescriptionItem");
         incomingItemDto.setAvailable(true);
-        incomingItemDto.setOwnerId(ownerId);
+        incomingItemDto.setOwnerId(userOwner.getId());
         item = ItemMapper.mapToItem(incomingItemDto, userOwner);
         item.setId(1L);
     }
@@ -98,13 +98,50 @@ class ItemServiceImplTest {
     }
 
     @Test
-    void addItem() {
+    void addItem_whenNotUser_thenThrown() {
         incomingItemDto.setOwnerId(-1L);
         Throwable thrown = assertThrows(NoneXSharerUserIdException.class, () -> {
             itemService.addItem(incomingItemDto);
         });
         assertNotNull(thrown.getMessage());
     }
+
+    @Test
+    void addItem_whenUnknownUser_thenThrown() {
+        incomingItemDto.setOwnerId(99L);
+        Throwable thrown = assertThrows(NotFoundException.class, () -> {
+            itemService.addItem(incomingItemDto);
+        });
+        assertNotNull(thrown.getMessage());
+    }
+
+    @Test
+    void addItem() {
+        Long userId = incomingItemDto.getOwnerId();
+
+        when(userRepository.findById(anyLong())).thenReturn(Optional.of(userOwner));
+        userRepository.findById(userId);
+        when(itemRepository.save(any())).thenReturn(item);
+
+        ItemDto actualDto = itemService.addItem(incomingItemDto);
+
+        assertEquals(incomingItemDto.getName(), actualDto.getName());
+        assertEquals(incomingItemDto.getDescription(), actualDto.getDescription());
+        assertEquals(incomingItemDto.getRequestId(), actualDto.getRequestId());
+        assertThat(actualDto).hasFieldOrProperty("id");
+    }
+    /*
+    public ItemDto addItem(IncomingItemDto incomingItemDto) {
+        if (incomingItemDto.getOwnerId().equals(-1L)) {
+            throw new NoneXSharerUserIdException("Не указан владелец вещи");
+        }
+        Long userId = incomingItemDto.getOwnerId();
+        User owner = userRepository.findById(userId)
+                .orElseThrow(() -> new NotFoundException(String.format("Пользователь с id %d не найден", userId)));
+        Item item = itemRepository.save(ItemMapper.mapToItem(incomingItemDto, owner));
+
+        return ItemMapper.mapToItemDto(item);
+     */
 
     @Test
     void updateItem_whenWrongUser_thenThrown() {

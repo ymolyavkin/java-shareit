@@ -169,7 +169,6 @@ class ItemRequestServiceImplTest {
 
     @Test
     public void addItemRequestTest() {
-        System.out.println();
         when(userRepository.findById(requesterId)).thenReturn(Optional.of(userRequester));
         when(itemRequestRepository.save(any())).thenReturn(itemRequest);
         ItemRequestResponseDto actualNewRequest = itemRequestService.addItemRequest(incomingItemRequestDto, requesterId);
