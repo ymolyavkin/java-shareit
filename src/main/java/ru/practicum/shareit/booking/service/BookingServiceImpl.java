@@ -67,10 +67,7 @@ public class BookingServiceImpl implements BookingService {
 
         Pageable pageable = PageRequest.of(from, size);
         Page<Booking> bookingPage = bookingRepository.findByItem_IdInOrderByStartDesc(itemIdsByOwner, pageable);
-        if (bookingPage == null) {
-            List<BookingResponseDto> emptyList = Collections.emptyList();
-            return emptyList;
-        }
+
         List<Booking> bookingList = bookingPage.getContent();
         List<Booking> bookings;
         switch (state) {

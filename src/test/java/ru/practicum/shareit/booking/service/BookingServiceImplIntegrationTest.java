@@ -119,45 +119,6 @@ class BookingServiceImplIntegrationTest {
         bookingResponseDto = BookingMapper.mapToBookingResponseDto(booking, item);
     }
 
-    // @BeforeEach
-   /* void setUp1() {
-        bookingService = new BookingServiceImpl(itemRepository, userRepository, bookingRepository);
-        bookingDtoOne = new IncomingBookingDto();
-        bookingDtoTwo = new IncomingBookingDto();
-
-        bookingDtoOne.setBookerId(2L);
-        bookingDtoTwo.setBookerId(2L);
-        bookingDtoOne.setItemId(1L);
-        bookingDtoTwo.setItemId(1L);
-
-        bookingDtoOne.setStart(LocalDateTime.now().plus(1, ChronoUnit.DAYS));
-        bookingDtoOne.setEnd(LocalDateTime.now().plus(2, ChronoUnit.DAYS));
-        bookingDtoTwo.setStart(LocalDateTime.now().plus(3, ChronoUnit.DAYS));
-        bookingDtoTwo.setEnd(LocalDateTime.now().plus(4, ChronoUnit.DAYS));
-
-
-        IncomingUserDto userDtoOne = easyRandom.nextObject(IncomingUserDto.class);
-        userDtoOne.setEmail("email@mail.ru");
-        User userOne = userRepository.save(UserMapper.mapToUser(userDtoOne));
-        userOne.setId(1L);
-        IncomingUserDto userDtoTwo = easyRandom.nextObject(IncomingUserDto.class);
-        userDtoTwo.setEmail("mail@yandex.ru");
-
-
-        User userTwo = userRepository.save(UserMapper.mapToUser(userDtoTwo));
-        userTwo.setId(2L);
-        IncomingItemDto itemDto = easyRandom.nextObject(IncomingItemDto.class);
-        itemDto.setOwnerId(1L);
-        itemDto.setRequestId(1L);
-
-        IncomingItemRequestDto incomingItemRequestDto = new IncomingItemRequestDto();
-        incomingItemRequestDto.setDescription("Description");
-
-        ItemRequest itemRequest = itemRequestRepository.save(ItemRequestMapper.mapToItemRequest(incomingItemRequestDto, userOne));
-
-        Item item = itemRepository.save(ItemMapper.mapToItem(itemDto, userOne));
-    }
-*/
     @Test
     @DirtiesContext
     void getAllTest() {
@@ -185,10 +146,7 @@ class BookingServiceImplIntegrationTest {
             Mockito.when(itemRepository.findById(itemId)).thenReturn(Optional.empty());
             doThrow(NotFoundException.class).when(itemRepository).findById(itemId);
 
-            assertThrows(NotFoundException.class, () -> bookingService.getBookingById(bookingId, userId));
-//            Mockito.when(itemRepository.findById(itemId))
-//                    .thenThrow(new NotFoundException(String.format("Вещь с id %d не найдена", itemId)));
-//            assertThrows(NotFoundException.class, () -> bookingService.getBookingById(bookingId, userId));
+            assertThrows(NotFoundException.class, () -> bookingService.getBookingById(bookingId, userId));//
         }
         if (userId != 1 && userId != 3) {
             Mockito.when(bookingRepository.getReferenceById(bookingId)).thenReturn(booking);
@@ -197,9 +155,6 @@ class BookingServiceImplIntegrationTest {
                 bookingService.getBookingById(bookingId, userId);
             });
             assertNotNull(thrown.getMessage());
-
-
-            // assertEquals("Пользователь с id 99 не не автор бронирования и не владелец вещи, данные о бронировании недоступны", exception.getMessage());
         } else {
             Mockito.when(itemRepository.findById(itemId)).thenReturn(Optional.of(item));
             Mockito.when(bookingRepository.findById(bookingId)).thenReturn(Optional.of(booking));
@@ -211,18 +166,6 @@ class BookingServiceImplIntegrationTest {
         }
     }
 
-    /*
-    public BookingResponseDto getBookingById(Long id, Long userId) {
-            Booking booking = bookingRepository.getReferenceById(id);
-            Item item = itemRepository.findById(booking.getItemId())
-                    .orElseThrow(() -> new NotFoundException(String.format("Вещь с id %d не найдена", booking.getItemId())));
-            if (!booking.getBookerId().equals(userId) && !item.getOwnerId().equals(userId)) {
-                throw new NotFoundException(String.format("Пользователь с id %d не не автор бронирования и не владелец вещи, данные о бронировании недоступны", userId));
-            }
-
-            return BookingMapper.mapToBookingResponseDto(booking, item);
-        }
-     */
     @DirtiesContext
     @ParameterizedTest
     @MethodSource("ru.practicum.shareit.util.TestData#argsProviderFactoryBookingsByOwner")
@@ -235,45 +178,86 @@ class BookingServiceImplIntegrationTest {
         if (ownerId.equals(99L)) {
             Mockito.when(userRepository.findById(ownerId)).thenThrow(new NotFoundException(String.format("Пользователь с id %d не найден", ownerId)));
             assertThrows(NotFoundException.class, () -> bookingService.getBookingsByOwner(ownerId, state, from, size));
+        } else if (state == StateRequest.UNSUPPORTED_STATUS) {
+            Mockito.when(userRepository.findById(ownerId)).thenReturn(Optional.of(booker));
+            assertThrows(UnsupportedStatusException.class, () -> bookingService.getBookingsByOwner(ownerId, state, from, size));
         } else {
-//            List<BookingResponseDto> expected;
-//            List<Long> itemIdsByOwner = List.of(ownerId);
-//            expectedListBookings = Collections.emptyList();
-//
-//            bookingPage = new PageImpl<>(expectedListBookings);
-//
-//            List<Booking> bookingList = bookingPage.getContent();
-//            Mockito.when(userRepository.findById(ownerId)).thenReturn(Optional.of(booker));
-//            Mockito.when(bookingRepository.findByItem_IdInOrderByStartDesc(itemIdsByOwner, pageable)).thenReturn(bookingPage);
-//            expected = bookingList.stream().map(bookingResponse -> BookingMapper.mapToBookingResponseDto(bookingResponse, item)).collect(Collectors.toList());
-//            result = bookingService.getBookingsByOwner(ownerId, state, FROM, SIZE);
-//
-//            assertEquals(expected, result);
-            // List<Booking> bookings;
+            List<BookingResponseDto> expected;
+            List<Long> itemIdsByOwner = List.of(ownerId);
+            expectedListBookings = Collections.emptyList();
+
+            bookingPage = new PageImpl<>(expectedListBookings);
+
+            List<Booking> bookingList = bookingPage.getContent();
+            Mockito.when(userRepository.findById(ownerId)).thenReturn(Optional.of(booker));
+            Mockito.when(bookingRepository.findByItem_IdInOrderByStartDesc(itemIdsByOwner, pageable)).thenReturn(bookingPage);
+            /*expected = bookingList
+                    .stream()
+                    .map(bookingResponse -> BookingMapper.mapToBookingResponseDto(bookingResponse, item))
+                    .collect(Collectors.toList());
+
+            when(bookingRepository.findByItem_IdInOrderByStartDesc(anyList(), any())).thenReturn(bookingPage);
+            result = bookingService.getBookingsByOwner(ownerId, state, from, size);
+
+            assertEquals(expected, result);*/
             switch (state) {
-                case UNSUPPORTED_STATUS:
-                    Mockito.when(userRepository.findById(ownerId)).thenReturn(Optional.of(booker));
-                    assertThrows(UnsupportedStatusException.class, () -> bookingService.getBookingsByOwner(ownerId, state, from, size));
-                    break;
                 case ALL:
-                case CURRENT:
-                case FUTURE:
-                case PAST:
-                case WAITING:
-                case REJECTED:
-                    List<BookingResponseDto> expected;
-                    List<Long> itemIdsByOwner = List.of(ownerId);
-                    expectedListBookings = Collections.emptyList();
-
-                    bookingPage = new PageImpl<>(expectedListBookings);
-
-                    List<Booking> bookingList = bookingPage.getContent();
-                    Mockito.when(userRepository.findById(ownerId)).thenReturn(Optional.of(booker));
-                    Mockito.when(bookingRepository.findByItem_IdInOrderByStartDesc(itemIdsByOwner, pageable)).thenReturn(bookingPage);
                     expected = bookingList
                             .stream()
                             .map(bookingResponse -> BookingMapper.mapToBookingResponseDto(bookingResponse, item))
                             .collect(Collectors.toList());
+
+                    when(bookingRepository.findByItem_IdInOrderByStartDesc(anyList(), any())).thenReturn(bookingPage);
+                    result = bookingService.getBookingsByOwner(ownerId, state, from, size);
+
+                    assertEquals(expected, result);
+                case CURRENT:
+                    expected = bookingList
+                            .stream()
+                            .map(bookingResponse -> BookingMapper.mapToBookingResponseDto(bookingResponse, item))
+                            .collect(Collectors.toList());
+
+                    when(bookingRepository.findByItem_IdInOrderByStartDesc(anyList(), any())).thenReturn(bookingPage);
+                    result = bookingService.getBookingsByOwner(ownerId, state, from, size);
+
+                    assertEquals(expected, result);
+                case FUTURE:
+                    expected = bookingList
+                            .stream()
+                            .map(bookingResponse -> BookingMapper.mapToBookingResponseDto(bookingResponse, item))
+                            .collect(Collectors.toList());
+
+                    when(bookingRepository.findByItem_IdInOrderByStartDesc(anyList(), any())).thenReturn(bookingPage);
+                    result = bookingService.getBookingsByOwner(ownerId, state, from, size);
+
+                    assertEquals(expected, result);
+                case PAST:
+                    expected = bookingList
+                            .stream()
+                            .map(bookingResponse -> BookingMapper.mapToBookingResponseDto(bookingResponse, item))
+                            .collect(Collectors.toList());
+
+                    when(bookingRepository.findByItem_IdInOrderByStartDesc(anyList(), any())).thenReturn(bookingPage);
+                    result = bookingService.getBookingsByOwner(ownerId, state, from, size);
+
+                    assertEquals(expected, result);
+                case WAITING:
+                    expected = bookingList
+                            .stream()
+                            .map(bookingResponse -> BookingMapper.mapToBookingResponseDto(bookingResponse, item))
+                            .collect(Collectors.toList());
+
+                    when(bookingRepository.findByItem_IdInOrderByStartDesc(anyList(), any())).thenReturn(bookingPage);
+                    result = bookingService.getBookingsByOwner(ownerId, state, from, size);
+
+                    assertEquals(expected, result);
+                case REJECTED:
+                    expected = bookingList
+                            .stream()
+                            .map(bookingResponse -> BookingMapper.mapToBookingResponseDto(bookingResponse, item))
+                            .collect(Collectors.toList());
+
+                    when(bookingRepository.findByItem_IdInOrderByStartDesc(anyList(), any())).thenReturn(bookingPage);
                     result = bookingService.getBookingsByOwner(ownerId, state, from, size);
 
                     assertEquals(expected, result);
@@ -284,6 +268,67 @@ class BookingServiceImplIntegrationTest {
         }
     }
 
+    /*
+     public List<BookingResponseDto> getBookingsByOwner(Long ownerId, StateRequest state, Integer from, Integer size) {
+         LocalDateTime dateTimeNow = LocalDateTime.now();
+         User owner = userRepository.findById(ownerId)
+                 .orElseThrow(() -> new NotFoundException(String.format("Пользователь с id %d не найден", ownerId)));
+         if (state == StateRequest.UNSUPPORTED_STATUS) {
+             throw new UnsupportedStatusException("Unknown state: UNSUPPORTED_STATUS");
+         }
+         List<Long> itemIdsByOwner = itemsIdsByOwner(ownerId);
+
+         Pageable pageable = PageRequest.of(from, size);
+         Page<Booking> bookingPage = bookingRepository.findByItem_IdInOrderByStartDesc(itemIdsByOwner, pageable);
+         if (bookingPage == null) {
+             List<BookingResponseDto> emptyList = Collections.emptyList();
+             return emptyList;
+         }
+         List<Booking> bookingList = bookingPage.getContent();
+         List<Booking> bookings;
+         switch (state) {
+             case ALL:
+                 bookings = bookingList;
+                 break;
+             case CURRENT:
+                 bookings = bookingList
+                         .stream()
+                         .filter(booking -> booking.getStart().isBefore(dateTimeNow) && booking.getEnd().isAfter(dateTimeNow))
+                         .collect(Collectors.toList());
+                 break;
+             case FUTURE:
+                 bookings = bookingList
+                         .stream()
+                         .filter(booking -> booking.getStart().isAfter(dateTimeNow))
+                         .collect(Collectors.toList());
+                 break;
+             case PAST:
+                 bookings = bookingList
+                         .stream()
+                         .filter(booking -> booking.getEnd().isBefore(dateTimeNow))
+                         .collect(Collectors.toList());
+                 break;
+             case WAITING:
+                 bookings = bookingList
+                         .stream()
+                         .filter(booking -> booking.getStatus() == Status.WAITING)
+                         .collect(Collectors.toList());
+                 break;
+             case REJECTED:
+                 bookings = bookingList
+                         .stream()
+                         .filter(booking -> booking.getStatus() == Status.REJECTED)
+                         .collect(Collectors.toList());
+                 break;
+             default:
+                 throw new UnsupportedStatusException("Unknown state: UNSUPPORTED_STATUS");
+         }
+         return bookings
+                 .stream()
+                 .map(booking -> BookingMapper.mapToBookingResponseDto(booking, booking.getItem()))
+                 .collect(Collectors.toList());
+     }
+      */
     @DirtiesContext
     @ParameterizedTest
     @MethodSource("ru.practicum.shareit.util.TestData#argsProviderFactoryBookingsByBooker")
