@@ -11,11 +11,15 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.Status;
 import ru.practicum.shareit.booking.repository.BookingRepository;
+import ru.practicum.shareit.exception.CommentErrorException;
 import ru.practicum.shareit.exception.NoneXSharerUserIdException;
 import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.exception.OwnerMismatchException;
 import ru.practicum.shareit.item.comment.Comment;
 import ru.practicum.shareit.item.comment.CommentRepository;
+import ru.practicum.shareit.item.comment.dto.CommentDto;
+import ru.practicum.shareit.item.comment.dto.CommentMapper;
+import ru.practicum.shareit.item.comment.dto.IncomingCommentDto;
 import ru.practicum.shareit.item.dto.IncomingItemDto;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.ItemLastNextDto;
@@ -27,6 +31,7 @@ import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserRepository;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -56,16 +61,19 @@ class ItemServiceImplTest {
     private User userAuthor;
     private IncomingItemDto incomingItemDto;
     private IncomingItemRequestDto incomingItemRequestDto;
+    private IncomingCommentDto incomingCommentDto;
+    private Comment comment;
     private final int from = 0;
     private final int size = 10;
     private Long requesterId = 1L;
     private Long ownerId;
     private Booking lastBooking;
     private Booking nextBooking;
+    private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+    private final LocalDateTime dateTime = LocalDateTime.parse("2023-01-14 11:04", formatter);
 
     @BeforeEach
     public void setUp() {
-        // itemService = new ItemServiceImpl(itemRepository, userRepository, bookingRepository, commentRepository);
         userOwner = new User();
         userOwner.setEmail("userowner@email.ru");
         userOwner.setName("ownerName");
@@ -85,8 +93,18 @@ class ItemServiceImplTest {
         incomingItemDto.setOwnerId(userOwner.getId());
         item = ItemMapper.mapToItem(incomingItemDto, userOwner);
         item.setId(1L);
-        lastBooking = new Booking(1L, LocalDateTime.now(), LocalDateTime.now().plusDays(1), item, userAuthor, Status.WAITING);
-        nextBooking = new Booking(2L, LocalDateTime.now().plusDays(2), LocalDateTime.now().plusDays(3), item, userAuthor, Status.WAITING);
+        LocalDateTime dateTimeNow = LocalDateTime.now();
+        lastBooking = new Booking(1L, dateTime, dateTime.plusDays(1), item, userAuthor, Status.WAITING);
+        nextBooking = new Booking(2L, dateTime.plusDays(2), dateTime.plusDays(3), item, userAuthor, Status.WAITING);
+        incomingCommentDto = new IncomingCommentDto();
+        incomingCommentDto.setText("incomingCommentDtoText");
+        comment = Comment
+                .builder()
+                .text(incomingCommentDto.getText())
+                .build();
+        comment.setAuthor(userAuthor);
+        comment.setItem(item);
+        comment.setCreated(LocalDateTime.now());
     }
 
     @Test
@@ -262,5 +280,35 @@ class ItemServiceImplTest {
 
     @Test
     void addComment() {
+        long userId = userAuthor.getId();
+        long itemId = item.getId();
+        Mockito.lenient().when(userRepository.findById(anyLong())).thenReturn(Optional.ofNullable(userAuthor));
+        when(itemRepository.findById(anyLong())).thenReturn(Optional.ofNullable(item));
+        when(bookingRepository.existsByBooker_IdAndEndBeforeAndStatus(anyLong(), any(), any()))
+                .thenReturn(true);
+        CommentDto expected = CommentMapper.mapToCommentDto(comment);
+
+        when(commentRepository.save(any()))
+                .thenAnswer(invocationOnMock -> invocationOnMock.getArgument(0));
+        CommentDto actual = itemService.addComment(incomingCommentDto, userId, itemId);
+        expected.setId(1L);
+        actual.setId(1L);
+        assertEquals(expected, actual);
+        assertEquals(expected.getAuthorName(), actual.getAuthorName());
+        assertEquals(expected.getText(), actual.getText());
+    }
+
+    @Test
+    void addComment_whenCommentError_thenThrown() {
+        long userId = userAuthor.getId();
+        long itemId = item.getId();
+        Mockito.lenient().when(userRepository.findById(anyLong())).thenReturn(Optional.ofNullable(userAuthor));
+        when(itemRepository.findById(anyLong())).thenReturn(Optional.ofNullable(item));
+        when(bookingRepository.existsByBooker_IdAndEndBeforeAndStatus(anyLong(), any(), any()))
+                .thenReturn(false);
+        Throwable thrown = assertThrows(CommentErrorException.class, () -> {
+            itemService.addComment(incomingCommentDto, userId, itemId);
+        });
+        assertNotNull(thrown.getMessage());
     }
 }
