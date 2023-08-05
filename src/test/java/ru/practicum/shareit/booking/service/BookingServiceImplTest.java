@@ -12,6 +12,7 @@ import ru.practicum.shareit.booking.dto.BookingResponseDto;
 import ru.practicum.shareit.booking.dto.IncomingBookingDto;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.repository.BookingRepository;
+import ru.practicum.shareit.exception.NoneXSharerUserIdException;
 import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.item.dto.IncomingItemDto;
 import ru.practicum.shareit.item.dto.ItemMapper;
@@ -27,6 +28,7 @@ import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Optional;
 
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.when;
@@ -134,7 +136,32 @@ class BookingServiceImplTest {
     @Test
     void updateBooking() {
     }
+    @Test
+    void updateBooking_whenUnknownUser_thenThrown() {
+        long ownerId = -1L;
+        long bookingId=1;
+        Throwable thrown = assertThrows(NoneXSharerUserIdException.class, () -> {
+           bookingService.updateBooking(incomingBookingDtoOne, bookingId, ownerId);
+        });
+        assertNotNull(thrown.getMessage());
+    }
+/*
+public BookingResponseDto updateBooking(IncomingBookingDto incomingBookingDto, Long bookingId, Long bookerId) {
+ if (ownerId.equals(-1L)) {
+            throw new NoneXSharerUserIdException("Не указан владелец вещи");
+        }
+        Booking booking = bookingRepository.getReferenceById(bookingId);
+        Item item = itemRepository.findById(booking.getItemId())
+                .orElseThrow(() -> new NotFoundException(String.format("Вещь с id %d не найдена", booking.getItemId())));
 
+        booking.setStart(incomingBookingDto.getStart());
+        booking.setEnd(incomingBookingDto.getEnd());
+        booking.setStatus(incomingBookingDto.getStatus());
+        bookingRepository.saveAndFlush(booking);
+
+        return BookingMapper.mapToBookingResponseDto(booking, item);
+    }
+ */
     @Test
     void approvingBooking() {
     }
