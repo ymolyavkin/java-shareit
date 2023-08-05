@@ -222,27 +222,17 @@ class BookingServiceImplTest {
         assertEquals(actual, expected);
         verify(bookingRepository, times(1)).saveAndFlush(any());
     }
-    /*
-    public BookingResponseDto approvingBooking(Long bookingId, Long ownerId, Boolean approved) {
-        Booking booking = bookingRepository.findById(bookingId)
-                .orElseThrow(() -> new NotFoundException(String.format("Бронирование с id %d не найдено", bookingId)));
-        Item item = itemRepository.findById(booking.getItemId())
-                .orElseThrow(() -> new NotFoundException(String.format("Вещь с id %d не найдена", booking.getItemId())));
-        if (!ownerId.equals(item.getOwnerId())) {
-            throw new NotFoundException("Подтвержение может быть выполнено только владельцем вещи");
-        }
-        if (approved != null) {
-            if (approved) {
-                if (booking.getStatus() == Status.APPROVED) {
-                    throw new BadRequestException("Status is already approved");
-                }
-                booking.setStatus(Status.APPROVED);
-            } else {
-                booking.setStatus(Status.REJECTED);
-            }
-            bookingRepository.saveAndFlush(booking);
-        }
-        return BookingMapper.mapToBookingResponseDto(booking, item);
+    @Test
+    void approvingBooking_whenApprovedIsNull_thenNotApproved() {
+        long bookingId = 1L;
+        long ownerId = 1L;
+        Mockito.lenient().when(bookingRepository.findById(anyLong())).thenReturn(Optional.ofNullable(booking));
+        Mockito.lenient().when(itemRepository.findById(anyLong())).thenReturn(Optional.of(item));
+
+       when(bookingRepository.findById(bookingId)).thenReturn(Optional.ofNullable(booking));
+
+        bookingService.approvingBooking(bookingId, ownerId, null);
+
+        verify(bookingRepository, never()).saveAndFlush(any());
     }
-     */
 }

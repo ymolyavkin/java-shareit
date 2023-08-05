@@ -39,7 +39,6 @@ public class BookingServiceImpl implements BookingService {
     @Transactional(readOnly = true)
     @Override
     public BookingResponseDto getBookingById(Long bookingId, Long userId) {
-        //Booking booking = bookingRepository.getReferenceById(id);
         Booking booking = bookingRepository.findById(bookingId)
                 .orElseThrow(() -> new NotFoundException(String.format("Бронирование с id %d не найдено", bookingId)));
         Item item = itemRepository.findById(booking.getItemId())
@@ -53,10 +52,6 @@ public class BookingServiceImpl implements BookingService {
 
     private List<Long> itemsIdsByOwner(Long ownerId) {
         return itemRepository.findItemIdsByOwnerId(ownerId);
-    }
-
-    private List<Item> itemsByOwner(Long ownerId) {
-        return itemRepository.findAllByOwnerId(ownerId);
     }
 
     @Transactional(readOnly = true)
