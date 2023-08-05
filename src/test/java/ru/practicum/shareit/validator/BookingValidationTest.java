@@ -131,5 +131,6 @@ class BookingValidationTest {
             bookingIsValid(incomingBookingDto, item);
         });
         assertNotNull(thrown.getMessage());
+        assertEquals(incomingBookingDto.getEnd(), incomingBookingDto.getStart());
     }
 }
