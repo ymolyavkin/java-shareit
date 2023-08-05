@@ -29,10 +29,9 @@ import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class BookingServiceImplTest {
@@ -166,23 +165,20 @@ class BookingServiceImplTest {
         assertThrows(NotFoundException.class, () -> bookingService.getBookingById(booker.getId(), bookingId));
     }
 
-    /*
-    public BookingResponseDto updateBooking(IncomingBookingDto incomingBookingDto, Long bookingId, Long bookerId) {
-     if (ownerId.equals(-1L)) {
-                throw new NoneXSharerUserIdException("Не указан владелец вещи");
-            }
-            Booking booking = bookingRepository.getReferenceById(bookingId);
-            Item item = itemRepository.findById(booking.getItemId())
-                    .orElseThrow(() -> new NotFoundException(String.format("Вещь с id %d не найдена", booking.getItemId())));
+    @Test
+    void updateBooking_whenCorrectAll_thenUpdate() {
+        long bookingId = 1L;
+        long bookerId = 1L;
+        Mockito.lenient().when(bookingRepository.getReferenceById(anyLong())).thenReturn(booking);
+        Mockito.lenient().when(itemRepository.findById(anyLong())).thenReturn(Optional.of(item));
 
-            booking.setStart(incomingBookingDto.getStart());
-            booking.setEnd(incomingBookingDto.getEnd());
-            booking.setStatus(incomingBookingDto.getStatus());
-            bookingRepository.saveAndFlush(booking);
+        BookingResponseDto expected = bookingResponseDto;
+        when(bookingRepository.getReferenceById(anyLong())).thenReturn(booking);
+        BookingResponseDto actual = bookingService.updateBooking(incomingBookingDtoOne, bookingId, bookerId);
+        assertEquals(actual, expected);
+        verify(bookingRepository, times(1)).saveAndFlush(any());
+    }
 
-            return BookingMapper.mapToBookingResponseDto(booking, item);
-        }
-     */
     @Test
     void approvingBooking() {
     }
