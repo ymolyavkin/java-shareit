@@ -206,6 +206,7 @@ class BookingServiceImplTest {
         assertEquals(actual, expected);
         verify(bookingRepository, times(1)).saveAndFlush(any());
     }
+
     @Test
     void approvingBooking_whenAllCorrect_thenRejected() {
         long bookingId = 1L;
@@ -222,6 +223,7 @@ class BookingServiceImplTest {
         assertEquals(actual, expected);
         verify(bookingRepository, times(1)).saveAndFlush(any());
     }
+
     @Test
     void approvingBooking_whenApprovedIsNull_thenNotApproved() {
         long bookingId = 1L;
@@ -229,7 +231,7 @@ class BookingServiceImplTest {
         Mockito.lenient().when(bookingRepository.findById(anyLong())).thenReturn(Optional.ofNullable(booking));
         Mockito.lenient().when(itemRepository.findById(anyLong())).thenReturn(Optional.of(item));
 
-       when(bookingRepository.findById(bookingId)).thenReturn(Optional.ofNullable(booking));
+        when(bookingRepository.findById(bookingId)).thenReturn(Optional.ofNullable(booking));
 
         bookingService.approvingBooking(bookingId, ownerId, null);
 

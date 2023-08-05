@@ -122,6 +122,7 @@ class BookingControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id", is(1)));
     }
+
     @SneakyThrows
     @Test
     void updateBooking_whenUnknownOwner_thenThrown() {
@@ -137,21 +138,22 @@ class BookingControllerTest {
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isInternalServerError());
     }
-   /* @PatchMapping(value = "/{bookingId}", consumes = "application/json")
-    public BookingResponseDto updateBooking(@RequestHeader(value = USER_ID_FROM_REQUEST, defaultValue = "-1") Long ownerId,
-                                            @RequestBody(required = false) IncomingBookingDto incomingBookingDto,
-                                            @PathVariable Long bookingId,
-                                            @RequestParam(required = false) Boolean approved) {
-        if (ownerId.equals(-1L)) {
-            throw new NoneXSharerUserIdException("Не указан владелец вещи");
-        }
-        log.info("Получен запрос на обновление вещи пользователем с id = {}", ownerId);
-        if (approved != null) {
-            log.info("Получен запрос на подтверждение бронирования id = {} пользователем с id = {}", bookingId, ownerId);
-            return bookingService.approvingBooking(bookingId, ownerId, approved);
-        }
-        return bookingService.updateBooking(incomingBookingDto, bookingId, ownerId);
-    }*/
+
+    /* @PatchMapping(value = "/{bookingId}", consumes = "application/json")
+     public BookingResponseDto updateBooking(@RequestHeader(value = USER_ID_FROM_REQUEST, defaultValue = "-1") Long ownerId,
+                                             @RequestBody(required = false) IncomingBookingDto incomingBookingDto,
+                                             @PathVariable Long bookingId,
+                                             @RequestParam(required = false) Boolean approved) {
+         if (ownerId.equals(-1L)) {
+             throw new NoneXSharerUserIdException("Не указан владелец вещи");
+         }
+         log.info("Получен запрос на обновление вещи пользователем с id = {}", ownerId);
+         if (approved != null) {
+             log.info("Получен запрос на подтверждение бронирования id = {} пользователем с id = {}", bookingId, ownerId);
+             return bookingService.approvingBooking(bookingId, ownerId, approved);
+         }
+         return bookingService.updateBooking(incomingBookingDto, bookingId, ownerId);
+     }*/
     @Test
     void getBookingById() {
     }
