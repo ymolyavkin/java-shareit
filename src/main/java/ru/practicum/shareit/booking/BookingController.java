@@ -63,9 +63,7 @@ public class BookingController {
                                             @RequestBody(required = false) IncomingBookingDto incomingBookingDto,
                                             @PathVariable Long bookingId,
                                             @RequestParam(required = false) Boolean approved) {
-       /* if (ownerId.equals(-1L)) {
-            throw new NoneXSharerUserIdException("Не указан владелец вещи");
-        }*/
+
         log.info("Получен запрос на обновление вещи пользователем с id = {}", ownerId);
         if (approved != null) {
             log.info("Получен запрос на подтверждение бронирования id = {} пользователем с id = {}", bookingId, ownerId);

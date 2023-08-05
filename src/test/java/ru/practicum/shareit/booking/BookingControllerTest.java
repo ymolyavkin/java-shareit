@@ -28,9 +28,8 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.hamcrest.Matchers.is;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static ru.practicum.shareit.util.Constants.USER_ID_FROM_REQUEST;
@@ -139,23 +138,21 @@ class BookingControllerTest {
                 .andExpect(status().isInternalServerError());
     }
 
-    /* @PatchMapping(value = "/{bookingId}", consumes = "application/json")
-     public BookingResponseDto updateBooking(@RequestHeader(value = USER_ID_FROM_REQUEST, defaultValue = "-1") Long ownerId,
-                                             @RequestBody(required = false) IncomingBookingDto incomingBookingDto,
-                                             @PathVariable Long bookingId,
-                                             @RequestParam(required = false) Boolean approved) {
-         if (ownerId.equals(-1L)) {
-             throw new NoneXSharerUserIdException("Не указан владелец вещи");
-         }
-         log.info("Получен запрос на обновление вещи пользователем с id = {}", ownerId);
-         if (approved != null) {
-             log.info("Получен запрос на подтверждение бронирования id = {} пользователем с id = {}", bookingId, ownerId);
-             return bookingService.approvingBooking(bookingId, ownerId, approved);
-         }
-         return bookingService.updateBooking(incomingBookingDto, bookingId, ownerId);
-     }*/
+    @SneakyThrows
     @Test
-    void getBookingById() {
+    void updateBooking_whenCorrectAll_thenUpdated() {
+        long bookingId = 1L;
+        when(bookingService.updateBooking(Mockito.any(IncomingBookingDto.class), anyLong(), anyLong()))
+                .thenReturn(bookingResponseDto);
+
+        mockMvc.perform(patch("/bookings/{bookingId}", bookingId)
+                        .header(USER_ID_FROM_REQUEST, 1)
+                        .content(objectMapper.writeValueAsString(incomingBookingDto))
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id", is(1)));
     }
 
     @SneakyThrows
@@ -172,60 +169,6 @@ class BookingControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isInternalServerError());
-    }
-
-    @SneakyThrows
-    @Test
-    void createBookingWhenEndInPastValidationTest() {
-//        Long userId = 1L;
-//        Long itemId = 1L;
-//        BookingShortDto createBookingDto = new BookingShortDto(userId, start, end.minusDays(7), itemId);
-//        BookingDto bookingDto = new BookingDto(1L, start, end.minusDays(7), Status.WAITING, null, null);
-//        when(bookingService.createBooking(anyLong(), any())).thenReturn(bookingDto);
-//
-//        mockMvc.perform(post("/bookings")
-//                        .header("X-Sharer-User-Id", userId)
-//                        .contentType("application/json")
-//                        .content(objectMapper.writeValueAsString(createBookingDto)))
-//                .andExpect(status().isBadRequest());
-//
-//        verify(bookingService, never()).createBooking(anyLong(), any());
-    }
-
-    @SneakyThrows
-    @Test
-    void createBookingWhenStartIsNullValidationTest() {
-//        Long userId = 1L;
-//        Long itemId = 1L;
-//        BookingShortDto createBookingDto = new BookingShortDto(userId, null, end, itemId);
-//        BookingDto bookingDto = new BookingDto(1L, null, end, Status.WAITING, null, null);
-//        when(bookingService.createBooking(anyLong(), any())).thenReturn(bookingDto);
-//
-//        mockMvc.perform(post("/bookings")
-//                        .header("X-Sharer-User-Id", userId)
-//                        .contentType("application/json")
-//                        .content(objectMapper.writeValueAsString(createBookingDto)))
-//                .andExpect(status().isBadRequest());
-//
-//        verify(bookingService, never()).createBooking(anyLong(), any());
-    }
-
-    @SneakyThrows
-    @Test
-    void createBookingWhenEndIsNullValidationTest() {
-//        Long userId = 1L;
-//        Long itemId = 1L;
-//        BookingShortDto createBookingDto = new BookingShortDto(userId, start, null, itemId);
-//        BookingDto bookingDto = new BookingDto(1L, start, null, Status.WAITING, null, null);
-//        when(bookingService.createBooking(anyLong(), any())).thenReturn(bookingDto);
-//
-//        mockMvc.perform(post("/bookings")
-//                        .header("X-Sharer-User-Id", userId)
-//                        .contentType("application/json")
-//                        .content(objectMapper.writeValueAsString(createBookingDto)))
-//                .andExpect(status().isBadRequest());
-//
-//        verify(bookingService, never()).createBooking(anyLong(), any());
     }
 
     @SneakyThrows
@@ -266,25 +209,6 @@ class BookingControllerTest {
 //        assertEquals(objectMapper.writeValueAsString(List.of(bookingDto)), result);
     }
 
-    @SneakyThrows
-    @Test
-    void getAllBookingByStateTest() {
-//        BookingDto bookingDto = new BookingDto(1L, start, end, Status.WAITING, null, null);
-//        when(bookingService.getAllBookingByState(anyLong(), any(), anyInt(),
-//                anyInt())).thenReturn(List.of(bookingDto));
-//        String result = mockMvc.perform(get("/bookings")
-//                        .header("X-Sharer-User-Id", 1)
-//                        .param("state", "ALL")
-//                        .param("from", String.valueOf(0))
-//                        .param("size", String.valueOf(10)))
-//                .andDo(print())
-//                .andExpect(status().isOk())
-//                .andReturn()
-//                .getResponse()
-//                .getContentAsString();
-//
-//        assertEquals(objectMapper.writeValueAsString(List.of(bookingDto)), result);
-    }
 
     @SneakyThrows
     @Test
