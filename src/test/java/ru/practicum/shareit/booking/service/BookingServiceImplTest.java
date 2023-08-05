@@ -51,7 +51,6 @@ class BookingServiceImplTest {
     private IncomingBookingDto incomingBookingDtoOne;
     private IncomingBookingDto incomingBookingDtoTwo;
     private User booker;
-    private User otherBooker;
     private User owner;
     private Item item;
     private Booking booking;
@@ -63,12 +62,10 @@ class BookingServiceImplTest {
     @BeforeEach
     void setUp() {
         Long bookerId = 1L;
-        Long otherBookerId = 2L;
         Long ownerId = 3L;
         Long itemId = 1L;
         Long requestId = 1L;
         Long bookingId = 1L;
-        //   bookingService = new BookingServiceImpl(itemRepository, userRepository, bookingRepository);
 
         incomingBookingDtoOne = new IncomingBookingDto();
         incomingBookingDtoTwo = new IncomingBookingDto();
@@ -153,14 +150,6 @@ class BookingServiceImplTest {
     void isOverlapTime() {
         boolean result = bookingService.isOverlapTime(booking, otherBooking);
         assertFalse(result);
-    }
-/*
-public boolean isOverlapTime(Booking one, Booking two) {
-        return Time.isOverlapping(one.getStart(), one.getEnd(), two.getStart(), two.getEnd());
-    }
- */
-    @Test
-    void updateBooking() {
     }
 
     @Test
