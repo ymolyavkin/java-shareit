@@ -157,6 +157,7 @@ class BookingServiceImplTest {
         });
         assertNotNull(thrown.getMessage());
     }
+
     @Test
     void getBookingsByOwner() {
         Mockito.lenient().when(userRepository.findById(owner.getId())).thenReturn(Optional.of(owner));

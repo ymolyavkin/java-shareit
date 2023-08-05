@@ -7,7 +7,6 @@ import ru.practicum.shareit.user.model.User;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
-import java.util.Objects;
 
 @Builder
 @Getter
@@ -44,19 +43,6 @@ public class Booking {
     public Long getBookerId() {
         return booker.getId();
     }
-
-//    @Override
-//    public boolean equals(Object o) {
-//        if (this == o) return true;
-//        if (o == null || getClass() != o.getClass()) return false;
-//        Booking booking = (Booking) o;
-//        return id.equals(booking.id);
-//    }
-//
-//    @Override
-//    public int hashCode() {
-//        return Objects.hash(id, start, end);
-//    }
 
     @Override
     public String toString() {
