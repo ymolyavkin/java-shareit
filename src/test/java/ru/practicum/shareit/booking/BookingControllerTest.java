@@ -104,10 +104,6 @@ class BookingControllerTest {
     }
 
     @Test
-    void getBookingsByOwner() {
-    }
-
-    @Test
     void addBooking() throws Exception {
         when(bookingService.addBooking(Mockito.any(IncomingBookingDto.class)))
                 .thenReturn(bookingResponseDto);
@@ -191,42 +187,21 @@ class BookingControllerTest {
 
     @SneakyThrows
     @Test
-    void getAllByOwnerTest() {
-//        BookingDto bookingDto = new BookingDto(1L, start, end, Status.WAITING, null, null);
-//        when(bookingService.getAllOwnersBookingByState(anyLong(), any(), anyInt(),
-//                anyInt())).thenReturn(List.of(bookingDto));
-//        String result = mockMvc.perform(get("/bookings/owner")
-//                        .header("X-Sharer-User-Id", 1)
-//                        .param("state", "ALL")
-//                        .param("from", String.valueOf(0))
-//                        .param("size", String.valueOf(10)))
-//                .andDo(print())
-//                .andExpect(status().isOk())
-//                .andReturn()
-//                .getResponse()
-//                .getContentAsString();
-//
-//        assertEquals(objectMapper.writeValueAsString(List.of(bookingDto)), result);
-    }
+    void getBookingsByOwnerTest() {
+        List<BookingResponseDto> bookingResponseDtoList = List.of(bookingResponseDto);
+        when(bookingService.getBookingsByOwner(anyLong(), any(), anyInt(), anyInt()))
+                .thenReturn(bookingResponseDtoList);
+        String result = mockMvc.perform(get("/bookings/owner")
+                        .header("X-Sharer-User-Id", 1)
+                        .param("state", "ALL")
+                        .param("from", String.valueOf(0))
+                        .param("size", String.valueOf(10)))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
 
-
-    @SneakyThrows
-    @Test
-    void approveBookingTest() {
-//        Long bookingId = 1L;
-//        BookingDto bookingDto = new BookingDto(bookingId, start, end, Status.WAITING, null, null);
-//        when(bookingService.approveBooking(anyLong(), anyLong(),
-//                anyBoolean())).thenReturn(bookingDto);
-//        String result = mockMvc.perform(patch("/bookings/{bookingId}", bookingId)
-//                        .header("X-Sharer-User-Id", 1)
-//                        .param("bookingId", "1L")
-//                        .param("approved", "true"))
-//                .andDo(print())
-//                .andExpect(status().isOk())
-//                .andReturn()
-//                .getResponse()
-//                .getContentAsString();
-//
-//        assertEquals(objectMapper.writeValueAsString(bookingDto), result);
+        assertEquals(objectMapper.writeValueAsString(List.of(bookingResponseDto)), result);
     }
 }
