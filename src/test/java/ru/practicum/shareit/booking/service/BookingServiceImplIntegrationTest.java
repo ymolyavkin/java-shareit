@@ -18,7 +18,9 @@ import ru.practicum.shareit.booking.dto.BookingResponseDto;
 import ru.practicum.shareit.booking.dto.IncomingBookingDto;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.StateRequest;
+import ru.practicum.shareit.booking.model.Status;
 import ru.practicum.shareit.booking.repository.BookingRepository;
+import ru.practicum.shareit.exception.BadRequestException;
 import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.exception.UnsupportedStatusException;
 import ru.practicum.shareit.item.dto.IncomingItemDto;
@@ -191,15 +193,6 @@ class BookingServiceImplIntegrationTest {
             List<Booking> bookingList = bookingPage.getContent();
             Mockito.when(userRepository.findById(ownerId)).thenReturn(Optional.of(booker));
             Mockito.when(bookingRepository.findByItem_IdInOrderByStartDesc(itemIdsByOwner, pageable)).thenReturn(bookingPage);
-            /*expected = bookingList
-                    .stream()
-                    .map(bookingResponse -> BookingMapper.mapToBookingResponseDto(bookingResponse, item))
-                    .collect(Collectors.toList());
-
-            when(bookingRepository.findByItem_IdInOrderByStartDesc(anyList(), any())).thenReturn(bookingPage);
-            result = bookingService.getBookingsByOwner(ownerId, state, from, size);
-
-            assertEquals(expected, result);*/
             switch (state) {
                 case ALL:
                     expected = bookingList
@@ -268,67 +261,6 @@ class BookingServiceImplIntegrationTest {
         }
     }
 
-    /*
-     public List<BookingResponseDto> getBookingsByOwner(Long ownerId, StateRequest state, Integer from, Integer size) {
-         LocalDateTime dateTimeNow = LocalDateTime.now();
-         User owner = userRepository.findById(ownerId)
-                 .orElseThrow(() -> new NotFoundException(String.format("Пользователь с id %d не найден", ownerId)));
-         if (state == StateRequest.UNSUPPORTED_STATUS) {
-             throw new UnsupportedStatusException("Unknown state: UNSUPPORTED_STATUS");
-         }
-         List<Long> itemIdsByOwner = itemsIdsByOwner(ownerId);
-
-         Pageable pageable = PageRequest.of(from, size);
-         Page<Booking> bookingPage = bookingRepository.findByItem_IdInOrderByStartDesc(itemIdsByOwner, pageable);
-         if (bookingPage == null) {
-             List<BookingResponseDto> emptyList = Collections.emptyList();
-             return emptyList;
-         }
-         List<Booking> bookingList = bookingPage.getContent();
-         List<Booking> bookings;
-         switch (state) {
-             case ALL:
-                 bookings = bookingList;
-                 break;
-             case CURRENT:
-                 bookings = bookingList
-                         .stream()
-                         .filter(booking -> booking.getStart().isBefore(dateTimeNow) && booking.getEnd().isAfter(dateTimeNow))
-                         .collect(Collectors.toList());
-                 break;
-             case FUTURE:
-                 bookings = bookingList
-                         .stream()
-                         .filter(booking -> booking.getStart().isAfter(dateTimeNow))
-                         .collect(Collectors.toList());
-                 break;
-             case PAST:
-                 bookings = bookingList
-                         .stream()
-                         .filter(booking -> booking.getEnd().isBefore(dateTimeNow))
-                         .collect(Collectors.toList());
-                 break;
-             case WAITING:
-                 bookings = bookingList
-                         .stream()
-                         .filter(booking -> booking.getStatus() == Status.WAITING)
-                         .collect(Collectors.toList());
-                 break;
-             case REJECTED:
-                 bookings = bookingList
-                         .stream()
-                         .filter(booking -> booking.getStatus() == Status.REJECTED)
-                         .collect(Collectors.toList());
-                 break;
-             default:
-                 throw new UnsupportedStatusException("Unknown state: UNSUPPORTED_STATUS");
-         }
-         return bookings
-                 .stream()
-                 .map(booking -> BookingMapper.mapToBookingResponseDto(booking, booking.getItem()))
-                 .collect(Collectors.toList());
-     }
-      */
     @DirtiesContext
     @ParameterizedTest
     @MethodSource("ru.practicum.shareit.util.TestData#argsProviderFactoryBookingsByBooker")
@@ -394,8 +326,6 @@ class BookingServiceImplIntegrationTest {
     @ValueSource(ints = {1, -1, 99})
     void addBookingTest(int bookerId) {
         item.setOwner(owner);
-        //bookingRepository.save(booking);
-        // userRepository.save(booker);
         switch (bookerId) {
             case 1:
                 Mockito.when(userRepository.findById((long) bookerId)).thenReturn(Optional.of(booker));
@@ -406,10 +336,6 @@ class BookingServiceImplIntegrationTest {
             case -1:
                 Mockito.when(userRepository.findById((long) bookerId)).thenReturn(Optional.of(booker));
                 doThrow(NotFoundException.class).when(userRepository).findById((long) bookerId);
-//                Throwable thrown = assertThrows(NoneXSharerUserIdException.class, () -> {
-//                    bookingService.addBooking(incomingBookingDtoOne);
-//                });
-//                assertNotNull(thrown.getMessage());
                 break;
             default:
                 Mockito.when(userRepository.findById((long) bookerId)).thenReturn(Optional.empty());
@@ -419,37 +345,6 @@ class BookingServiceImplIntegrationTest {
         }
 
     }
-    /*
-    public BookingResponseDto addBooking(IncomingBookingDto incomingBookingDto) {
-        if (incomingBookingDto.getBookerId().equals(-1L)) {
-            throw new NoneXSharerUserIdException("Не указан инициатор бронирования");
-        }
-        Long bookerId = incomingBookingDto.getBookerId();
-        Long itemId = incomingBookingDto.getItemId();
-        User booker = userRepository.findById(bookerId)
-                .orElseThrow(() -> new NotFoundException(String.format("Пользователь с id %d не найден", bookerId)));
-        Item item = itemRepository.findById(itemId)
-                .orElseThrow(() -> new NotFoundException(String.format("Вещь с id %d не найдена", itemId)));
-        if (bookerId.equals(item.getOwnerId())) {
-            throw new NotFoundException("Инициатор бронирования и владелец запрашиваемой вещи совпадают");
-        }
-        BookingValidation.bookingIsValid(incomingBookingDto, item);
-        Booking resultBooking = BookingMapper.mapToBooking(incomingBookingDto, item, booker);
-        List<Booking> allBookingsByItem = bookingRepository.findByItem_Id(itemId);
-
-        boolean isOverlap = allBookingsByItem
-                .stream()
-                .map(booking -> isOverlapTime(booking, resultBooking))
-                .reduce(Boolean::logicalOr).orElse(false);
-
-        if (isOverlap) {
-            throw new NotFoundException("Данная вещь на этот период недоступна");
-        }
-        Booking booking = bookingRepository.save(resultBooking);
-
-        return BookingMapper.mapToBookingResponseDto(booking, item);
-    }
-     */
 
     @Test
     @DirtiesContext
@@ -491,16 +386,6 @@ class BookingServiceImplIntegrationTest {
 
     @Test
     @DirtiesContext
-    void approvingBookingTest() {
-//        when(bookingRepository.findById(anyLong()))
-//                .thenThrow(new NotFoundException("Бронирование не найдено"));
-//
-//        assertThrows(NotFoundException.class, () -> bookingService.updateBooking(incomingBookingDtoOne, 99L, 1L));
-//        verify(bookingRepository, never()).saveAndFlush(Mockito.any(Booking.class));
-    }
-
-    @Test
-    @DirtiesContext
     void approvingBooking_whenUnknownBooking_thenThrown() {
         when(bookingRepository.findById(anyLong()))
                 .thenThrow(new NotFoundException("Бронирование не найдено"));
@@ -533,545 +418,51 @@ class BookingServiceImplIntegrationTest {
 
         verify(bookingRepository, never()).saveAndFlush(Mockito.any(Booking.class));
     }
-    /*
-    public BookingResponseDto approvingBooking(Long bookingId, Long ownerId, Boolean approved) {
-        Booking booking = bookingRepository.findById(bookingId)
-                .orElseThrow(() -> new NotFoundException(String.format("Бронирование с id %d не найдено", bookingId)));
-        Item item = itemRepository.findById(booking.getItemId())
-                .orElseThrow(() -> new NotFoundException(String.format("Вещь с id %d не найдена", booking.getItemId())));
-        if (!ownerId.equals(item.getOwnerId())) {
-            throw new NotFoundException("Подтвержение может быть выполнено только владельцем вещи");
-        }
-        if (approved != null) {
-            if (approved) {
-                if (booking.getStatus() == Status.APPROVED) {
-                    throw new BadRequestException("Status is already approved");
-                }
-                booking.setStatus(Status.APPROVED);
-            } else {
-                booking.setStatus(Status.REJECTED);
-            }
-            bookingRepository.saveAndFlush(booking);
-        }
-        return BookingMapper.mapToBookingResponseDto(booking, item);
+
+    @Test
+    void getApproveStatusApprovedTest() {
+        Long userId = owner.getId();
+        Long bookingId = booking.getId();
+        BookingResponseDto bookingDto = BookingMapper.mapToBookingResponseDto(booking, item);
+        BookingResponseDto bookingDtoActual;
+        when(bookingRepository.findById(any())).thenReturn(Optional.ofNullable(booking));
+        when(itemRepository.findById(any())).thenReturn(Optional.ofNullable(item));
+        bookingDtoActual = bookingService.approvingBooking(userId, bookingId, true);
+        bookingDto.setStatus(Status.APPROVED);
+
+        assertEquals(bookingDto.getStatus(), bookingDtoActual.getStatus());
+    }
+
+    @Test
+    void getApproveStatusRejectedTest() {
+        Long userId = owner.getId();
+        Long bookingId = booking.getId();
+        BookingResponseDto bookingDto = BookingMapper.mapToBookingResponseDto(booking, item);
+        BookingResponseDto bookingDtoActual;
+        when(bookingRepository.findById(any())).thenReturn(Optional.ofNullable(booking));
+        when(itemRepository.findById(any())).thenReturn(Optional.ofNullable(item));
+        bookingDtoActual = bookingService.approvingBooking(userId, bookingId, false);
+        bookingDto.setStatus(Status.REJECTED);
+
+        assertEquals(bookingDto.getStatus(), bookingDtoActual.getStatus());
+    }
+
+    @Test
+    void getApproveWithWrongUserIdValidationTest() {
+        Long userId = 99L;
+        Long bookingId = booking.getId();
+        when(bookingRepository.findById(any())).thenReturn(Optional.ofNullable(booking));
+
+        assertThrows(NotFoundException.class, () -> bookingService.approvingBooking(userId, bookingId, true));
+    }
+
+    @Test
+    void getApproveWithNotAvailableExceptionValidationTest() {
+        Long userId = owner.getId();
+        Long bookingId = booking.getId();
+        Mockito.lenient().when(itemRepository.findById(any())).thenReturn(Optional.ofNullable(item));
+        when(bookingRepository.findById(any())).thenReturn(Optional.ofNullable(booking));
+        booking.setStatus(Status.APPROVED);
+        assertThrows(BadRequestException.class, () -> bookingService.approvingBooking(userId, bookingId, true));
     }
 }
-     */
-}
-//package ru.practicum.shareit.booking.service;
-//
-//import org.jeasy.random.EasyRandom;
-//import org.junit.jupiter.api.BeforeEach;
-//import org.junit.jupiter.api.Test;
-//import org.junit.jupiter.params.ParameterizedTest;
-//import org.junit.jupiter.params.provider.MethodSource;
-//import org.springframework.beans.factory.annotation.Autowired;
-//import org.springframework.boot.test.context.SpringBootTest;
-//import org.springframework.boot.test.mock.mockito.MockBean;
-//import org.springframework.data.domain.*;
-//import org.springframework.test.annotation.DirtiesContext;
-//import ru.practicum.shareit.booking.dto.BookingMapper;
-//import ru.practicum.shareit.booking.dto.BookingResponseDto;
-//import ru.practicum.shareit.booking.dto.IncomingBookingDto;
-//import ru.practicum.shareit.booking.model.Booking;
-//import ru.practicum.shareit.booking.model.StateRequest;
-//import ru.practicum.shareit.booking.repository.BookingRepository;
-//import ru.practicum.shareit.exception.NotFoundException;
-//import ru.practicum.shareit.exception.UnsupportedStatusException;
-//import ru.practicum.shareit.item.dto.IncomingItemDto;
-//import ru.practicum.shareit.item.dto.ItemMapper;
-//import ru.practicum.shareit.item.model.Item;
-//import ru.practicum.shareit.item.repository.ItemRepository;
-//import ru.practicum.shareit.request.dto.IncomingItemRequestDto;
-//import ru.practicum.shareit.request.repository.ItemRequestRepository;
-//import ru.practicum.shareit.user.dto.IncomingUserDto;
-//import ru.practicum.shareit.user.dto.UserMapper;
-//import ru.practicum.shareit.user.model.User;
-//import ru.practicum.shareit.user.repository.UserRepository;
-//
-//import java.time.LocalDateTime;
-//import java.time.temporal.ChronoUnit;
-//import java.util.Collections;
-//import java.util.List;
-//import java.util.Optional;
-//import java.util.stream.Collectors;
-//
-//import static org.junit.jupiter.api.Assertions.*;
-//import static org.mockito.Mockito.when;
-//
-//@SpringBootTest
-//class BookingServiceImplIntegrationTest {
-//    @Autowired
-//    BookingService bookingService;
-//    //@Autowired
-////@InjectMocks
-////BookingServiceImpl bookingService;
-//    @MockBean
-//    ItemRepository itemRepository;
-//    //@Autowired
-////    @MockBean
-////    ItemRequestRepository itemRequestRepository;
-//    //@Autowired
-//    @MockBean
-//    UserRepository userRepository;
-//    //@Autowired
-//    @MockBean
-//    BookingRepository bookingRepository;
-//    private final EasyRandom easyRandom = new EasyRandom();
-//    private IncomingBookingDto incomingBookingDtoOne;
-//    private IncomingBookingDto incomingBookingDtoTwo;
-//    private BookingResponseDto bookingResponseDto;
-//    private Booking booking;
-//    private Item item;
-//    private User user;
-//
-//    @BeforeEach
-//    void setUp() {
-//        bookingService = new BookingServiceImpl(itemRepository, userRepository, bookingRepository);
-//
-//        incomingBookingDtoOne = new IncomingBookingDto();
-//        incomingBookingDtoTwo = new IncomingBookingDto();
-//
-//        incomingBookingDtoOne.setBookerId(1L);
-//        incomingBookingDtoTwo.setBookerId(2L);
-//        incomingBookingDtoOne.setItemId(1L);
-//        incomingBookingDtoTwo.setItemId(1L);
-//
-//        incomingBookingDtoOne.setStart(LocalDateTime.now().plus(1, ChronoUnit.DAYS));
-//        incomingBookingDtoOne.setEnd(LocalDateTime.now().plus(2, ChronoUnit.DAYS));
-//        incomingBookingDtoTwo.setStart(LocalDateTime.now().plus(3, ChronoUnit.DAYS));
-//        incomingBookingDtoTwo.setEnd(LocalDateTime.now().plus(4, ChronoUnit.DAYS));
-//
-//        IncomingUserDto userDtoOne = easyRandom.nextObject(IncomingUserDto.class);
-//        userDtoOne.setEmail("email@mail.ru");
-//        // user = userRepository.save(UserMapper.mapToUser(userDtoOne));
-//        user = UserMapper.mapToUser(userDtoOne);
-//        user.setId(1L);
-//        IncomingUserDto userDtoTwo = easyRandom.nextObject(IncomingUserDto.class);
-//        userDtoTwo.setEmail("mail@yandex.ru");
-//
-//
-//        // User userTwo = userRepository.save(UserMapper.mapToUser(userDtoTwo));
-//        //   userTwo.setId(2L);
-//        IncomingItemDto itemDto = easyRandom.nextObject(IncomingItemDto.class);
-//        itemDto.setOwnerId(1L);
-//        itemDto.setRequestId(1L);
-//
-//        IncomingItemRequestDto incomingItemRequestDto = new IncomingItemRequestDto();
-//        incomingItemRequestDto.setDescription("Description");
-//
-//        // ItemRequest itemRequest = itemRequestRepository.save(ItemRequestMapper.mapToItemRequest(incomingItemRequestDto, userOne));
-//
-//        item = ItemMapper.mapToItem(itemDto, user);
-//        item.setId(1L);
-//        booking = BookingMapper.mapToBooking(incomingBookingDtoOne, item, user);
-//        booking.setId(1L);
-//        bookingResponseDto = BookingMapper.mapToBookingResponseDto(booking, item);
-//        bookingResponseDto.setId(1L);
-//    }
-//
-//    @Test
-//        // @DirtiesContext
-//    void getAllTest() {
-////        BookingResponseDto bookingResponseDtoOne = bookingService.addBooking(incomingBookingDtoOne);
-////        BookingResponseDto bookingResponseDtoTwo = bookingService.addBooking(incomingBookingDtoTwo);
-////        List<Booking> bookings = bookingRepository.findAll();
-////        assertNotNull(bookings);
-////        assertEquals(2, bookings.size());
-//    }
-//
-//    @Test
-//        //@DirtiesContext
-//    void getBookingByIdTest() {
-////        BookingResponseDto bookingResponseDtoOne = bookingService.addBooking(incomingBookingDtoOne);
-////        BookingResponseDto bookingResponseDtoTwo = bookingService.addBooking(incomingBookingDtoTwo);
-////        List<Booking> bookings = bookingRepository.findAll();
-////        assertNotNull(bookings);
-////        assertEquals(2, bookings.size());
-//    }
-//
-//    @Test
-//    @DirtiesContext
-//    void getBookingsByOwnerTest() {
-////        BookingResponseDto bookingResponseDtoOne = bookingService.addBooking(incomingBookingDtoOne);
-////        BookingResponseDto bookingResponseDtoTwo = bookingService.addBooking(incomingBookingDtoTwo);
-//    }
-//
-//    @ParameterizedTest
-//    @MethodSource("ru.practicum.shareit.util.TestData#argsProviderFactoryBookingsByBooker")
-//    void getBookingsByBookerTest(Long bookerId, StateRequest state) {
-//        List<Booking> expectedListBookings;
-//        List<BookingResponseDto> result;
-//
-//        int from = 0;
-//        int size = 10;
-//        Pageable pageable = PageRequest.of(from / size, size, Sort.by("id").descending());
-//        Page<Booking> bookingPage;
-//        if (bookerId.equals(99L)) {
-//            when(userRepository.findById(bookerId))
-//                    .thenThrow(new NotFoundException(String.format("Пользователь с id %d не найден", bookerId)));
-//            assertThrows(NotFoundException.class, () -> bookingService.getBookingsByBooker(bookerId, state, from, size));
-//        } else {
-//            List<BookingResponseDto> expected;
-//            switch (state) {
-//                case UNSUPPORTED_STATUS:
-//                    when(userRepository.findById(bookerId)).thenReturn(Optional.of(user));
-//
-//                    assertThrows(UnsupportedStatusException.class, () -> bookingService.getBookingsByBooker(bookerId, state, from, size));
-//                    break;
-//                case ALL:
-//                    expectedListBookings = List.of(booking);
-//                    bookingPage = new PageImpl<>(expectedListBookings);
-//                    when(userRepository.findById(bookerId)).thenReturn(Optional.of(user));
-//                    when(bookingRepository.findAllByBooker_Id(bookerId, pageable)).thenReturn(bookingPage);
-//                    expected = bookingPage.getContent()
-//                            .stream()
-//                            .map(bookingResponse -> BookingMapper.mapToBookingResponseDto(bookingResponse, item))
-//                            .collect(Collectors.toList());
-//                    result = bookingService.getBookingsByBooker(bookerId, state, from, size);
-//
-//                    assertEquals(expected, result);
-//                    break;
-//                case CURRENT:
-//                case FUTURE:
-//                case PAST:
-//                case WAITING:
-//                case REJECTED:
-//                default:
-//                    expectedListBookings = Collections.emptyList();
-//                    bookingPage = new PageImpl<>(expectedListBookings);
-//                    when(userRepository.findById(bookerId)).thenReturn(Optional.of(user));
-//                    when(bookingRepository.findAllByBooker_Id(bookerId, pageable)).thenReturn(bookingPage);
-//                    expected = bookingPage.getContent()
-//                            .stream()
-//                            .map(bookingResponse -> BookingMapper.mapToBookingResponseDto(bookingResponse, item))
-//                            .collect(Collectors.toList());
-//                    result = bookingService.getBookingsByBooker(bookerId, state, from, size);
-//
-//                    assertEquals(expected, result);
-//                    break;
-//            }
-//        }
-//    }
-//    /*
-//     @Transactional(readOnly = true)
-//    @Override
-//    public List<BookingResponseDto> getBookingsByBooker(Long bookerId, StateRequest state, Integer from, Integer size) {
-//        LocalDateTime dateTimeNow = LocalDateTime.now();
-//        User booker = userRepository.findById(bookerId)
-//                .orElseThrow(() -> new NotFoundException(String.format("Пользователь с id %d не найден", bookerId)));
-//        if (state == StateRequest.UNSUPPORTED_STATUS) {
-//            throw new UnsupportedStatusException("Unknown state: UNSUPPORTED_STATUS");
-//        }
-//        List<Booking> bookings;
-//        switch (state) {
-//            case ALL:
-//                Pageable pageable = PageRequest.of(from / size, size, Sort.by("id").descending());
-//                Page<Booking> bookingPage = bookingRepository.findAllByBooker_Id(bookerId, pageable);
-//
-//                bookings = bookingPage.getContent();
-//                break;
-//            case CURRENT:
-//                bookings = bookingRepository.findAllByBooker_IdAndStartBeforeAndEndAfter(bookerId, dateTimeNow, dateTimeNow, SORT_BY_DESC);
-//                break;
-//            case FUTURE:
-//                bookings = bookingRepository.findAllByBooker_IdAndStartAfter(bookerId, dateTimeNow, SORT_BY_DESC);
-//                break;
-//            case PAST:
-//                bookings = bookingRepository.findAllByBooker_IdAndEndBefore(bookerId, dateTimeNow, SORT_BY_DESC);
-//                break;
-//            case WAITING:
-//                bookings = bookingRepository.findAllByBooker_IdAndStatus(bookerId, Status.WAITING, SORT_BY_DESC);
-//                break;
-//            case REJECTED:
-//                bookings = bookingRepository.findAllByBooker_IdAndStatus(bookerId, Status.REJECTED, SORT_BY_DESC);
-//                break;
-//            default:
-//                bookings = Collections.emptyList();
-//        }
-//        return bookings
-//                .stream()
-//                .map(booking -> BookingMapper.mapToBookingResponseDto(booking, booking.getItem()))
-//                .collect(Collectors.toList());
-//    }
-//     */
-//
-//    @Test
-//        // @DirtiesContext
-//    void addBookingTest() {
-//    }
-//
-//    @Test
-//    @DirtiesContext
-//    void isOverlapTimeTest() {
-//    }
-//
-//    @Test
-////    @DirtiesContext
-//    void updateBookingTest() {
-//    }
-//
-//    @Test
-//        //  @DirtiesContext
-//    void approvingBookingTest() {
-//    }
-//}
-///*
-//package ru.practicum.shareit.booking.service;
-//
-//import org.jeasy.random.EasyRandom;
-//import org.junit.jupiter.api.BeforeEach;
-//import org.junit.jupiter.api.Test;
-//import org.junit.jupiter.params.ParameterizedTest;
-//import org.junit.jupiter.params.provider.MethodSource;
-//import org.springframework.beans.factory.annotation.Autowired;
-//import org.springframework.boot.test.context.SpringBootTest;
-//import org.springframework.boot.test.mock.mockito.MockBean;
-//import org.springframework.data.domain.*;
-//import org.springframework.test.annotation.DirtiesContext;
-//import ru.practicum.shareit.booking.dto.BookingMapper;
-//import ru.practicum.shareit.booking.dto.BookingResponseDto;
-//import ru.practicum.shareit.booking.dto.IncomingBookingDto;
-//import ru.practicum.shareit.booking.model.Booking;
-//import ru.practicum.shareit.booking.model.StateRequest;
-//import ru.practicum.shareit.booking.repository.BookingRepository;
-//import ru.practicum.shareit.exception.NotFoundException;
-//import ru.practicum.shareit.exception.UnsupportedStatusException;
-//import ru.practicum.shareit.item.dto.IncomingItemDto;
-//import ru.practicum.shareit.item.dto.ItemMapper;
-//import ru.practicum.shareit.item.model.Item;
-//import ru.practicum.shareit.item.repository.ItemRepository;
-//import ru.practicum.shareit.request.dto.IncomingItemRequestDto;
-//import ru.practicum.shareit.request.repository.ItemRequestRepository;
-//import ru.practicum.shareit.user.dto.IncomingUserDto;
-//import ru.practicum.shareit.user.dto.UserMapper;
-//import ru.practicum.shareit.user.model.User;
-//import ru.practicum.shareit.user.repository.UserRepository;
-//
-//import java.time.LocalDateTime;
-//import java.time.temporal.ChronoUnit;
-//import java.util.Collections;
-//import java.util.List;
-//import java.util.Optional;
-//import java.util.stream.Collectors;
-//
-//import static org.junit.jupiter.api.Assertions.*;
-//import static org.mockito.Mockito.when;
-//
-//@SpringBootTest
-//class BookingServiceImplIntegrationTest {
-//    @Autowired
-//    BookingService bookingService;
-//    //@Autowired
-////@InjectMocks
-////BookingServiceImpl bookingService;
-//    @MockBean
-//    ItemRepository itemRepository;
-//    //@Autowired
-////    @MockBean
-////    ItemRequestRepository itemRequestRepository;
-//    //@Autowired
-//    @MockBean
-//    UserRepository userRepository;
-//    //@Autowired
-//    @MockBean
-//    BookingRepository bookingRepository;
-//    private final EasyRandom easyRandom = new EasyRandom();
-//    private IncomingBookingDto incomingBookingDtoOne;
-//    private IncomingBookingDto incomingBookingDtoTwo;
-//    private BookingResponseDto bookingResponseDto;
-//    private Booking booking;
-//    private Item item;
-//    private User user;
-//
-//    @BeforeEach
-//    void setUp() {
-//        bookingService = new BookingServiceImpl(itemRepository, userRepository, bookingRepository);
-//
-//        incomingBookingDtoOne = new IncomingBookingDto();
-//        incomingBookingDtoTwo = new IncomingBookingDto();
-//
-//        incomingBookingDtoOne.setBookerId(1L);
-//        incomingBookingDtoTwo.setBookerId(2L);
-//        incomingBookingDtoOne.setItemId(1L);
-//        incomingBookingDtoTwo.setItemId(1L);
-//
-//        incomingBookingDtoOne.setStart(LocalDateTime.now().plus(1, ChronoUnit.DAYS));
-//        incomingBookingDtoOne.setEnd(LocalDateTime.now().plus(2, ChronoUnit.DAYS));
-//        incomingBookingDtoTwo.setStart(LocalDateTime.now().plus(3, ChronoUnit.DAYS));
-//        incomingBookingDtoTwo.setEnd(LocalDateTime.now().plus(4, ChronoUnit.DAYS));
-//
-//        IncomingUserDto userDtoOne = easyRandom.nextObject(IncomingUserDto.class);
-//        userDtoOne.setEmail("email@mail.ru");
-//        // user = userRepository.save(UserMapper.mapToUser(userDtoOne));
-//        user = UserMapper.mapToUser(userDtoOne);
-//        user.setId(1L);
-//        IncomingUserDto userDtoTwo = easyRandom.nextObject(IncomingUserDto.class);
-//        userDtoTwo.setEmail("mail@yandex.ru");
-//
-//
-//        // User userTwo = userRepository.save(UserMapper.mapToUser(userDtoTwo));
-//        //   userTwo.setId(2L);
-//        IncomingItemDto itemDto = easyRandom.nextObject(IncomingItemDto.class);
-//        itemDto.setOwnerId(1L);
-//        itemDto.setRequestId(1L);
-//
-//        IncomingItemRequestDto incomingItemRequestDto = new IncomingItemRequestDto();
-//        incomingItemRequestDto.setDescription("Description");
-//
-//        // ItemRequest itemRequest = itemRequestRepository.save(ItemRequestMapper.mapToItemRequest(incomingItemRequestDto, userOne));
-//
-//        item = ItemMapper.mapToItem(itemDto, user);
-//        item.setId(1L);
-//        booking = BookingMapper.mapToBooking(incomingBookingDtoOne, item, user);
-//        booking.setId(1L);
-//        bookingResponseDto = BookingMapper.mapToBookingResponseDto(booking, item);
-//        bookingResponseDto.setId(1L);
-//    }
-//
-//    @Test
-//   // @DirtiesContext
-//    void getAllTest() {
-////        BookingResponseDto bookingResponseDtoOne = bookingService.addBooking(incomingBookingDtoOne);
-////        BookingResponseDto bookingResponseDtoTwo = bookingService.addBooking(incomingBookingDtoTwo);
-////        List<Booking> bookings = bookingRepository.findAll();
-////        assertNotNull(bookings);
-////        assertEquals(2, bookings.size());
-//    }
-//
-//    @Test
-//    //@DirtiesContext
-//    void getBookingByIdTest() {
-////        BookingResponseDto bookingResponseDtoOne = bookingService.addBooking(incomingBookingDtoOne);
-////        BookingResponseDto bookingResponseDtoTwo = bookingService.addBooking(incomingBookingDtoTwo);
-////        List<Booking> bookings = bookingRepository.findAll();
-////        assertNotNull(bookings);
-////        assertEquals(2, bookings.size());
-//    }
-//
-//    @Test
-//    @DirtiesContext
-//    void getBookingsByOwnerTest() {
-////        BookingResponseDto bookingResponseDtoOne = bookingService.addBooking(incomingBookingDtoOne);
-////        BookingResponseDto bookingResponseDtoTwo = bookingService.addBooking(incomingBookingDtoTwo);
-//    }
-//
-//    @ParameterizedTest
-//    @MethodSource("ru.practicum.shareit.util.TestData#argsProviderFactoryBookingsByBooker")
-//    void getBookingsByBookerTest(Long bookerId, StateRequest state) {
-//        List<Booking> expectedListBookings;
-//        List<BookingResponseDto> result;
-//
-//        int from = 0;
-//        int size = 10;
-//        Pageable pageable = PageRequest.of(from / size, size, Sort.by("id").descending());
-//        Page<Booking> bookingPage;
-//        if (bookerId.equals(99L)) {
-//            when(userRepository.findById(bookerId))
-//                    .thenThrow(new NotFoundException(String.format("Пользователь с id %d не найден", bookerId)));
-//            assertThrows(NotFoundException.class, () -> bookingService.getBookingsByBooker(bookerId, state, from, size));
-//        } else {
-//            List<BookingResponseDto> expected;
-//            switch (state) {
-//                case UNSUPPORTED_STATUS:
-//                    when(userRepository.findById(bookerId)).thenReturn(Optional.of(user));
-//
-//                    assertThrows(UnsupportedStatusException.class, () -> bookingService.getBookingsByBooker(bookerId, state, from, size));
-//                    break;
-//                case ALL:
-//                    expectedListBookings = List.of(booking);
-//                    bookingPage = new PageImpl<>(expectedListBookings);
-//                    when(userRepository.findById(bookerId)).thenReturn(Optional.of(user));
-//                    when(bookingRepository.findAllByBooker_Id(bookerId, pageable)).thenReturn(bookingPage);
-//                    expected = bookingPage.getContent()
-//                            .stream()
-//                            .map(bookingResponse -> BookingMapper.mapToBookingResponseDto(bookingResponse, item))
-//                            .collect(Collectors.toList());
-//                    result = bookingService.getBookingsByBooker(bookerId, state, from, size);
-//
-//                    assertEquals(expected, result);
-//                    break;
-//                case CURRENT:
-//                case FUTURE:
-//                case PAST:
-//                case WAITING:
-//                case REJECTED:
-//                default:
-//                    expectedListBookings = Collections.emptyList();
-//                    bookingPage = new PageImpl<>(expectedListBookings);
-//                    when(userRepository.findById(bookerId)).thenReturn(Optional.of(user));
-//                    when(bookingRepository.findAllByBooker_Id(bookerId, pageable)).thenReturn(bookingPage);
-//                    expected = bookingPage.getContent()
-//                            .stream()
-//                            .map(bookingResponse -> BookingMapper.mapToBookingResponseDto(bookingResponse, item))
-//                            .collect(Collectors.toList());
-//                    result = bookingService.getBookingsByBooker(bookerId, state, from, size);
-//
-//                    assertEquals(expected, result);
-//                    break;
-//            }
-//        }
-//    }
-//    /*
-//     @Transactional(readOnly = true)
-//    @Override
-//    public List<BookingResponseDto> getBookingsByBooker(Long bookerId, StateRequest state, Integer from, Integer size) {
-//        LocalDateTime dateTimeNow = LocalDateTime.now();
-//        User booker = userRepository.findById(bookerId)
-//                .orElseThrow(() -> new NotFoundException(String.format("Пользователь с id %d не найден", bookerId)));
-//        if (state == StateRequest.UNSUPPORTED_STATUS) {
-//            throw new UnsupportedStatusException("Unknown state: UNSUPPORTED_STATUS");
-//        }
-//        List<Booking> bookings;
-//        switch (state) {
-//            case ALL:
-//                Pageable pageable = PageRequest.of(from / size, size, Sort.by("id").descending());
-//                Page<Booking> bookingPage = bookingRepository.findAllByBooker_Id(bookerId, pageable);
-//
-//                bookings = bookingPage.getContent();
-//                break;
-//            case CURRENT:
-//                bookings = bookingRepository.findAllByBooker_IdAndStartBeforeAndEndAfter(bookerId, dateTimeNow, dateTimeNow, SORT_BY_DESC);
-//                break;
-//            case FUTURE:
-//                bookings = bookingRepository.findAllByBooker_IdAndStartAfter(bookerId, dateTimeNow, SORT_BY_DESC);
-//                break;
-//            case PAST:
-//                bookings = bookingRepository.findAllByBooker_IdAndEndBefore(bookerId, dateTimeNow, SORT_BY_DESC);
-//                break;
-//            case WAITING:
-//                bookings = bookingRepository.findAllByBooker_IdAndStatus(bookerId, Status.WAITING, SORT_BY_DESC);
-//                break;
-//            case REJECTED:
-//                bookings = bookingRepository.findAllByBooker_IdAndStatus(bookerId, Status.REJECTED, SORT_BY_DESC);
-//                break;
-//            default:
-//                bookings = Collections.emptyList();
-//        }
-//        return bookings
-//                .stream()
-//                .map(booking -> BookingMapper.mapToBookingResponseDto(booking, booking.getItem()))
-//                .collect(Collectors.toList());
-//    }
-//     */
-//
-//    @Test
-//   // @DirtiesContext
-//    void addBookingTest() {
-//    }
-//
-//    @Test
-//    @DirtiesContext
-//    void isOverlapTimeTest() {
-//    }
-//
-//    @Test
-////    @DirtiesContext
-//    void updateBookingTest() {
-//    }
-//
-//    @Test
-//  //  @DirtiesContext
-//    void approvingBookingTest() {
-//    }
-//}*/
