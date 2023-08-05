@@ -13,13 +13,11 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import ru.practicum.shareit.booking.dto.BookerDto;
-import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.BookingResponseDto;
 import ru.practicum.shareit.booking.dto.IncomingBookingDto;
 import ru.practicum.shareit.booking.model.StateRequest;
 import ru.practicum.shareit.booking.model.Status;
 import ru.practicum.shareit.booking.service.BookingService;
-import ru.practicum.shareit.exception.NoneXSharerUserIdException;
 import ru.practicum.shareit.item.dto.ItemIdNameDto;
 import ru.practicum.shareit.item.model.Item;
 
@@ -124,11 +122,36 @@ class BookingControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id", is(1)));
     }
-
+    @SneakyThrows
     @Test
-    void updateBooking() {
-    }
+    void updateBooking_whenUnknownOwner_thenThrown() {
+        long ownerId = -1L;
+        when(bookingService.addBooking(Mockito.any(IncomingBookingDto.class)))
+                .thenReturn(bookingResponseDto);
 
+        mockMvc.perform(post("/bookings")
+                        .header(USER_ID_FROM_REQUEST, ownerId)
+                        .content(objectMapper.writeValueAsString(incomingBookingDto))
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isInternalServerError());
+    }
+   /* @PatchMapping(value = "/{bookingId}", consumes = "application/json")
+    public BookingResponseDto updateBooking(@RequestHeader(value = USER_ID_FROM_REQUEST, defaultValue = "-1") Long ownerId,
+                                            @RequestBody(required = false) IncomingBookingDto incomingBookingDto,
+                                            @PathVariable Long bookingId,
+                                            @RequestParam(required = false) Boolean approved) {
+        if (ownerId.equals(-1L)) {
+            throw new NoneXSharerUserIdException("Не указан владелец вещи");
+        }
+        log.info("Получен запрос на обновление вещи пользователем с id = {}", ownerId);
+        if (approved != null) {
+            log.info("Получен запрос на подтверждение бронирования id = {} пользователем с id = {}", bookingId, ownerId);
+            return bookingService.approvingBooking(bookingId, ownerId, approved);
+        }
+        return bookingService.updateBooking(incomingBookingDto, bookingId, ownerId);
+    }*/
     @Test
     void getBookingById() {
     }
@@ -208,7 +231,6 @@ class BookingControllerTest {
     void getByIdTest() {
         Long bookingId = 1L;
         Long userId = 1L;
-        //BookingDto bookingDto = new BookingDto(1L, start, end, Status.WAITING, null, null);
         when(bookingService.getBookingById(bookingId, userId)).thenReturn(bookingResponseDto);
 
         String result = mockMvc.perform(get("/bookings/{bookingId}", bookingId)
@@ -221,16 +243,6 @@ class BookingControllerTest {
 
         assertEquals(objectMapper.writeValueAsString(bookingResponseDto), result);
     }
-    /*
-    @GetMapping("/{bookingId}")
-    public BookingResponseDto getBookingById(@RequestHeader(value = USER_ID_FROM_REQUEST, defaultValue = "-1") Long userId,
-                                             @PathVariable Long bookingId) {
-        log.info("Получен запрос на данных о бронировании с id = {}", bookingId);
-
-        return bookingService.getBookingById(bookingId, userId);
-    }
-     */
-
 
     @SneakyThrows
     @Test
