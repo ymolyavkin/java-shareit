@@ -2,17 +2,22 @@ package ru.practicum.shareit.user.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.jeasy.random.EasyRandom;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import ru.practicum.shareit.user.dto.IncomingUserDto;
 import ru.practicum.shareit.user.dto.UserMapper;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.service.UserServiceImpl;
 
+import javax.validation.ValidationException;
+
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -32,6 +37,16 @@ class UserControllerTest {
     @MockBean
     private UserServiceImpl userService;
     private final EasyRandom easyRandom = new EasyRandom();
+    private User user;
+    private IncomingUserDto incomingUserDto;
+
+    @BeforeEach
+    void setUp(){
+        incomingUserDto = easyRandom.nextObject(IncomingUserDto.class);
+        incomingUserDto.setEmail("newEmail@mail.ru");
+        incomingUserDto.setName("newName@mail.ru");
+        user = UserMapper.mapToUser(incomingUserDto);
+    }
 
     @Test
     void getUsers() {
@@ -48,11 +63,11 @@ class UserControllerTest {
 
     @Test
     void addUser() throws Exception {
-        Long userId = 1L;
-        IncomingUserDto incomingUserDto = easyRandom.nextObject(IncomingUserDto.class);
-        incomingUserDto.setEmail("newEmail@mail.ru");
-        incomingUserDto.setName("newName@mail.ru");
-        User user = UserMapper.mapToUser(incomingUserDto);
+//        Long userId = 1L;
+//        IncomingUserDto incomingUserDto = easyRandom.nextObject(IncomingUserDto.class);
+//        incomingUserDto.setEmail("newEmail@mail.ru");
+//        incomingUserDto.setName("newName@mail.ru");
+//        User user = UserMapper.mapToUser(incomingUserDto);
 
         when(userService.addUser(incomingUserDto)).thenReturn(user);
 
@@ -64,6 +79,16 @@ class UserControllerTest {
                 .getResponse()
                 .getContentAsString();
         assertEquals(objectMapper.writeValueAsString(user), result);
+    }
+    @Test
+    public void addUserWithEmptyNameValidationTest() throws Exception {
+        incomingUserDto.setName("");
+        when(userService.addUser(any())).thenThrow(new ValidationException("Name is not valid, name is empty"));
+        mockMvc.perform(post("/users")
+                        .content(objectMapper.writeValueAsString(user))
+                        .contentType("application/json")
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
     }
 
     @Test

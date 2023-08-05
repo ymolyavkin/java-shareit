@@ -143,72 +143,26 @@ class BookingServiceImplTest {
     }
 
     @Test
+    public void addBooking_whenBookerEqualsOwner_thenThrown() {
+        long bookerId = 1L;
+        booker.setId(1L);
+        owner.setId(1L);
+        incomingBookingDtoOne.setBookerId(bookerId);
+
+        Mockito.lenient().when(userRepository.findById(bookerId)).thenReturn(Optional.of(booker));
+        when(itemRepository.findById(item.getId())).thenReturn(Optional.of(item));
+
+        Throwable thrown = assertThrows(NotFoundException.class, () -> {
+            bookingService.addBooking(incomingBookingDtoOne);
+        });
+        assertNotNull(thrown.getMessage());
+    }
+    @Test
     void getBookingsByOwner() {
         Mockito.lenient().when(userRepository.findById(owner.getId())).thenReturn(Optional.of(owner));
         List<Long> itemIdsByOwner = List.of(1L);
 
     }
-    /*
-    public List<BookingResponseDto> getBookingsByOwner(Long ownerId, StateRequest state, Integer from, Integer size) {
-        LocalDateTime dateTimeNow = LocalDateTime.now();
-        User owner = userRepository.findById(ownerId)
-                .orElseThrow(() -> new NotFoundException(String.format("Пользователь с id %d не найден", ownerId)));
-        if (state == StateRequest.UNSUPPORTED_STATUS) {
-            throw new UnsupportedStatusException("Unknown state: UNSUPPORTED_STATUS");
-        }
-        List<Long> itemIdsByOwner = itemsIdsByOwner(ownerId);
-
-        Pageable pageable = PageRequest.of(from, size);
-        Page<Booking> bookingPage = bookingRepository.findByItem_IdInOrderByStartDesc(itemIdsByOwner, pageable);
-        if (bookingPage == null) {
-            List<BookingResponseDto> emptyList = Collections.emptyList();
-            return emptyList;
-        }
-        List<Booking> bookingList = bookingPage.getContent();
-        List<Booking> bookings;
-        switch (state) {
-            case ALL:
-                bookings = bookingList;
-                break;
-            case CURRENT:
-                bookings = bookingList
-                        .stream()
-                        .filter(booking -> booking.getStart().isBefore(dateTimeNow) && booking.getEnd().isAfter(dateTimeNow))
-                        .collect(Collectors.toList());
-                break;
-            case FUTURE:
-                bookings = bookingList
-                        .stream()
-                        .filter(booking -> booking.getStart().isAfter(dateTimeNow))
-                        .collect(Collectors.toList());
-                break;
-            case PAST:
-                bookings = bookingList
-                        .stream()
-                        .filter(booking -> booking.getEnd().isBefore(dateTimeNow))
-                        .collect(Collectors.toList());
-                break;
-            case WAITING:
-                bookings = bookingList
-                        .stream()
-                        .filter(booking -> booking.getStatus() == Status.WAITING)
-                        .collect(Collectors.toList());
-                break;
-            case REJECTED:
-                bookings = bookingList
-                        .stream()
-                        .filter(booking -> booking.getStatus() == Status.REJECTED)
-                        .collect(Collectors.toList());
-                break;
-            default:
-                throw new UnsupportedStatusException("Unknown state: UNSUPPORTED_STATUS");
-        }
-        return bookings
-                .stream()
-                .map(booking -> BookingMapper.mapToBookingResponseDto(booking, booking.getItem()))
-                .collect(Collectors.toList());
-    }
-     */
 
     @Test
     void isOverlapTime() {
