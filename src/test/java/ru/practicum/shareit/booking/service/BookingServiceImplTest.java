@@ -136,32 +136,43 @@ class BookingServiceImplTest {
     @Test
     void updateBooking() {
     }
+
     @Test
     void updateBooking_whenUnknownUser_thenThrown() {
         long ownerId = -1L;
-        long bookingId=1;
+        long bookingId = 1L;
         Throwable thrown = assertThrows(NoneXSharerUserIdException.class, () -> {
-           bookingService.updateBooking(incomingBookingDtoOne, bookingId, ownerId);
+            bookingService.updateBooking(incomingBookingDtoOne, bookingId, ownerId);
         });
         assertNotNull(thrown.getMessage());
     }
-/*
-public BookingResponseDto updateBooking(IncomingBookingDto incomingBookingDto, Long bookingId, Long bookerId) {
- if (ownerId.equals(-1L)) {
-            throw new NoneXSharerUserIdException("Не указан владелец вещи");
-        }
-        Booking booking = bookingRepository.getReferenceById(bookingId);
-        Item item = itemRepository.findById(booking.getItemId())
-                .orElseThrow(() -> new NotFoundException(String.format("Вещь с id %d не найдена", booking.getItemId())));
 
-        booking.setStart(incomingBookingDto.getStart());
-        booking.setEnd(incomingBookingDto.getEnd());
-        booking.setStatus(incomingBookingDto.getStatus());
-        bookingRepository.saveAndFlush(booking);
+    @Test
+    void updateBooking_whenUnknownBooking_thenThrown() {
+               long bookingId = 99L;
+        when(bookingRepository.findById(anyLong())).thenReturn(Optional.empty());
 
-        return BookingMapper.mapToBookingResponseDto(booking, item);
+        assertThrows(NotFoundException.class, () -> bookingService.getBookingById(booker.getId(), bookingId));
     }
- */
+
+
+    /*
+    public BookingResponseDto updateBooking(IncomingBookingDto incomingBookingDto, Long bookingId, Long bookerId) {
+     if (ownerId.equals(-1L)) {
+                throw new NoneXSharerUserIdException("Не указан владелец вещи");
+            }
+            Booking booking = bookingRepository.getReferenceById(bookingId);
+            Item item = itemRepository.findById(booking.getItemId())
+                    .orElseThrow(() -> new NotFoundException(String.format("Вещь с id %d не найдена", booking.getItemId())));
+
+            booking.setStart(incomingBookingDto.getStart());
+            booking.setEnd(incomingBookingDto.getEnd());
+            booking.setStatus(incomingBookingDto.getStatus());
+            bookingRepository.saveAndFlush(booking);
+
+            return BookingMapper.mapToBookingResponseDto(booking, item);
+        }
+     */
     @Test
     void approvingBooking() {
     }
