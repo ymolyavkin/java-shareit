@@ -25,14 +25,6 @@ public class ErrorHandler {
         );
     }
 
-    @ExceptionHandler({AlreadyExistsException.class})
-    @ResponseStatus(HttpStatus.CONFLICT)
-    public Map<String, String> handleAlreadyExists(final RuntimeException e) {
-        return Map.of(
-                "error", e.getMessage()
-        );
-    }
-
     @ExceptionHandler({ValidationException.class})
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public Map<String, String> handleValidation(final RuntimeException e) {
