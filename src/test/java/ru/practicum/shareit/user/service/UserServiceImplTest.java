@@ -26,7 +26,6 @@ import static org.mockito.Mockito.*;
 
 @RunWith(JUnitParamsRunner.class)
 @ExtendWith(MockitoExtension.class)
-//@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
 class UserServiceImplTest {
     @Mock
     private UserRepository userRepository;

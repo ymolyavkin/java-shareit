@@ -49,13 +49,10 @@ import static org.mockito.Mockito.never;
 class BookingServiceImplIntegrationTest {
     @Autowired
     BookingService bookingService;
-    //@Autowired
     @Mock
     ItemRepository itemRepository;
-    //@Autowired
     @Mock
     ItemRequestRepository itemRequestRepository;
-    //@Autowired
     @Mock
     UserRepository userRepository;
     @Mock

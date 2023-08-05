@@ -15,8 +15,6 @@ public interface ItemService {
 
     List<ItemLastNextDto> getItemsLastNextBookingByUser(Long userId, int from, int size);
 
-   // List<ItemDto> getItemsByUser(Long userId);
-
     ItemDto addItem(IncomingItemDto incomingItemDto);
 
     ItemDto updateItem(IncomingItemDto incomingItemDto, Long itemId, Long userId);

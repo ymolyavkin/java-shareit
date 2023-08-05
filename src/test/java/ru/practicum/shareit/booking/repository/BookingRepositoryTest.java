@@ -146,32 +146,4 @@ class BookingRepositoryTest {
         assertNotNull(actualBooking);
         assertEquals(actualBooking, bookingTwo);
     }
-
-    @Test
-    void findByItemIdAndBookerId() {
-    }
-
-    @Test
-    void findByItem_IdInOrderByStartDesc() {
-    }
-
-    @Test
-    void testFindByItem_IdInOrderByStartDesc() {
-    }
-
-    @Test
-    void findFirstByItem_IdAndStartBeforeAndStatusOrderByStartDesc() {
-    }
-
-    @Test
-    void findFirstByItem_IdAndStartAfterAndStatusOrderByStartAsc() {
-    }
-
-//    @AfterEach
-//    void tearDown() {
-//        bookingRepository.deleteAll();
-//        itemRepository.deleteAll();
-//        itemRequestRepository.deleteAll();
-//        userRepository.deleteAll();
-//    }
 }
