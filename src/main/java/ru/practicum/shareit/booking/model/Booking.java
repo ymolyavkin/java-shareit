@@ -15,6 +15,7 @@ import java.util.Objects;
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
+@EqualsAndHashCode
 @Table(name = "bookings")
 public class Booking {
     @Id
@@ -44,18 +45,18 @@ public class Booking {
         return booker.getId();
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Booking booking = (Booking) o;
-        return id.equals(booking.id);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, start, end);
-    }
+//    @Override
+//    public boolean equals(Object o) {
+//        if (this == o) return true;
+//        if (o == null || getClass() != o.getClass()) return false;
+//        Booking booking = (Booking) o;
+//        return id.equals(booking.id);
+//    }
+//
+//    @Override
+//    public int hashCode() {
+//        return Objects.hash(id, start, end);
+//    }
 
     @Override
     public String toString() {

@@ -13,6 +13,8 @@ import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static ru.practicum.shareit.booking.dto.BookingMapper.*;
 
 class BookingMapperTest {
     private Booking booking;
@@ -49,7 +51,7 @@ class BookingMapperTest {
     }
 
     @Test
-    void mapToBookingResponseDto() {
+    void mapToBookingResponseDtoTest() {
         ItemIdNameDto itemIdNameDto = new ItemIdNameDto() {
             private Long id = item.getId();
             private String name = item.getName();
@@ -70,7 +72,7 @@ class BookingMapperTest {
             }
         };
 
-        BookingResponseDto bookingResponseDto = BookingResponseDto.builder()
+        BookingResponseDto expectedDto = BookingResponseDto.builder()
                 .id(booking.getId())
                 .start(booking.getStart())
                 .end(booking.getEnd())
@@ -78,14 +80,17 @@ class BookingMapperTest {
                 .booker(bookerDto)
                 .status(booking.getStatus())
                 .build();
+        BookingResponseDto actualDto = mapToBookingResponseDto(booking, item);
 
-        assertThat(booking.getId()).isEqualTo(3L);
-        assertThat(booking.getStart()).isEqualTo(start);
-        assertThat(booking.getEnd()).isEqualTo(end);
+        assertEquals(actualDto, expectedDto);
+        assertThat(actualDto.getId()).isEqualTo(expectedDto.getId());
+        assertThat(actualDto.getStart()).isEqualTo(expectedDto.getStart());
+        assertThat(actualDto.getEnd()).isEqualTo(expectedDto.getEnd());
+        assertThat(actualDto.getStatus()).isEqualTo(expectedDto.getStatus());
     }
 
     @Test
-    void mapToBookingDto() {
+    void mapToBookingDtoTest() {
         BookingDto bookingDto = BookingDto.builder()
                 .id(lastBooking.getId())
                 .start(lastBooking.getStart())
@@ -95,24 +100,29 @@ class BookingMapperTest {
                 .status(lastBooking.getStatus())
                 .build();
 
-        assertThat(bookingDto.getId()).isEqualTo(1L);
-        assertThat(bookingDto.getStart()).isEqualTo(start);
-        assertThat(bookingDto.getEnd()).isEqualTo(end);
-        assertThat(bookingDto.getItemId()).isEqualTo(item.getId());
-        assertThat(bookingDto.getBookerId()).isEqualTo(1L);
-        assertThat(bookingDto.getStatus()).isEqualTo(Status.WAITING);
+        BookingDto actualDto = mapToBookingDto(lastBooking);
+
+        assertEquals(actualDto, bookingDto);
+        assertThat(actualDto.getId()).isEqualTo(1L);
+        assertThat(actualDto.getStart()).isEqualTo(start);
+        assertThat(actualDto.getEnd()).isEqualTo(end);
+        assertThat(actualDto.getItemId()).isEqualTo(item.getId());
+        assertThat(actualDto.getBookerId()).isEqualTo(1L);
+        assertThat(actualDto.getStatus()).isEqualTo(Status.WAITING);
     }
 
     @Test
-    void mapToBookingLastNextDto() {
+    void mapToBookingLastNextDtoTest() {
         BookingLastNextDto bookingLastNextDto = new BookingLastNextDto(booking.getId(), booking.getBookerId());
 
-        assertThat(bookingLastNextDto.getId()).isEqualTo(booking.getId());
-        assertThat(bookingLastNextDto.getBookerId()).isEqualTo(booking.getBookerId());
+        BookingLastNextDto actualLastNextDto = mapToBookingLastNextDto(booking);
+
+        assertThat(actualLastNextDto.getId()).isEqualTo(booking.getId());
+        assertThat(actualLastNextDto.getBookerId()).isEqualTo(booking.getBookerId());
     }
 
     @Test
-    void mapToBooking() {
+    void mapToBookingTest() {
         Booking booking = new Booking();
         booking.setStart(incomingBookingDto.getStart());
         booking.setEnd(incomingBookingDto.getEnd());
@@ -120,6 +130,9 @@ class BookingMapperTest {
         booking.setBooker(booker);
         booking.setStatus(incomingBookingDto.getStatus());
 
+        Booking actualBooking = mapToBooking(incomingBookingDto, item, booker);
+
+        assertEquals(actualBooking, booking);
         assertThat(incomingBookingDto.getStart()).isEqualTo(booking.getStart());
         assertThat(incomingBookingDto.getEnd()).isEqualTo(booking.getEnd());
         assertThat(incomingBookingDto.getStatus()).isEqualTo(booking.getStatus());
