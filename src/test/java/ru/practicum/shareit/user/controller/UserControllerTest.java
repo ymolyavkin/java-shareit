@@ -10,22 +10,30 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.user.dto.IncomingUserDto;
+import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.dto.UserMapper;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.service.UserServiceImpl;
 
 import javax.validation.ValidationException;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-
-import static org.junit.jupiter.api.Assertions.*;
+import static org.hamcrest.Matchers.hasSize;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import static org.junit.jupiter.api.Assertions.*;
 
 @WebMvcTest(controllers = UserController.class)
 @AutoConfigureMockMvc
@@ -38,18 +46,16 @@ class UserControllerTest {
     private UserServiceImpl userService;
     private final EasyRandom easyRandom = new EasyRandom();
     private User user;
+    private UserDto userDto;
     private IncomingUserDto incomingUserDto;
 
     @BeforeEach
-    void setUp(){
+    void setUp() {
         incomingUserDto = easyRandom.nextObject(IncomingUserDto.class);
         incomingUserDto.setEmail("newEmail@mail.ru");
         incomingUserDto.setName("newName@mail.ru");
         user = UserMapper.mapToUser(incomingUserDto);
-    }
-
-    @Test
-    void getUsers() {
+        userDto = UserMapper.mapToUserDto(user);
     }
 
     @Test
@@ -63,12 +69,6 @@ class UserControllerTest {
 
     @Test
     void addUser() throws Exception {
-//        Long userId = 1L;
-//        IncomingUserDto incomingUserDto = easyRandom.nextObject(IncomingUserDto.class);
-//        incomingUserDto.setEmail("newEmail@mail.ru");
-//        incomingUserDto.setName("newName@mail.ru");
-//        User user = UserMapper.mapToUser(incomingUserDto);
-
         when(userService.addUser(incomingUserDto)).thenReturn(user);
 
         String result = mockMvc.perform(post("/users")
@@ -80,10 +80,33 @@ class UserControllerTest {
                 .getContentAsString();
         assertEquals(objectMapper.writeValueAsString(user), result);
     }
+
     @Test
     public void addUserWithEmptyNameValidationTest() throws Exception {
         incomingUserDto.setName("");
         when(userService.addUser(any())).thenThrow(new ValidationException("Name is not valid, name is empty"));
+        mockMvc.perform(post("/users")
+                        .content(objectMapper.writeValueAsString(user))
+                        .contentType("application/json")
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    public void createUserWithEmptyEmailValidationTest() throws Exception {
+        incomingUserDto.setEmail("");
+        when(userService.addUser(any())).thenThrow(new ValidationException("Email is not valid, email is empty"));
+        mockMvc.perform(post("/users")
+                        .content(objectMapper.writeValueAsString(user))
+                        .contentType("application/json")
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    public void createUserWithWrongEmailTest() throws Exception {
+        incomingUserDto.setEmail("incorrect?.email.@");
+        when(userService.addUser(any())).thenThrow(new ValidationException("Email isn't valid"));
         mockMvc.perform(post("/users")
                         .content(objectMapper.writeValueAsString(user))
                         .contentType("application/json")
@@ -116,6 +139,42 @@ class UserControllerTest {
     }
 
     @Test
-    void deleteUserById() {
+    public void getUserByIdTest() throws Exception {
+        when(userService.getUserById(anyLong())).thenReturn(userDto);
+        mockMvc.perform(get("/users/{userId}", 1L))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id", is(userDto.getId()), Long.class))
+                .andExpect(jsonPath("$.name", is(userDto.getName())))
+                .andExpect(jsonPath("$.email", is(userDto.getEmail())));
+    }
+
+    @Test
+    public void getUserByWrongIdValidationTest() throws Exception {
+        when(userService.getUserById(anyLong())).thenThrow(new NotFoundException("User has not been found"));
+        mockMvc.perform(get("/users/{userId}", 999L))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    public void getAllUsersTest() throws Exception {
+        List<UserDto> users = new ArrayList<>();
+        users.add(userDto);
+        when(userService.getAllUsers()).thenReturn(users);
+        mockMvc.perform(get("/users"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", hasSize(1)))
+                .andExpect(jsonPath("$[0].id", is(userDto.getId()), Long.class))
+                .andExpect(jsonPath("$[0].name", is(userDto.getName())))
+                .andExpect(jsonPath("$[0].email", is(userDto.getEmail())));
+    }
+
+    @Test
+    void deleteUserById() throws Exception {
+        Long userId = 1L;
+        mockMvc.perform(delete("/users/{id}", userId))
+                .andDo(print())
+                .andExpect(status().isOk());
+
+        verify(userService).deleteUserById(userId);
     }
 }
