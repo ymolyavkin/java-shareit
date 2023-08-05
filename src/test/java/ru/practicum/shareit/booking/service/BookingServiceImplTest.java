@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import ru.practicum.shareit.booking.dto.BookingMapper;
 import ru.practicum.shareit.booking.dto.BookingResponseDto;
@@ -149,12 +150,21 @@ class BookingServiceImplTest {
 
     @Test
     void updateBooking_whenUnknownBooking_thenThrown() {
-               long bookingId = 99L;
+        long bookingId = 99L;
         when(bookingRepository.findById(anyLong())).thenReturn(Optional.empty());
 
         assertThrows(NotFoundException.class, () -> bookingService.getBookingById(booker.getId(), bookingId));
     }
 
+    @Test
+    void updateBooking_whenUnknownItem_thenThrown() {
+        long bookingId = 1L;
+        long itemId = 99L;
+        Mockito.lenient().when(bookingRepository.findById(anyLong())).thenReturn(Optional.of(booking));
+        when(itemRepository.findById(anyLong())).thenReturn(Optional.empty());
+
+        assertThrows(NotFoundException.class, () -> bookingService.getBookingById(booker.getId(), bookingId));
+    }
 
     /*
     public BookingResponseDto updateBooking(IncomingBookingDto incomingBookingDto, Long bookingId, Long bookerId) {
