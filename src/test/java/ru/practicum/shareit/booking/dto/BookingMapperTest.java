@@ -25,17 +25,17 @@ class BookingMapperTest {
     private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
     private final LocalDateTime dateTime = LocalDateTime.parse("2023-01-14 11:04", formatter);
 
-    private final LocalDateTime start = LocalDateTime.now();
-    private final LocalDateTime end = LocalDateTime.now().plusDays(1);
+    private final LocalDateTime start = dateTime.plusDays(1);
+    private final LocalDateTime end = dateTime.plusDays(2);
 
     @BeforeEach
     void beforeEach() {
-        item = new Item(1L, "ItemName", "DescriptionItem", true, booker, 1L, 0);
         booker = new User();
         booker.setEmail("user@email.ru");
         booker.setName("userName");
         booker.setId(1L);
-        lastBooking = new Booking(1L, dateTime, dateTime.plusDays(1), item, booker, Status.WAITING);
+        item = new Item(1L, "ItemName", "DescriptionItem", true, booker, 1L, 0);
+        lastBooking = new Booking(1L, start, end, item, booker, Status.WAITING);
         nextBooking = new Booking(2L, dateTime.plusDays(2), dateTime.plusDays(3), item, booker, Status.WAITING);
         incomingBookingDto = new IncomingBookingDto();
         incomingBookingDto.setBookerId(booker.getId());
@@ -87,17 +87,20 @@ class BookingMapperTest {
     @Test
     void mapToBookingDto() {
         BookingDto bookingDto = BookingDto.builder()
-                .id(booking.getId())
-                .start(booking.getStart())
-                .end(booking.getEnd())
-                .bookerId(booking.getBookerId())
-                .status(booking.getStatus())
+                .id(lastBooking.getId())
+                .start(lastBooking.getStart())
+                .end(lastBooking.getEnd())
+                .itemId(item.getId())
+                .bookerId(lastBooking.getBookerId())
+                .status(lastBooking.getStatus())
                 .build();
+
         assertThat(bookingDto.getId()).isEqualTo(1L);
         assertThat(bookingDto.getStart()).isEqualTo(start);
         assertThat(bookingDto.getEnd()).isEqualTo(end);
         assertThat(bookingDto.getItemId()).isEqualTo(item.getId());
         assertThat(bookingDto.getBookerId()).isEqualTo(1L);
+        assertThat(bookingDto.getStatus()).isEqualTo(Status.WAITING);
     }
 
     @Test
