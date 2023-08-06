@@ -28,9 +28,9 @@ public class BookingController {
     @GetMapping
     public List<BookingResponseDto> getBookingsByBooker(
             @RequestHeader(value = USER_ID_FROM_REQUEST) Long bookerId,
-            @RequestParam(required = false, defaultValue = "ALL") StateRequest state,
-            @RequestParam(name = "from", defaultValue = "0", required = false) @Min(0) int from,
-            @RequestParam(name = "size", defaultValue = "10", required = false) @Min(1) int size) {
+            @RequestParam(defaultValue = "ALL") StateRequest state,
+            @RequestParam(name = "from", defaultValue = "0") @Min(0) int from,
+            @RequestParam(name = "size", defaultValue = "10") @Min(1) int size) {
         log.info("Получен запрос на выдачу вещей, забронированных пользователем с id = {}", bookerId);
         return bookingService.getBookingsByBooker(bookerId, state, from, size);
     }
@@ -38,9 +38,9 @@ public class BookingController {
     @GetMapping("/owner")
     public List<BookingResponseDto> getBookingsByOwner(
             @RequestHeader(value = USER_ID_FROM_REQUEST) Long ownerId,
-            @RequestParam(required = false, defaultValue = "ALL") StateRequest state,
-            @RequestParam(name = "from", defaultValue = "0", required = false) @Min(0) int from,
-            @RequestParam(name = "size", defaultValue = "10", required = false) @Min(1) int size) {
+            @RequestParam(defaultValue = "ALL") StateRequest state,
+            @RequestParam(name = "from", defaultValue = "0") @Min(0) int from,
+            @RequestParam(name = "size", defaultValue = "10") @Min(1) int size) {
         log.info("Получен запрос на выдачу вещей, принадлежащих пользователю с id = {}", ownerId);
         return bookingService.getBookingsByOwner(ownerId, state, from, size);
     }

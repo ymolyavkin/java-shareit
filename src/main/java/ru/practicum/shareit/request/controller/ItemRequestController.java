@@ -52,8 +52,8 @@ public class ItemRequestController {
     public List<ItemRequestWithAnswersDto> getItemRequestsByOther(
             @Validated
             @RequestHeader(value = USER_ID_FROM_REQUEST) Long userId,
-            @RequestParam(name = "from", defaultValue = "0", required = false) @Min(0) Integer from,
-            @RequestParam(name = "size", defaultValue = "10", required = false) @Min(1) Integer size) {
+            @RequestParam(name = "from", defaultValue = "0") @Min(0) Integer from,
+            @RequestParam(name = "size", defaultValue = "10") @Min(1) Integer size) {
         log.info(REQUEST_GIVE_ALL_USER_QUERIES, userId);
 
         return itemRequestService.getItemRequestsByOther(userId, from, size);

@@ -31,8 +31,8 @@ public class ItemController {
     @GetMapping
     public List<ItemLastNextDto> getItems(@RequestHeader(value = USER_ID_FROM_REQUEST) Long userId,
                                           @Validated
-                                          @RequestParam(name = "from", defaultValue = "0", required = false) @Min(0) Integer from,
-                                          @RequestParam(name = "size", defaultValue = "10", required = false) @Min(1) Integer size) {
+                                          @RequestParam(name = "from", defaultValue = "0") @Min(0) Integer from,
+                                          @RequestParam(name = "size", defaultValue = "10") @Min(1) Integer size) {
         log.info("Получен запрос на выдачу вещей пользователя с id = {}", userId);
 
         return itemService.getItemsLastNextBookingByUser(userId, from, size);
@@ -72,8 +72,8 @@ public class ItemController {
     @GetMapping("/search")
     public List<ItemDto> searchItems(@Validated
                                      @RequestParam String text,
-                                     @RequestParam(name = "from", defaultValue = "0", required = false) @Min(0) Integer from,
-                                     @RequestParam(name = "size", defaultValue = "10", required = false) @Min(1) Integer size) {
+                                     @RequestParam(name = "from", defaultValue = "0") @Min(0) Integer from,
+                                     @RequestParam(name = "size", defaultValue = "10") @Min(1) Integer size) {
         log.info("Получен запрос на поиск вещей по ключевому слову \'{}\'", text);
         if (text.isBlank()) {
             return new ArrayList<>(0);
