@@ -25,7 +25,7 @@ public class ItemRequestController {
     private final ItemRequestService itemRequestService;
 
     @PostMapping(consumes = "application/json")
-    public ItemRequestResponseDto addItemRequest(@RequestHeader(value = USER_ID_FROM_REQUEST, defaultValue = "-1") Long userId,
+    public ItemRequestResponseDto addItemRequest(@RequestHeader(value = USER_ID_FROM_REQUEST) Long userId,
                                                  @Validated({Marker.OnCreate.class})
                                                  @RequestBody IncomingItemRequestDto incomingItemRequestDto,
                                                  BindingResult errors) {
@@ -39,7 +39,7 @@ public class ItemRequestController {
 
     @GetMapping
     public List<ItemRequestWithAnswersDto> getItemRequestsByAuthor(
-            @RequestHeader(value = USER_ID_FROM_REQUEST, defaultValue = "-1") Long userId,
+            @RequestHeader(value = USER_ID_FROM_REQUEST) Long userId,
             @RequestParam(name = "from", defaultValue = "0") int from,
             @RequestParam(name = "size", defaultValue = "10") int size) {
         log.info("Получен запрос на выдачу всех запросов пользователя с id = {}", userId);
@@ -50,7 +50,7 @@ public class ItemRequestController {
     @GetMapping("/all")
     public List<ItemRequestWithAnswersDto> getItemRequestsByOther(
             @Validated
-            @RequestHeader(value = USER_ID_FROM_REQUEST, defaultValue = "-1") Long userId,
+            @RequestHeader(value = USER_ID_FROM_REQUEST) Long userId,
             @RequestParam(name = "from", defaultValue = "0", required = false) @Min(0) Integer from,
             @RequestParam(name = "size", defaultValue = "10", required = false) @Min(1) Integer size) {
         log.info("Получен запрос на выдачу всех запросов пользователя с id = {}", userId);
@@ -60,7 +60,7 @@ public class ItemRequestController {
 
     @GetMapping("/{requestId}")
     public ItemRequestWithAnswersDto getItemRequestById(
-            @RequestHeader(value = USER_ID_FROM_REQUEST, defaultValue = "-1") Long userId,
+            @RequestHeader(value = USER_ID_FROM_REQUEST) Long userId,
             @PathVariable Long requestId) {
         log.info("Получен запрос на выдачу всех запросов пользователя с id = {}", userId);
 
