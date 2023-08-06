@@ -156,9 +156,6 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     public BookingResponseDto addBooking(IncomingBookingDto incomingBookingDto) {
-        if (incomingBookingDto.getBookerId().equals(-1L)) {
-            throw new NoneXSharerUserIdException("Не указан инициатор бронирования");
-        }
         Long bookerId = incomingBookingDto.getBookerId();
         Long itemId = incomingBookingDto.getItemId();
         User booker = userRepository.findById(bookerId)
@@ -191,9 +188,6 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     public BookingResponseDto updateBooking(IncomingBookingDto incomingBookingDto, Long bookingId, Long bookerId) {
-        if (bookerId.equals(-1L)) {
-            throw new NoneXSharerUserIdException("Не указан владелец вещи");
-        }
         Booking booking = bookingRepository.getReferenceById(bookingId);
         Item item = itemRepository.findById(booking.getItemId())
                 .orElseThrow(() -> new NotFoundException(String.format("Вещь с id %d не найдена", booking.getItemId())));

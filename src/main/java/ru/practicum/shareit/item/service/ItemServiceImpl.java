@@ -80,9 +80,6 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public ItemDto addItem(IncomingItemDto incomingItemDto) {
-        if (incomingItemDto.getOwnerId().equals(-1L)) {
-            throw new NoneXSharerUserIdException("Не указан владелец вещи");
-        }
         Long userId = incomingItemDto.getOwnerId();
         User owner = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException(String.format("Пользователь с id %d не найден", userId)));
