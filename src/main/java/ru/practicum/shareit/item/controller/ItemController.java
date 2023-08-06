@@ -22,6 +22,7 @@ import static ru.practicum.shareit.util.Constants.USER_ID_FROM_REQUEST;
 
 
 @Slf4j
+@Validated
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/items")
@@ -30,7 +31,6 @@ public class ItemController {
 
     @GetMapping
     public List<ItemLastNextDto> getItems(@RequestHeader(value = USER_ID_FROM_REQUEST) Long userId,
-                                          @Validated
                                           @RequestParam(name = "from", defaultValue = "0") @Min(0) Integer from,
                                           @RequestParam(name = "size", defaultValue = "10") @Min(1) Integer size) {
         log.info("Получен запрос на выдачу вещей пользователя с id = {}", userId);
@@ -70,8 +70,7 @@ public class ItemController {
     }
 
     @GetMapping("/search")
-    public List<ItemDto> searchItems(@Validated
-                                     @RequestParam String text,
+    public List<ItemDto> searchItems(@RequestParam String text,
                                      @RequestParam(name = "from", defaultValue = "0") @Min(0) Integer from,
                                      @RequestParam(name = "size", defaultValue = "10") @Min(1) Integer size) {
         log.info("Получен запрос на поиск вещей по ключевому слову \'{}\'", text);

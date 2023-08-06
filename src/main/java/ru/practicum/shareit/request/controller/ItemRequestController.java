@@ -19,6 +19,7 @@ import static ru.practicum.shareit.util.Constants.REQUEST_GIVE_ALL_USER_QUERIES;
 import static ru.practicum.shareit.util.Constants.USER_ID_FROM_REQUEST;
 
 @Slf4j
+@Validated
 @RequiredArgsConstructor
 @RestController
 @RequestMapping(path = "/requests")
@@ -50,7 +51,6 @@ public class ItemRequestController {
 
     @GetMapping("/all")
     public List<ItemRequestWithAnswersDto> getItemRequestsByOther(
-            @Validated
             @RequestHeader(value = USER_ID_FROM_REQUEST) Long userId,
             @RequestParam(name = "from", defaultValue = "0") @Min(0) Integer from,
             @RequestParam(name = "size", defaultValue = "10") @Min(1) Integer size) {

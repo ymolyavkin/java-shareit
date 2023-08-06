@@ -57,8 +57,6 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
             nativeQuery = true)
     int findByItemIdAndBookerId(Long itemId, Long bookerId);
 
-  //  List<Booking> findByItem_IdInOrderByStartDesc(List<Long> ids);
-
     Page<Booking> findByItem_IdInOrderByStartDesc(List<Long> ids, Pageable pageable);
 
     Optional<Booking> findFirstByItem_IdAndStartBeforeAndStatusOrderByStartDesc(Long itemId, LocalDateTime localDate,
