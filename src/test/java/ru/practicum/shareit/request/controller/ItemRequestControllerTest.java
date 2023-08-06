@@ -30,8 +30,7 @@ import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static ru.practicum.shareit.util.Constants.USER_ID_FROM_REQUEST;
 
 @WebMvcTest(controllers = ItemRequestController.class)
@@ -166,5 +165,14 @@ class ItemRequestControllerTest {
                 .getContentAsString();
 
         assertEquals(objectMapper.writeValueAsString(expectedItemRequest), result);
+    }
+
+    @Test
+    void getItemRequestsByOther_whenIncorrectUSER_ID_FROM_REQUEST_thenBadRequest() throws Exception {
+
+        mockMvc.perform(get("/requests/all")
+                        .header(USER_ID_FROM_REQUEST, ""))
+                .andDo(print())
+                .andExpect(status().isBadRequest());
     }
 }

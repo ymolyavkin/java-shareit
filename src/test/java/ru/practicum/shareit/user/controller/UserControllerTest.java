@@ -177,4 +177,22 @@ class UserControllerTest {
 
         verify(userService).deleteUserById(userId);
     }
+
+    @Test
+    void updateUser_whenIncorrectIncomingData_thenBadRequest() throws Exception {
+        Long userId = 1L;
+        incomingUserDto.setEmail("mail.ru");
+        incomingUserDto.setName("newName@mail.ru");
+        User newUser = UserMapper.mapToUser(incomingUserDto);
+        newUser.setId(userId);
+
+        String result = mockMvc.perform(patch("/users/{id}", userId)
+                        .contentType("application/json")
+                        .content(objectMapper.writeValueAsString(newUser)))
+                .andExpect(status().isBadRequest())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+        assertEquals("", result);
+    }
 }

@@ -3,7 +3,6 @@ package ru.practicum.shareit.item.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -33,8 +32,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static ru.practicum.shareit.util.Constants.USER_ID_FROM_REQUEST;
 
 @WebMvcTest(controllers = ItemController.class)
@@ -46,8 +44,6 @@ class ItemControllerTest {
     MockMvc mockMvc;
     @MockBean
     private ItemService itemService;
-    @InjectMocks
-    private ItemController itemController;
     private ItemLastNextDto itemLastNextDto;
     private IncomingItemDto incomingItemDto;
     private User owner;
@@ -184,5 +180,32 @@ class ItemControllerTest {
                 .getContentAsString();
 
         assertEquals(objectMapper.writeValueAsString(commentDto), result);
+    }
+
+    @Test
+    void addComment_whenIncorrectX_Sharer_User_Id_thenThrown() throws Exception {
+        Long itemId = 1L;
+        IncomingCommentDto incomingCommentDto = new IncomingCommentDto();
+        incomingCommentDto.setText("Text comment");
+        mockMvc.perform(post("/items/{itemId}/comment", itemId)
+                        .header("X-Sharer-User-Id", "")
+                        .content(objectMapper.writeValueAsString(incomingCommentDto))
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.ALL))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void addItem_whenWrongIncoming_thenThrown() throws Exception {
+        incomingItemDto.setName("");
+
+        mockMvc.perform(post("/items")
+                        .header(USER_ID_FROM_REQUEST, 1)
+                        .content(objectMapper.writeValueAsString(incomingItemDto))
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.ALL))
+                .andExpect(status().isBadRequest());
     }
 }
