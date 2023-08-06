@@ -47,7 +47,7 @@ public class BookingController {
 
     @ExceptionHandler(UnsatisfiedServletRequestParameterException.class)
     @PostMapping
-    public BookingResponseDto addBooking(@RequestHeader(value = USER_ID_FROM_REQUEST, defaultValue = "-1") Long bookerId,
+    public BookingResponseDto addBooking(@RequestHeader(value = USER_ID_FROM_REQUEST) Long bookerId,
                                          @Valid @RequestBody IncomingBookingDto incomingBookingDto) {
         log.info("Получен запрос на бронирование вещи пользователем с id = {}", bookerId);
         if (bookerId.equals(-1L)) {
