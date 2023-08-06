@@ -15,6 +15,7 @@ import ru.practicum.shareit.validator.Marker;
 import javax.validation.constraints.Min;
 import java.util.List;
 
+import static ru.practicum.shareit.util.Constants.REQUEST_GIVE_ALL_USER_QUERIES;
 import static ru.practicum.shareit.util.Constants.USER_ID_FROM_REQUEST;
 
 @Slf4j
@@ -42,7 +43,7 @@ public class ItemRequestController {
             @RequestHeader(value = USER_ID_FROM_REQUEST) Long userId,
             @RequestParam(name = "from", defaultValue = "0") int from,
             @RequestParam(name = "size", defaultValue = "10") int size) {
-        log.info("Получен запрос на выдачу всех запросов пользователя с id = {}", userId);
+        log.info(REQUEST_GIVE_ALL_USER_QUERIES, userId);
 
         return itemRequestService.getItemRequestsByAuthor(userId, from, size);
     }
@@ -53,7 +54,7 @@ public class ItemRequestController {
             @RequestHeader(value = USER_ID_FROM_REQUEST) Long userId,
             @RequestParam(name = "from", defaultValue = "0", required = false) @Min(0) Integer from,
             @RequestParam(name = "size", defaultValue = "10", required = false) @Min(1) Integer size) {
-        log.info("Получен запрос на выдачу всех запросов пользователя с id = {}", userId);
+        log.info(REQUEST_GIVE_ALL_USER_QUERIES, userId);
 
         return itemRequestService.getItemRequestsByOther(userId, from, size);
     }
@@ -62,7 +63,7 @@ public class ItemRequestController {
     public ItemRequestWithAnswersDto getItemRequestById(
             @RequestHeader(value = USER_ID_FROM_REQUEST) Long userId,
             @PathVariable Long requestId) {
-        log.info("Получен запрос на выдачу всех запросов пользователя с id = {}", userId);
+        log.info(REQUEST_GIVE_ALL_USER_QUERIES, userId);
 
         return itemRequestService.getItemRequestById(userId, requestId);
     }
