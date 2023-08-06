@@ -59,7 +59,7 @@ public class BookingController {
     }
 
     @PatchMapping(value = "/{bookingId}", consumes = "application/json")
-    public BookingResponseDto updateBooking(@RequestHeader(value = USER_ID_FROM_REQUEST, defaultValue = "-1") Long ownerId,
+    public BookingResponseDto updateBooking(@RequestHeader(value = USER_ID_FROM_REQUEST) Long ownerId,
                                             @RequestBody(required = false) IncomingBookingDto incomingBookingDto,
                                             @PathVariable Long bookingId,
                                             @RequestParam(required = false) Boolean approved) {
