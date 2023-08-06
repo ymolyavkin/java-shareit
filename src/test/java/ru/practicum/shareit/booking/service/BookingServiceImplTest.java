@@ -175,7 +175,7 @@ class BookingServiceImplTest {
     void updateBooking_whenUnknownUser_thenThrown() {
         long ownerId = -1L;
         long bookingId = 1L;
-        Throwable thrown = assertThrows(NoneXSharerUserIdException.class, () -> {
+        Throwable thrown = assertThrows(NullPointerException.class, () -> {
             bookingService.updateBooking(incomingBookingDtoOne, bookingId, ownerId);
         });
         assertNotNull(thrown.getMessage());

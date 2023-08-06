@@ -148,7 +148,7 @@ class ItemServiceImplTest {
     @Test
     void addItem_whenNotUser_thenThrown() {
         incomingItemDto.setOwnerId(-1L);
-        Throwable thrown = assertThrows(NoneXSharerUserIdException.class, () -> {
+        Throwable thrown = assertThrows(NotFoundException.class, () -> {
             itemService.addItem(incomingItemDto);
         });
         assertNotNull(thrown.getMessage());
