@@ -37,7 +37,7 @@ public class BookingController {
 
     @GetMapping("/owner")
     public List<BookingResponseDto> getBookingsByOwner(
-            @RequestHeader(value = USER_ID_FROM_REQUEST, defaultValue = "-1") Long ownerId,
+            @RequestHeader(value = USER_ID_FROM_REQUEST) Long ownerId,
             @RequestParam(required = false, defaultValue = "ALL") StateRequest state,
             @RequestParam(name = "from", defaultValue = "0", required = false) @Min(0) int from,
             @RequestParam(name = "size", defaultValue = "10", required = false) @Min(1) int size) {
@@ -73,7 +73,7 @@ public class BookingController {
     }
 
     @GetMapping("/{bookingId}")
-    public BookingResponseDto getBookingById(@RequestHeader(value = USER_ID_FROM_REQUEST, defaultValue = "-1") Long userId,
+    public BookingResponseDto getBookingById(@RequestHeader(value = USER_ID_FROM_REQUEST) Long userId,
                                              @PathVariable Long bookingId) {
         log.info("Получен запрос на данных о бронировании с id = {}", bookingId);
 
