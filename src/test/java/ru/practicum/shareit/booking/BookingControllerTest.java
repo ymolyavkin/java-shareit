@@ -216,6 +216,7 @@ class BookingControllerTest {
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.error").exists());
     }
+
     @SneakyThrows
     @Test
     void getBookingsByOwner_whenIncorrectX_Sharer_User_Id_thenThrown() {
