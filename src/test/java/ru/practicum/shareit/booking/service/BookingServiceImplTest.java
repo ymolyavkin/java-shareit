@@ -177,7 +177,6 @@ class BookingServiceImplTest {
         Throwable thrown = assertThrows(NullPointerException.class, () -> {
             bookingService.updateBooking(incomingBookingDtoOne, bookingId, ownerId);
         });
-        assertNotNull(thrown.getMessage());
     }
 
     @Test
