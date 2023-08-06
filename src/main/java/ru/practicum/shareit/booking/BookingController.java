@@ -27,7 +27,7 @@ public class BookingController {
 
     @GetMapping
     public List<BookingResponseDto> getBookingsByBooker(
-            @RequestHeader(value = USER_ID_FROM_REQUEST, defaultValue = "-1") Long bookerId,
+            @RequestHeader(value = USER_ID_FROM_REQUEST) Long bookerId,
             @RequestParam(required = false, defaultValue = "ALL") StateRequest state,
             @RequestParam(name = "from", defaultValue = "0", required = false) @Min(0) int from,
             @RequestParam(name = "size", defaultValue = "10", required = false) @Min(1) int size) {
