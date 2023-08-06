@@ -29,7 +29,7 @@ public class ItemController {
     private final ItemService itemService;
 
     @GetMapping
-    public List<ItemLastNextDto> getItems(@RequestHeader(value = USER_ID_FROM_REQUEST, defaultValue = "-1") Long userId,
+    public List<ItemLastNextDto> getItems(@RequestHeader(value = USER_ID_FROM_REQUEST) Long userId,
                                           @Validated
                                           @RequestParam(name = "from", defaultValue = "0", required = false) @Min(0) Integer from,
                                           @RequestParam(name = "size", defaultValue = "10", required = false) @Min(1) Integer size) {
@@ -40,7 +40,7 @@ public class ItemController {
 
     @ExceptionHandler(UnsatisfiedServletRequestParameterException.class)
     @PostMapping
-    public ItemDto addItem(@RequestHeader(value = USER_ID_FROM_REQUEST, defaultValue = "-1") Long userId,
+    public ItemDto addItem(@RequestHeader(value = USER_ID_FROM_REQUEST) Long userId,
                            @Valid @RequestBody IncomingItemDto incomingItemDto) {
         log.info("Получен запрос пользователя с id = {} на добавление вещи", userId);
         if (userId.equals(-1L)) {
@@ -51,7 +51,7 @@ public class ItemController {
     }
 
     @PatchMapping(value = "/{itemId}", consumes = "application/json")
-    public ItemDto updateItem(@RequestHeader(value = USER_ID_FROM_REQUEST, defaultValue = "-1") Long userId,
+    public ItemDto updateItem(@RequestHeader(value = USER_ID_FROM_REQUEST) Long userId,
                               @RequestBody IncomingItemDto incomingItemDto,
                               @PathVariable Long itemId) {
         log.info("Получен запрос на обновление вещи id = {} пользователя с id = {}", itemId, userId);
@@ -62,7 +62,7 @@ public class ItemController {
     }
 
     @GetMapping("/{itemId}")
-    public ItemLastNextDto getItemById(@RequestHeader(value = USER_ID_FROM_REQUEST, defaultValue = "-1") Long userId,
+    public ItemLastNextDto getItemById(@RequestHeader(value = USER_ID_FROM_REQUEST) Long userId,
                                        @PathVariable Long itemId) {
         log.info("Получен запрос на выдачу вещи с id = {} пользователем с id = {}", itemId, userId);
 
@@ -82,7 +82,7 @@ public class ItemController {
     }
 
     @PostMapping(value = "/{itemId}/comment", consumes = "application/json")
-    public CommentDto addComment(@RequestHeader(value = USER_ID_FROM_REQUEST, defaultValue = "-1") Long userId,
+    public CommentDto addComment(@RequestHeader(value = USER_ID_FROM_REQUEST) Long userId,
                                  @Valid @RequestBody IncomingCommentDto incomingCommentDto,
                                  @PathVariable Long itemId) {
         log.info("Получен запрос пользователя с id = {} на добавление комментария к вещи с id = {}", userId, itemId);
