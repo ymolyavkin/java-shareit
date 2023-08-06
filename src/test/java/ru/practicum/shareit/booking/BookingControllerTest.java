@@ -204,4 +204,26 @@ class BookingControllerTest {
 
         assertEquals(objectMapper.writeValueAsString(List.of(bookingResponseDto)), result);
     }
+
+    @SneakyThrows
+    @Test
+    void getBookingsByOwner_whenIncorrectParameters_thenThrown() {
+        mockMvc.perform(get("/bookings/owner")
+                        .header("X-Sharer-User-Id", 1)
+                        .param("state", "ALL")
+                        .param("from", String.valueOf(-1))
+                        .param("size", String.valueOf(-10)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.error").exists());
+    }
+    @SneakyThrows
+    @Test
+    void getBookingsByOwner_whenIncorrectX_Sharer_User_Id_thenThrown() {
+        mockMvc.perform(get("/bookings/owner")
+                        .header("X-Sharer-User-Id", "")
+                        .param("state", "ALL")
+                        .param("from", String.valueOf(0))
+                        .param("size", String.valueOf(10)))
+                .andExpect(status().isBadRequest());
+    }
 }
