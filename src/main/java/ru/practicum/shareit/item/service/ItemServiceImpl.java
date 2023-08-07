@@ -111,14 +111,8 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public List<ItemDto> searchItemsByText(String searchText, Integer from, Integer size) {
-        // List<Item> items = itemRepository.findByNameIsContainingIgnoreCaseOrDescriptionIsContainingIgnoreCase(searchText, searchText);
         List<Item> items = itemRepository.findByNameOrDescriptionAndAvailable(searchText);
 
-        /*return items
-                .stream()
-                .filter(item -> item.getAvailable())
-                .map(ItemMapper::mapToItemDto)
-                .collect(Collectors.toList());*/
         return items
                 .stream()
                 .map(ItemMapper::mapToItemDto)
