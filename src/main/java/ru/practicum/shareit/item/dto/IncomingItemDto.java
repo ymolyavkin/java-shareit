@@ -16,10 +16,10 @@ import javax.validation.constraints.Size;
 @EqualsAndHashCode
 public class IncomingItemDto {
     @Size(max = 255, groups = {Marker.OnCreate.class, Marker.OnUpdate.class})
-    @NotBlank(message = "Название вещи не может быть пустым.")
+    @NotBlank(groups = {Marker.OnCreate.class}, message = "Название вещи не может быть пустым.")
     private String name;
     @Size(max = 512, groups = {Marker.OnCreate.class, Marker.OnUpdate.class})
-    @NotBlank(message = "Описание вещи не может быть пустым.")
+    @NotBlank(groups = {Marker.OnCreate.class}, message = "Описание вещи не может быть пустым.")
     private String description;
     @NotNull(message = "Доступность вещи для аренды должна быть указана.")
     private Boolean available;
