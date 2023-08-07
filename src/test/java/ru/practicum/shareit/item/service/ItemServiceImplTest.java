@@ -267,7 +267,7 @@ class ItemServiceImplTest {
     @Test
     void searchItemsByText() {
         when(itemRepository
-                .findByNameIsContainingIgnoreCaseOrDescriptionIsContainingIgnoreCase("searchText", "searchText"))
+                .findByNameOrDescriptionAndAvailable("searchText"))
                 .thenReturn(List.of(item));
         List<ItemDto> exppectedItemDtoList = List.of(ItemMapper.mapToItemDto(item));
         List<ItemDto> actualItemDtoList = itemService.searchItemsByText("searchText", from, size);
