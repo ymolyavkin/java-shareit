@@ -21,7 +21,7 @@ public class IncomingItemDto {
     @Size(max = 512, groups = {Marker.OnCreate.class, Marker.OnUpdate.class})
     @NotBlank(groups = {Marker.OnCreate.class}, message = "Описание вещи не может быть пустым.")
     private String description;
-    @NotNull(message = "Доступность вещи для аренды должна быть указана.")
+    @NotNull(groups = {Marker.OnCreate.class}, message = "Доступность вещи для аренды должна быть указана.")
     private Boolean available;
     private Long ownerId;
     private Long requestId;

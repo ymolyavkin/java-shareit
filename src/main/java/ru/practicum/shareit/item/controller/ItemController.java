@@ -83,7 +83,7 @@ public class ItemController {
 
     @PostMapping(value = "/{itemId}/comment", consumes = "application/json")
     public CommentDto addComment(@RequestHeader(value = USER_ID_FROM_REQUEST) Long userId,
-                                 @Valid @RequestBody IncomingCommentDto incomingCommentDto,
+                                 @Validated({Marker.OnCreate.class}) @RequestBody IncomingCommentDto incomingCommentDto,
                                  @PathVariable Long itemId) {
         log.info("Получен запрос пользователя с id = {} на добавление комментария к вещи с id = {}", userId, itemId);
         if (userId.equals(-1L)) {
