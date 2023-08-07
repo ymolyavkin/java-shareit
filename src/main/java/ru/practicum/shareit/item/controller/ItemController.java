@@ -14,7 +14,6 @@ import ru.practicum.shareit.item.dto.ItemLastNextDto;
 import ru.practicum.shareit.item.service.ItemService;
 import ru.practicum.shareit.validator.Marker;
 
-import javax.validation.Valid;
 import javax.validation.constraints.Min;
 import java.util.ArrayList;
 import java.util.List;
@@ -42,7 +41,7 @@ public class ItemController {
     @ExceptionHandler(UnsatisfiedServletRequestParameterException.class)
     @PostMapping
     public ItemDto addItem(@RequestHeader(value = USER_ID_FROM_REQUEST) Long userId,
-                           @Valid @RequestBody IncomingItemDto incomingItemDto) {
+                           @Validated({Marker.OnCreate.class}) @RequestBody IncomingItemDto incomingItemDto) {
         log.info("Получен запрос пользователя с id = {} на добавление вещи", userId);
         if (userId.equals(-1L)) {
             throw new NoneXSharerUserIdException("Не указан владелец вещи");
