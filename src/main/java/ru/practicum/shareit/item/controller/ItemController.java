@@ -12,6 +12,7 @@ import ru.practicum.shareit.item.dto.IncomingItemDto;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.ItemLastNextDto;
 import ru.practicum.shareit.item.service.ItemService;
+import ru.practicum.shareit.validator.Marker;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Min;
@@ -22,7 +23,7 @@ import static ru.practicum.shareit.util.Constants.USER_ID_FROM_REQUEST;
 
 
 @Slf4j
-@Validated
+@Validated({Marker.OnCreate.class})
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/items")

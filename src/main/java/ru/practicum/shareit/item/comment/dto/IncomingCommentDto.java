@@ -15,6 +15,6 @@ import javax.validation.constraints.Size;
 @RequiredArgsConstructor
 public class IncomingCommentDto {
     @Size(max = 512)
-    @NotBlank(message = "Комментарий не может быть пустым.")
+    @NotBlank(groups = {Marker.OnCreate.class}, message = "Комментарий не может быть пустым.")
     private String text;
 }
