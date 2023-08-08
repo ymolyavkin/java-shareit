@@ -33,6 +33,8 @@ import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.groupingBy;
@@ -78,25 +80,42 @@ public class ItemServiceImpl implements ItemService {
                         dateTimeNow, Status.APPROVED).map(BookingMapper::mapToBookingLastNextDto).orElse(null),
                 commentRepository.findByItem_Id(item.getId()));
     }
+
+    Predicate<Booking> isLast = booking -> (booking.getStatus() == Status.APPROVED &&
+            (booking.getStart().isBefore(LocalDateTime.now()) || booking.getStart().isEqual(LocalDateTime.now())));
+    Predicate<Booking> isNext = booking -> (booking.getStatus() == Status.APPROVED &&
+            (booking.getStart().isAfter(LocalDateTime.now()) || booking.getStart().isEqual(LocalDateTime.now())));
+
     private BookingLastNextDto getLastBooking(Item item, Map<Item, List<Booking>> bookings) {
-        BookingLastNextDto result=null;
-        if (bookings.containsKey(item)){
-        List<Booking> bookingsByItem = bookings.get(item);
-        result = BookingMapper.mapToBookingLastNextDto(bookingsByItem.get(0));
+        List<Booking> bookingsByItem = Collections.emptyList();
+        if (bookings.containsKey(item)) {
+            bookingsByItem = bookings.get(item);
         }
-        return result;
+
+        return bookingsByItem
+                .stream()
+             //   .filter(isLast)
+                .findFirst()
+                .map(BookingMapper::mapToBookingLastNextDto)
+                .orElse(null);
     }
+
     private BookingLastNextDto getNextBooking(Item item, Map<Item, List<Booking>> bookings) {
-        BookingLastNextDto result=null;
-        if (bookings.containsKey(item)){
-            List<Booking> bookingsByItem = bookings.get(item);
-            result = BookingMapper.mapToBookingLastNextDto(bookingsByItem.get(bookingsByItem.size() - 1));
+        List<Booking> bookingsByItem = Collections.emptyList();
+        if (bookings.containsKey(item)) {
+            bookingsByItem = bookings.get(item);
         }
-        return result;
+        return bookingsByItem
+                .stream()
+               // .filter(isNext)
+                .findFirst()
+                .map(BookingMapper::mapToBookingLastNextDto)
+                .orElse(null);
     }
+
     private List<Comment> getComments(Item item, Map<Item, List<Comment>> comments) {
-       List<Comment> result= Collections.emptyList();
-        if (comments.containsKey(item)){
+        List<Comment> result = Collections.emptyList();
+        if (comments.containsKey(item)) {
             result = comments.get(item);
         }
         return result;
@@ -107,9 +126,9 @@ public class ItemServiceImpl implements ItemService {
                                                            Map<Item, List<Booking>> bookings) {
 
         return items.stream().map(item -> ItemMapper.mapToItemLastNextResponseDto(item,
-                getLastBooking(item, bookings),
-                getNextBooking(item, bookings),
-                getComments(item, comments)))
+                        getLastBooking(item, bookings),
+                        getNextBooking(item, bookings),
+                        getComments(item, comments)))
                 .collect(toList());
     }
 
@@ -126,8 +145,8 @@ public class ItemServiceImpl implements ItemService {
         Map<Item, List<Booking>> bookings = bookingRepository.findByItemIn(items, Sort.by(DESC, "start"))
                 .stream()
                 .collect(groupingBy(Booking::getItem, toList()));
-return assembleItemLastNextDtos(items, comments, bookings);
-       // return items.stream().map(item -> toItemLastNextDto(item)).collect(Collectors.toList());
+        return assembleItemLastNextDtos(items, comments, bookings);
+        // return items.stream().map(item -> toItemLastNextDto(item)).collect(Collectors.toList());
     }
 
     @Override
