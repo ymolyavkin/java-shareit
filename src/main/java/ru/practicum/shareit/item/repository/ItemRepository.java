@@ -1,12 +1,12 @@
 package ru.practicum.shareit.item.repository;
 
+import org.springframework.data.domain.Page;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Component;
 import ru.practicum.shareit.item.model.Item;
-
-import java.awt.print.Pageable;
+import org.springframework.data.domain.Pageable;
 import java.util.List;
 
 @Component
@@ -19,7 +19,7 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
     @Query(value = "select * " +
             "from ITEMS " +
             "where owner_id = ?1", nativeQuery = true)
-    List<Item> findAllByOwnerId(Long userId, Pageable pageable);
+    Page<Item> findAllByOwnerId(Long userId, Pageable pageable);
 
     @Query("SELECT i FROM Item AS i " +
             "WHERE (LOWER(i.name) LIKE LOWER(concat('%', :text, '%')) " +

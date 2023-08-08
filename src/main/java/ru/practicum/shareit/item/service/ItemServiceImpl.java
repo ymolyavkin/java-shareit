@@ -3,6 +3,8 @@ package ru.practicum.shareit.item.service;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -80,8 +82,10 @@ public class ItemServiceImpl implements ItemService {
     @Override
     public List<ItemLastNextDto> getItemsLastNextBookingByUser(Long userId, int from, int size) {
         List<Item> items = itemRepository.findAllByOwnerId(userId);
-        OffsetPageRequest pageRequest = new OffsetPageRequest(from, size);
+        Pageable pageable = PageRequest.of(from, size);
+      //  OffsetPageRequest pageRequest = new OffsetPageRequest(from, size);
         //Page<Item> page = itemRepository.findAll(pageRequest);
+        Page<Item> page = itemRepository.findAllByOwnerId(userId, pageable);
         Map<Item, List<Comment>> comments = commentRepository.findByItemIn(items, Sort.by(DESC, "created"))
                 .stream()
                 .collect(groupingBy(Comment::getItem, toList()));
