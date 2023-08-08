@@ -89,6 +89,10 @@ public class ItemServiceImpl implements ItemService {
         Map<Item, List<Comment>> comments = commentRepository.findByItemIn(items, Sort.by(DESC, "created"))
                 .stream()
                 .collect(groupingBy(Comment::getItem, toList()));
+        Map<Item, List<Booking>> bookings = bookingRepository.findByItemIn(items, Sort.by(DESC, "start"))
+                .stream()
+                .collect(groupingBy(Booking::getItem, toList()));
+
         return items.stream().map(item -> toItemLastNextDto(item)).collect(Collectors.toList());
     }
 
