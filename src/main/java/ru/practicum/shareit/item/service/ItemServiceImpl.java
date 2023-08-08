@@ -30,15 +30,15 @@ import ru.practicum.shareit.user.repository.UserRepository;
 import ru.practicum.shareit.booking.repository.BookingRepository;
 
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.toList;
+import static org.springframework.data.domain.Sort.Direction.ASC;
 import static org.springframework.data.domain.Sort.Direction.DESC;
 
 @Service
@@ -82,9 +82,9 @@ public class ItemServiceImpl implements ItemService {
     }
 
     Predicate<Booking> isLast = booking -> (booking.getStatus() == Status.APPROVED &&
-            (booking.getStart().isBefore(LocalDateTime.now()) || booking.getStart().isEqual(LocalDateTime.now())));
+            (booking.getStart().isBefore(LocalDateTime.now()) || booking.getStart().isEqual(LocalDateTime.now()) || ChronoUnit.MILLIS.between(LocalDateTime.now(), booking.getStart())<5));
     Predicate<Booking> isNext = booking -> (booking.getStatus() == Status.APPROVED &&
-            (booking.getStart().isAfter(LocalDateTime.now()) || booking.getStart().isEqual(LocalDateTime.now())));
+            (booking.getStart().isAfter(LocalDateTime.now()) || booking.getStart().isEqual(LocalDateTime.now()) || ChronoUnit.MILLIS.between(LocalDateTime.now(), booking.getStart())<5));
 
     private BookingLastNextDto getLastBooking(Item item, Map<Item, List<Booking>> bookings) {
         List<Booking> bookingsByItem = Collections.emptyList();
@@ -94,7 +94,7 @@ public class ItemServiceImpl implements ItemService {
 
         return bookingsByItem
                 .stream()
-             //   .filter(isLast)
+                //   .filter(isLast)
                 .findFirst()
                 .map(BookingMapper::mapToBookingLastNextDto)
                 .orElse(null);
@@ -107,7 +107,7 @@ public class ItemServiceImpl implements ItemService {
         }
         return bookingsByItem
                 .stream()
-               // .filter(isNext)
+                // .filter(isNext)
                 .findFirst()
                 .map(BookingMapper::mapToBookingLastNextDto)
                 .orElse(null);
@@ -142,7 +142,7 @@ public class ItemServiceImpl implements ItemService {
         Map<Item, List<Comment>> comments = commentRepository.findByItemIn(items, Sort.by(DESC, "created"))
                 .stream()
                 .collect(groupingBy(Comment::getItem, toList()));
-        Map<Item, List<Booking>> bookings = bookingRepository.findByItemIn(items, Sort.by(DESC, "start"))
+        Map<Item, List<Booking>> bookings = bookingRepository.findByItemIn(items, Sort.by(ASC, "start"))
                 .stream()
                 .collect(groupingBy(Booking::getItem, toList()));
         return assembleItemLastNextDtos(items, comments, bookings);
