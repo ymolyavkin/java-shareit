@@ -3,6 +3,7 @@ package ru.practicum.shareit.item.service;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.dto.BookingMapper;
@@ -28,7 +29,13 @@ import ru.practicum.shareit.util.OffsetPageRequest;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
+
+import static java.util.stream.Collectors.groupingBy;
+import static java.util.stream.Collectors.toList;
+import static org.springframework.data.domain.Sort.Direction.DESC;
+import static ru.practicum.shareit.util.Constants.SORT_BY_CREATED_DESC;
 
 @Service
 @RequiredArgsConstructor
@@ -61,6 +68,7 @@ public class ItemServiceImpl implements ItemService {
 
     private ItemLastNextDto toItemLastNextDto(Item item) {
         LocalDateTime dateTimeNow = LocalDateTime.now();
+
         return ItemMapper.mapToItemLastNextResponseDto(item,
                 bookingRepository.findFirstByItem_IdAndStartBeforeAndStatusOrderByStartDesc(item.getId(),
                         dateTimeNow, Status.APPROVED).map(BookingMapper::mapToBookingLastNextDto).orElse(null),
@@ -73,8 +81,10 @@ public class ItemServiceImpl implements ItemService {
     public List<ItemLastNextDto> getItemsLastNextBookingByUser(Long userId, int from, int size) {
         List<Item> items = itemRepository.findAllByOwnerId(userId);
         OffsetPageRequest pageRequest = new OffsetPageRequest(from, size);
-        Page<Item> page = itemRepository.findAll(pageRequest);
-
+        //Page<Item> page = itemRepository.findAll(pageRequest);
+        Map<Item, List<Comment>> comments = commentRepository.findByItemIn(items, Sort.by(DESC, "created"))
+                .stream()
+                .collect(groupingBy(Comment::getItem, toList()));
         return items.stream().map(item -> toItemLastNextDto(item)).collect(Collectors.toList());
     }
 
@@ -116,7 +126,7 @@ public class ItemServiceImpl implements ItemService {
         return items
                 .stream()
                 .map(ItemMapper::mapToItemDto)
-                .collect(Collectors.toList());
+                .collect(toList());
     }
 
     @Override

@@ -22,7 +22,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static ru.practicum.shareit.util.Constants.SORT_BY_DESC;
+import static ru.practicum.shareit.util.Constants.SORT_BY_START_DESC;
 
 @Service
 @RequiredArgsConstructor
@@ -131,19 +131,19 @@ public class BookingServiceImpl implements BookingService {
                 bookings = bookingPage.getContent();
                 break;
             case CURRENT:
-                bookings = bookingRepository.findAllByBooker_IdAndStartBeforeAndEndAfter(bookerId, dateTimeNow, dateTimeNow, SORT_BY_DESC);
+                bookings = bookingRepository.findAllByBooker_IdAndStartBeforeAndEndAfter(bookerId, dateTimeNow, dateTimeNow, SORT_BY_START_DESC);
                 break;
             case FUTURE:
-                bookings = bookingRepository.findAllByBooker_IdAndStartAfter(bookerId, dateTimeNow, SORT_BY_DESC);
+                bookings = bookingRepository.findAllByBooker_IdAndStartAfter(bookerId, dateTimeNow, SORT_BY_START_DESC);
                 break;
             case PAST:
-                bookings = bookingRepository.findAllByBooker_IdAndEndBefore(bookerId, dateTimeNow, SORT_BY_DESC);
+                bookings = bookingRepository.findAllByBooker_IdAndEndBefore(bookerId, dateTimeNow, SORT_BY_START_DESC);
                 break;
             case WAITING:
-                bookings = bookingRepository.findAllByBooker_IdAndStatus(bookerId, Status.WAITING, SORT_BY_DESC);
+                bookings = bookingRepository.findAllByBooker_IdAndStatus(bookerId, Status.WAITING, SORT_BY_START_DESC);
                 break;
             case REJECTED:
-                bookings = bookingRepository.findAllByBooker_IdAndStatus(bookerId, Status.REJECTED, SORT_BY_DESC);
+                bookings = bookingRepository.findAllByBooker_IdAndStatus(bookerId, Status.REJECTED, SORT_BY_START_DESC);
                 break;
             default:
                 bookings = Collections.emptyList();
