@@ -8,6 +8,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.practicum.shareit.booking.dto.BookingLastNextDto;
 import ru.practicum.shareit.booking.dto.BookingMapper;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.Status;
@@ -27,9 +28,9 @@ import ru.practicum.shareit.item.repository.ItemRepository;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserRepository;
 import ru.practicum.shareit.booking.repository.BookingRepository;
-import ru.practicum.shareit.util.OffsetPageRequest;
 
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -37,7 +38,6 @@ import java.util.stream.Collectors;
 import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.toList;
 import static org.springframework.data.domain.Sort.Direction.DESC;
-import static ru.practicum.shareit.util.Constants.SORT_BY_CREATED_DESC;
 
 @Service
 @RequiredArgsConstructor
@@ -78,12 +78,46 @@ public class ItemServiceImpl implements ItemService {
                         dateTimeNow, Status.APPROVED).map(BookingMapper::mapToBookingLastNextDto).orElse(null),
                 commentRepository.findByItem_Id(item.getId()));
     }
+    private BookingLastNextDto getLastBooking(Item item, Map<Item, List<Booking>> bookings) {
+        BookingLastNextDto result=null;
+        if (bookings.containsKey(item)){
+        List<Booking> bookingsByItem = bookings.get(item);
+        result = BookingMapper.mapToBookingLastNextDto(bookingsByItem.get(0));
+        }
+        return result;
+    }
+    private BookingLastNextDto getNextBooking(Item item, Map<Item, List<Booking>> bookings) {
+        BookingLastNextDto result=null;
+        if (bookings.containsKey(item)){
+            List<Booking> bookingsByItem = bookings.get(item);
+            result = BookingMapper.mapToBookingLastNextDto(bookingsByItem.get(bookingsByItem.size() - 1));
+        }
+        return result;
+    }
+    private List<Comment> getComments(Item item, Map<Item, List<Comment>> comments) {
+       List<Comment> result= Collections.emptyList();
+        if (comments.containsKey(item)){
+            result = comments.get(item);
+        }
+        return result;
+    }
+
+    private List<ItemLastNextDto> assembleItemLastNextDtos(List<Item> items,
+                                                           Map<Item, List<Comment>> comments,
+                                                           Map<Item, List<Booking>> bookings) {
+
+        return items.stream().map(item -> ItemMapper.mapToItemLastNextResponseDto(item,
+                getLastBooking(item, bookings),
+                getNextBooking(item, bookings),
+                getComments(item, comments)))
+                .collect(toList());
+    }
 
     @Override
     public List<ItemLastNextDto> getItemsLastNextBookingByUser(Long userId, int from, int size) {
         List<Item> items = itemRepository.findAllByOwnerId(userId);
         Pageable pageable = PageRequest.of(from, size);
-      //  OffsetPageRequest pageRequest = new OffsetPageRequest(from, size);
+        //  OffsetPageRequest pageRequest = new OffsetPageRequest(from, size);
         //Page<Item> page = itemRepository.findAll(pageRequest);
         Page<Item> page = itemRepository.findAllByOwnerId(userId, pageable);
         Map<Item, List<Comment>> comments = commentRepository.findByItemIn(items, Sort.by(DESC, "created"))
@@ -92,8 +126,8 @@ public class ItemServiceImpl implements ItemService {
         Map<Item, List<Booking>> bookings = bookingRepository.findByItemIn(items, Sort.by(DESC, "start"))
                 .stream()
                 .collect(groupingBy(Booking::getItem, toList()));
-
-        return items.stream().map(item -> toItemLastNextDto(item)).collect(Collectors.toList());
+return assembleItemLastNextDtos(items, comments, bookings);
+       // return items.stream().map(item -> toItemLastNextDto(item)).collect(Collectors.toList());
     }
 
     @Override
