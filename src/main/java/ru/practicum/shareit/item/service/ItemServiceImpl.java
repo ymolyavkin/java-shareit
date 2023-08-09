@@ -32,7 +32,6 @@ import ru.practicum.shareit.booking.repository.BookingRepository;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
-import java.util.function.Predicate;
 
 import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.toList;
@@ -64,27 +63,11 @@ public class ItemServiceImpl implements ItemService {
         return ItemMapper.mapToItemLastNextDto(item, lastBooking, nextBooking, commentRepository.findByItem_Id(item.getId()));
     }
 
-    private ItemLastNextDto toItemLastNextDto(Item item) {
-        LocalDateTime dateTimeNow = LocalDateTime.now();
-
-        return ItemMapper.mapToItemLastNextResponseDto(item, bookingRepository.findFirstByItem_IdAndStartBeforeAndStatusOrderByStartDesc(item.getId(), dateTimeNow, Status.APPROVED).map(BookingMapper::mapToBookingLastNextDto).orElse(null), bookingRepository.findFirstByItem_IdAndStartAfterAndStatusOrderByStartAsc(item.getId(), dateTimeNow, Status.APPROVED).map(BookingMapper::mapToBookingLastNextDto).orElse(null), commentRepository.findByItem_Id(item.getId()));
-    }
-
     boolean isLast(Booking booking) {
         return booking.getStatus() == Status.APPROVED
                 && (booking.getStart().isBefore(LocalDateTime.now())
                 || booking.getStart().isEqual(LocalDateTime.now())
                 || ChronoUnit.MILLIS.between(LocalDateTime.now(), booking.getStart()) < 100);
-    }
-
-    Predicate<Booking> isLast = booking -> (booking.getStatus() == Status.APPROVED && (booking.getStart().isBefore(LocalDateTime.now()) || booking.getStart().isEqual(LocalDateTime.now()) || ChronoUnit.MILLIS.between(LocalDateTime.now(), booking.getStart()) < 100));
-    Predicate<Booking> isNext = booking -> (booking.getStatus() == Status.APPROVED && (booking.getStart().isBefore(LocalDateTime.now()) || booking.getStart().isEqual(LocalDateTime.now()) || ChronoUnit.MILLIS.between(LocalDateTime.now(), booking.getStart()) < 100));
-
-    public Booking[] nextTwo(Iterator<Booking> values) {
-        return new Booking[]{
-                (values.hasNext() ? values.next() : null),
-                (values.hasNext() ? values.next() : null)
-        };
     }
 
     private Map<String, BookingLastNextDto> aroundTime(Item item, Map<Item, List<Booking>> bookings) {
@@ -109,24 +92,6 @@ public class ItemServiceImpl implements ItemService {
         return result;
     }
 
-
-
-    private BookingLastNextDto getLastBooking(Item item, Map<Item, List<Booking>> bookings) {
-        List<Booking> bookingsByItem = Collections.emptyList();
-        if (bookings.containsKey(item)) {
-            bookingsByItem = bookings.get(item);
-        }
-        return bookingsByItem.stream().filter(isLast).findFirst().map(BookingMapper::mapToBookingLastNextDto).orElse(null);
-    }
-
-    private BookingLastNextDto getNextBooking(Item item, Map<Item, List<Booking>> bookings) {
-        List<Booking> bookingsByItem = Collections.emptyList();
-        if (bookings.containsKey(item)) {
-            bookingsByItem = bookings.get(item);
-        }
-        return bookingsByItem.stream().filter(isNext).findFirst().map(BookingMapper::mapToBookingLastNextDto).orElse(null);
-    }
-
     private List<Comment> getComments(Item item, Map<Item, List<Comment>> comments) {
         List<Comment> result = Collections.emptyList();
         if (comments.containsKey(item)) {
@@ -137,7 +102,7 @@ public class ItemServiceImpl implements ItemService {
 
     private List<ItemLastNextDto> assembleItemLastNextDtos(List<Item> items, Map<Item, List<Comment>> comments, Map<Item, List<Booking>> bookings) {
 
-        return items.stream().map(item -> ItemMapper.mapToItemLastNextResponseDto(item, getLastBooking(item, bookings), getNextBooking(item, bookings), getComments(item, comments))).collect(toList());
+        return items.stream().map(item -> ItemMapper.mapToItemLastNextResponseDto(item, aroundTime(item, bookings).get("last"), aroundTime(item, bookings).get("next"), getComments(item, comments))).collect(toList());
     }
 
     @Override
