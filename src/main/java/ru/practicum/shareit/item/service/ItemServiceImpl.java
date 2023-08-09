@@ -94,7 +94,7 @@ public class ItemServiceImpl implements ItemService {
             bookingsByItem = bookings.get(item);
         }
         System.out.println("=====================================================================");
-        System.out.println(LocalDateTime.now());
+        System.out.println("LocalDateTime.now()" + LocalDateTime.now());
         System.out.println("=====================================================================");
         return bookingsByItem
                 .stream()
