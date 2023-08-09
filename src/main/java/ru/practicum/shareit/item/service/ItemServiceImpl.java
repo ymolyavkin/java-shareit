@@ -80,22 +80,6 @@ public class ItemServiceImpl implements ItemService {
         if (bookings.containsKey(item)) {
             bookingsByItem = bookings.get(item);
         }
-        System.out.println("=================== getLastBooking ==================================================");
-        System.out.println("LocalDateTime.now()" + LocalDateTime.now());
-        System.out.println("bookings" + bookings);
-
-        for (Map.Entry<Item, List<Booking>> entry : bookings.entrySet()) {
-            Item key = entry.getKey();
-            System.out.println(key);
-            List<Booking> value = entry.getValue();
-            if (value.size() > 0) {
-                for (Booking booking : value) {
-                    System.out.println("booking: " + booking);
-                }
-            } else System.out.println("booking empty");
-        }
-
-        System.out.println("=====================================================================");
         return bookingsByItem.stream().filter(isLast).findFirst().map(BookingMapper::mapToBookingLastNextDto).orElse(null);
     }
 
@@ -104,22 +88,6 @@ public class ItemServiceImpl implements ItemService {
         if (bookings.containsKey(item)) {
             bookingsByItem = bookings.get(item);
         }
-        System.out.println("=================== getLastBooking ==================================================");
-        System.out.println("LocalDateTime.now()" + LocalDateTime.now());
-        System.out.println("bookings" + bookings);
-
-        for (Map.Entry<Item, List<Booking>> entry : bookings.entrySet()) {
-            Item key = entry.getKey();
-            System.out.println(key);
-            List<Booking> value = entry.getValue();
-            if (value.size() > 0) {
-                for (Booking booking : value) {
-                    System.out.println("booking: " + booking);
-                }
-            } else System.out.println("booking empty");
-        }
-
-        System.out.println("=====================================================================");
         return bookingsByItem.stream().filter(isNext).findFirst().map(BookingMapper::mapToBookingLastNextDto).orElse(null);
     }
 
@@ -140,13 +108,10 @@ public class ItemServiceImpl implements ItemService {
     public List<ItemLastNextDto> getItemsLastNextBookingByUser(Long userId, int from, int size) {
         List<Item> items = itemRepository.findAllByOwnerId(userId);
         Pageable pageable = PageRequest.of(from, size);
-        //  OffsetPageRequest pageRequest = new OffsetPageRequest(from, size);
-        //Page<Item> page = itemRepository.findAll(pageRequest);
         Page<Item> page = itemRepository.findAllByOwnerId(userId, pageable);
         Map<Item, List<Comment>> comments = commentRepository.findByItemIn(items, Sort.by(DESC, "created")).stream().collect(groupingBy(Comment::getItem, toList()));
         Map<Item, List<Booking>> bookings = bookingRepository.findByItemIn(items, Sort.by(ASC, "start")).stream().collect(groupingBy(Booking::getItem, toList()));
         return assembleItemLastNextDtos(items, comments, bookings);
-        // return items.stream().map(item -> toItemLastNextDto(item)).collect(Collectors.toList());
     }
 
     @Override

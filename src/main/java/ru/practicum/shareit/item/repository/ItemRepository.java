@@ -8,6 +8,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Component;
 import ru.practicum.shareit.item.model.Item;
 import org.springframework.data.domain.Pageable;
+
 import java.util.List;
 
 @Component
@@ -31,5 +32,6 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
     List<Long> findItemIdsByOwnerId(Long ownerId);
 
     List<Item> findAllByRequestId(Long requestId);
+
     List<Item> findByRequestIdIn(List<Long> itemRequests, Sort created);
 }
