@@ -31,9 +31,7 @@ import ru.practicum.shareit.booking.repository.BookingRepository;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Predicate;
 
 import static java.util.stream.Collectors.groupingBy;
@@ -72,8 +70,46 @@ public class ItemServiceImpl implements ItemService {
         return ItemMapper.mapToItemLastNextResponseDto(item, bookingRepository.findFirstByItem_IdAndStartBeforeAndStatusOrderByStartDesc(item.getId(), dateTimeNow, Status.APPROVED).map(BookingMapper::mapToBookingLastNextDto).orElse(null), bookingRepository.findFirstByItem_IdAndStartAfterAndStatusOrderByStartAsc(item.getId(), dateTimeNow, Status.APPROVED).map(BookingMapper::mapToBookingLastNextDto).orElse(null), commentRepository.findByItem_Id(item.getId()));
     }
 
+    boolean isLast(Booking booking) {
+        return booking.getStatus() == Status.APPROVED
+                && (booking.getStart().isBefore(LocalDateTime.now())
+                || booking.getStart().isEqual(LocalDateTime.now())
+                || ChronoUnit.MILLIS.between(LocalDateTime.now(), booking.getStart()) < 100);
+    }
+
     Predicate<Booking> isLast = booking -> (booking.getStatus() == Status.APPROVED && (booking.getStart().isBefore(LocalDateTime.now()) || booking.getStart().isEqual(LocalDateTime.now()) || ChronoUnit.MILLIS.between(LocalDateTime.now(), booking.getStart()) < 100));
     Predicate<Booking> isNext = booking -> (booking.getStatus() == Status.APPROVED && (booking.getStart().isBefore(LocalDateTime.now()) || booking.getStart().isEqual(LocalDateTime.now()) || ChronoUnit.MILLIS.between(LocalDateTime.now(), booking.getStart()) < 100));
+
+    public Booking[] nextTwo(Iterator<Booking> values) {
+        return new Booking[]{
+                (values.hasNext() ? values.next() : null),
+                (values.hasNext() ? values.next() : null)
+        };
+    }
+
+    private Map<String, BookingLastNextDto> aroundTime(Item item, Map<Item, List<Booking>> bookings) {
+        List<Booking> bookingsByItem = Collections.emptyList();
+        BookingLastNextDto next;
+        Map<String, BookingLastNextDto> result = new HashMap<>(2);
+        result.put("last", null);
+        result.put("next", null);
+        if (bookings.containsKey(item)) {
+            bookingsByItem = bookings.get(item);
+            Iterator<Booking> iterator = bookingsByItem.iterator();
+            while (iterator.hasNext()) {
+                Booking current = iterator.next();
+                if (isLast(current)) {
+                    result.put("last", BookingMapper.mapToBookingLastNextDto(current));
+                    next = iterator.hasNext() ? BookingMapper.mapToBookingLastNextDto(iterator.next()) : null;
+                    result.put("next", next);
+                    return result;
+                }
+            }
+        }
+        return result;
+    }
+
+
 
     private BookingLastNextDto getLastBooking(Item item, Map<Item, List<Booking>> bookings) {
         List<Booking> bookingsByItem = Collections.emptyList();
