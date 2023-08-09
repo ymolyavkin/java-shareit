@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.exception.NotFoundException;
@@ -16,9 +17,13 @@ import ru.practicum.shareit.request.repository.ItemRequestRepository;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserRepository;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
+import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.toList;
+import static org.springframework.data.domain.Sort.Direction.DESC;
 
 @Service
 @Slf4j
@@ -45,10 +50,26 @@ public class ItemRequestServiceImpl implements ItemRequestService {
         Page<ItemRequest> requests = itemRequestRepository.findAllByRequesterIdOrderByCreatedDesc(requesterId, firstPageWithTwoElements);
 
         List<ItemRequest> itemRequests = requests.getContent();
+
         return itemRequests
                 .stream()
-                .map(itemRequest -> ItemRequestMapper.mapToItemRequestAnswerDto(itemRequest, getAnswersToRequest(itemRequest)))
+                .map(itemRequest -> ItemRequestMapper.mapToItemRequestAnswerDto(itemRequest, getAnswersToRequestWithoutQueryDB(itemRequest, itemRequests)))
                 .collect(toList());
+    }
+
+    private List<ItemAnswerToRequestDto> getAnswersToRequestWithoutQueryDB(ItemRequest itemRequest, List<ItemRequest> itemRequests) {
+        List<Long> requestIdsList = itemRequests.stream().map(request -> request.getId()).collect(toList());
+        Map<Long, List<Item>> itemsByRequest = itemRepository.findByRequestIdIn(requestIdsList, Sort.by(DESC, "id"))
+                .stream()
+                .collect(groupingBy(Item::getRequestId, toList()));
+
+        List<Item> items;
+        if (itemsByRequest.size() > 0) {
+            items = itemsByRequest.get(itemRequest.getId());
+        } else {
+            items = Collections.emptyList();
+        }
+        return items.stream().map(ItemRequestMapper::mapToItemAnswerToRequestDto).collect(toList());
     }
 
     @Override
