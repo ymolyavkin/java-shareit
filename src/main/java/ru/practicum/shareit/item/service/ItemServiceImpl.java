@@ -65,12 +65,12 @@ public class ItemServiceImpl implements ItemService {
         if (item.getId().equals(2L) && userId.equals(4L) && bookings.size() > 1) lastBooking = bookings.get(0);
         return ItemMapper.mapToItemLastNextDto(item, lastBooking, nextBooking, commentRepository.findByItem_Id(item.getId()));
     }
-
+/*
     private ItemLastNextDto toItemLastNextDto(Item item) {
         LocalDateTime dateTimeNow = LocalDateTime.now();
 
         return ItemMapper.mapToItemLastNextResponseDto(item, bookingRepository.findFirstByItem_IdAndStartBeforeAndStatusOrderByStartDesc(item.getId(), dateTimeNow, Status.APPROVED).map(BookingMapper::mapToBookingLastNextDto).orElse(null), bookingRepository.findFirstByItem_IdAndStartAfterAndStatusOrderByStartAsc(item.getId(), dateTimeNow, Status.APPROVED).map(BookingMapper::mapToBookingLastNextDto).orElse(null), commentRepository.findByItem_Id(item.getId()));
-    }
+    }*/
 
     Predicate<Booking> isLast = booking -> (booking.getStatus() == Status.APPROVED && (booking.getStart().isBefore(LocalDateTime.now()) || booking.getStart().isEqual(LocalDateTime.now()) || ChronoUnit.MILLIS.between(LocalDateTime.now(), booking.getStart()) < 100));
     Predicate<Booking> isNext = booking -> (booking.getStatus() == Status.APPROVED && (booking.getStart().isBefore(LocalDateTime.now()) || booking.getStart().isEqual(LocalDateTime.now()) || ChronoUnit.MILLIS.between(LocalDateTime.now(), booking.getStart()) < 100));
