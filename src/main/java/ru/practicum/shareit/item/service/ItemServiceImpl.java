@@ -82,19 +82,23 @@ public class ItemServiceImpl implements ItemService {
     }
 
     Predicate<Booking> isLast = booking -> (booking.getStatus() == Status.APPROVED &&
-            (booking.getStart().isBefore(LocalDateTime.now()) || booking.getStart().isEqual(LocalDateTime.now()) || ChronoUnit.MILLIS.between(LocalDateTime.now(), booking.getStart())<5));
+            (booking.getStart().isBefore(LocalDateTime.now())
+                    || booking.getStart().isEqual(LocalDateTime.now())
+                    || ChronoUnit.MILLIS.between(LocalDateTime.now(), booking.getStart())<100));
     Predicate<Booking> isNext = booking -> (booking.getStatus() == Status.APPROVED &&
-            (booking.getStart().isAfter(LocalDateTime.now()) || booking.getStart().isEqual(LocalDateTime.now()) || ChronoUnit.MILLIS.between(LocalDateTime.now(), booking.getStart())<5));
+            (booking.getStart().isBefore(LocalDateTime.now()) || booking.getStart().isEqual(LocalDateTime.now()) || ChronoUnit.MILLIS.between(LocalDateTime.now(), booking.getStart())<100));
 
     private BookingLastNextDto getLastBooking(Item item, Map<Item, List<Booking>> bookings) {
         List<Booking> bookingsByItem = Collections.emptyList();
         if (bookings.containsKey(item)) {
             bookingsByItem = bookings.get(item);
         }
-
+        System.out.println("=====================================================================");
+        System.out.println(LocalDateTime.now());
+        System.out.println("=====================================================================");
         return bookingsByItem
                 .stream()
-                //   .filter(isLast)
+                   .filter(isLast)
                 .findFirst()
                 .map(BookingMapper::mapToBookingLastNextDto)
                 .orElse(null);
@@ -107,7 +111,7 @@ public class ItemServiceImpl implements ItemService {
         }
         return bookingsByItem
                 .stream()
-                // .filter(isNext)
+                 .filter(isNext)
                 .findFirst()
                 .map(BookingMapper::mapToBookingLastNextDto)
                 .orElse(null);
