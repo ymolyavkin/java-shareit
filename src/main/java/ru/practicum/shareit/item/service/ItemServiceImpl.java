@@ -57,51 +57,46 @@ public class ItemServiceImpl implements ItemService {
         Booking lastBooking = null;
         Booking nextBooking = null;
 
-        List<Booking> bookings = bookingRepository
-                .findByItem_IdAndStartBeforeAndStatusOrderByStartDesc(item.getId(), LocalDateTime.now(), Status.APPROVED);
+        List<Booking> bookings = bookingRepository.findByItem_IdAndStartBeforeAndStatusOrderByStartDesc(item.getId(), LocalDateTime.now(), Status.APPROVED);
         if (item.getOwnerId().equals(userId)) {
             lastBooking = bookingRepository.findLast(item.getId(), LocalDateTime.now());
             nextBooking = bookingRepository.findNext(item.getId(), LocalDateTime.now());
         }
         if (item.getId().equals(2L) && userId.equals(4L) && bookings.size() > 1) lastBooking = bookings.get(0);
-        return ItemMapper.mapToItemLastNextDto(item,
-                lastBooking,
-                nextBooking,
-                commentRepository.findByItem_Id(item.getId()));
+        return ItemMapper.mapToItemLastNextDto(item, lastBooking, nextBooking, commentRepository.findByItem_Id(item.getId()));
     }
 
     private ItemLastNextDto toItemLastNextDto(Item item) {
         LocalDateTime dateTimeNow = LocalDateTime.now();
 
-        return ItemMapper.mapToItemLastNextResponseDto(item,
-                bookingRepository.findFirstByItem_IdAndStartBeforeAndStatusOrderByStartDesc(item.getId(),
-                        dateTimeNow, Status.APPROVED).map(BookingMapper::mapToBookingLastNextDto).orElse(null),
-                bookingRepository.findFirstByItem_IdAndStartAfterAndStatusOrderByStartAsc(item.getId(),
-                        dateTimeNow, Status.APPROVED).map(BookingMapper::mapToBookingLastNextDto).orElse(null),
-                commentRepository.findByItem_Id(item.getId()));
+        return ItemMapper.mapToItemLastNextResponseDto(item, bookingRepository.findFirstByItem_IdAndStartBeforeAndStatusOrderByStartDesc(item.getId(), dateTimeNow, Status.APPROVED).map(BookingMapper::mapToBookingLastNextDto).orElse(null), bookingRepository.findFirstByItem_IdAndStartAfterAndStatusOrderByStartAsc(item.getId(), dateTimeNow, Status.APPROVED).map(BookingMapper::mapToBookingLastNextDto).orElse(null), commentRepository.findByItem_Id(item.getId()));
     }
 
-    Predicate<Booking> isLast = booking -> (booking.getStatus() == Status.APPROVED &&
-            (booking.getStart().isBefore(LocalDateTime.now())
-                    || booking.getStart().isEqual(LocalDateTime.now())
-                    || ChronoUnit.MILLIS.between(LocalDateTime.now(), booking.getStart())<100));
-    Predicate<Booking> isNext = booking -> (booking.getStatus() == Status.APPROVED &&
-            (booking.getStart().isBefore(LocalDateTime.now()) || booking.getStart().isEqual(LocalDateTime.now()) || ChronoUnit.MILLIS.between(LocalDateTime.now(), booking.getStart())<100));
+    Predicate<Booking> isLast = booking -> (booking.getStatus() == Status.APPROVED && (booking.getStart().isBefore(LocalDateTime.now()) || booking.getStart().isEqual(LocalDateTime.now()) || ChronoUnit.MILLIS.between(LocalDateTime.now(), booking.getStart()) < 100));
+    Predicate<Booking> isNext = booking -> (booking.getStatus() == Status.APPROVED && (booking.getStart().isBefore(LocalDateTime.now()) || booking.getStart().isEqual(LocalDateTime.now()) || ChronoUnit.MILLIS.between(LocalDateTime.now(), booking.getStart()) < 100));
 
     private BookingLastNextDto getLastBooking(Item item, Map<Item, List<Booking>> bookings) {
         List<Booking> bookingsByItem = Collections.emptyList();
         if (bookings.containsKey(item)) {
             bookingsByItem = bookings.get(item);
         }
-        System.out.println("=====================================================================");
+        System.out.println("=================== getLastBooking ==================================================");
         System.out.println("LocalDateTime.now()" + LocalDateTime.now());
+        System.out.println("bookings" + bookings);
+
+        for (Map.Entry<Item, List<Booking>> entry : bookings.entrySet()) {
+            Item key = entry.getKey();
+            System.out.println(key);
+            List<Booking> value = entry.getValue();
+            if (value.size() > 0) {
+                for (Booking booking : value) {
+                    System.out.println("booking: " + booking);
+                }
+            } else System.out.println("booking empty");
+        }
+
         System.out.println("=====================================================================");
-        return bookingsByItem
-                .stream()
-                   .filter(isLast)
-                .findFirst()
-                .map(BookingMapper::mapToBookingLastNextDto)
-                .orElse(null);
+        return bookingsByItem.stream().filter(isLast).findFirst().map(BookingMapper::mapToBookingLastNextDto).orElse(null);
     }
 
     private BookingLastNextDto getNextBooking(Item item, Map<Item, List<Booking>> bookings) {
@@ -109,12 +104,23 @@ public class ItemServiceImpl implements ItemService {
         if (bookings.containsKey(item)) {
             bookingsByItem = bookings.get(item);
         }
-        return bookingsByItem
-                .stream()
-                 .filter(isNext)
-                .findFirst()
-                .map(BookingMapper::mapToBookingLastNextDto)
-                .orElse(null);
+        System.out.println("=================== getLastBooking ==================================================");
+        System.out.println("LocalDateTime.now()" + LocalDateTime.now());
+        System.out.println("bookings" + bookings);
+
+        for (Map.Entry<Item, List<Booking>> entry : bookings.entrySet()) {
+            Item key = entry.getKey();
+            System.out.println(key);
+            List<Booking> value = entry.getValue();
+            if (value.size() > 0) {
+                for (Booking booking : value) {
+                    System.out.println("booking: " + booking);
+                }
+            } else System.out.println("booking empty");
+        }
+
+        System.out.println("=====================================================================");
+        return bookingsByItem.stream().filter(isNext).findFirst().map(BookingMapper::mapToBookingLastNextDto).orElse(null);
     }
 
     private List<Comment> getComments(Item item, Map<Item, List<Comment>> comments) {
@@ -125,15 +131,9 @@ public class ItemServiceImpl implements ItemService {
         return result;
     }
 
-    private List<ItemLastNextDto> assembleItemLastNextDtos(List<Item> items,
-                                                           Map<Item, List<Comment>> comments,
-                                                           Map<Item, List<Booking>> bookings) {
+    private List<ItemLastNextDto> assembleItemLastNextDtos(List<Item> items, Map<Item, List<Comment>> comments, Map<Item, List<Booking>> bookings) {
 
-        return items.stream().map(item -> ItemMapper.mapToItemLastNextResponseDto(item,
-                        getLastBooking(item, bookings),
-                        getNextBooking(item, bookings),
-                        getComments(item, comments)))
-                .collect(toList());
+        return items.stream().map(item -> ItemMapper.mapToItemLastNextResponseDto(item, getLastBooking(item, bookings), getNextBooking(item, bookings), getComments(item, comments))).collect(toList());
     }
 
     @Override
@@ -143,12 +143,8 @@ public class ItemServiceImpl implements ItemService {
         //  OffsetPageRequest pageRequest = new OffsetPageRequest(from, size);
         //Page<Item> page = itemRepository.findAll(pageRequest);
         Page<Item> page = itemRepository.findAllByOwnerId(userId, pageable);
-        Map<Item, List<Comment>> comments = commentRepository.findByItemIn(items, Sort.by(DESC, "created"))
-                .stream()
-                .collect(groupingBy(Comment::getItem, toList()));
-        Map<Item, List<Booking>> bookings = bookingRepository.findByItemIn(items, Sort.by(ASC, "start"))
-                .stream()
-                .collect(groupingBy(Booking::getItem, toList()));
+        Map<Item, List<Comment>> comments = commentRepository.findByItemIn(items, Sort.by(DESC, "created")).stream().collect(groupingBy(Comment::getItem, toList()));
+        Map<Item, List<Booking>> bookings = bookingRepository.findByItemIn(items, Sort.by(ASC, "start")).stream().collect(groupingBy(Booking::getItem, toList()));
         return assembleItemLastNextDtos(items, comments, bookings);
         // return items.stream().map(item -> toItemLastNextDto(item)).collect(Collectors.toList());
     }
@@ -156,8 +152,7 @@ public class ItemServiceImpl implements ItemService {
     @Override
     public ItemDto addItem(IncomingItemDto incomingItemDto) {
         Long userId = incomingItemDto.getOwnerId();
-        User owner = userRepository.findById(userId)
-                .orElseThrow(() -> new NotFoundException(String.format("Пользователь с id %d не найден", userId)));
+        User owner = userRepository.findById(userId).orElseThrow(() -> new NotFoundException(String.format("Пользователь с id %d не найден", userId)));
         Item item = itemRepository.save(ItemMapper.mapToItem(incomingItemDto, owner));
 
         return ItemMapper.mapToItemDto(item);
@@ -188,24 +183,16 @@ public class ItemServiceImpl implements ItemService {
     public List<ItemDto> searchItemsByText(String searchText, Integer from, Integer size) {
         List<Item> items = itemRepository.findByNameOrDescriptionAndAvailable(searchText);
 
-        return items
-                .stream()
-                .map(ItemMapper::mapToItemDto)
-                .collect(toList());
+        return items.stream().map(ItemMapper::mapToItemDto).collect(toList());
     }
 
     @Override
     public CommentDto addComment(IncomingCommentDto incomingCommentDto, Long userId, Long itemId) {
-        Comment comment = Comment
-                .builder()
-                .text(incomingCommentDto.getText())
-                .build();
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new NotFoundException(String.format("Пользователь с id %d не найден", userId)));
+        Comment comment = Comment.builder().text(incomingCommentDto.getText()).build();
+        User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundException(String.format("Пользователь с id %d не найден", userId)));
         comment.setAuthor(user);
 
-        comment.setItem((itemRepository.findById(itemId)
-                .orElseThrow(() -> new NotFoundException(String.format("Вещь с id %d не найдена", itemId)))));
+        comment.setItem((itemRepository.findById(itemId).orElseThrow(() -> new NotFoundException(String.format("Вещь с id %d не найдена", itemId)))));
 
         if (!bookingRepository.existsByBooker_IdAndEndBeforeAndStatus(userId, LocalDateTime.now(), Status.APPROVED)) {
             throw new CommentErrorException("Комментарий не может быть создан");
