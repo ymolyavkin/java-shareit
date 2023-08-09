@@ -24,6 +24,7 @@ import ru.practicum.shareit.item.service.ItemService;
 import ru.practicum.shareit.user.model.User;
 
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -47,6 +48,7 @@ class ItemControllerTest {
     private ItemLastNextDto itemLastNextDto;
     private IncomingItemDto incomingItemDto;
     private User owner;
+    private Item item;
 
     @BeforeEach
     void setUp() {
@@ -64,6 +66,8 @@ class ItemControllerTest {
         incomingItemDto.setAvailable(true);
 
         owner = new User(1L, "Owner", "owner@email.ru");
+        item = ItemMapper.mapToItem(incomingItemDto, owner);
+        item.setId(1L);
     }
 
     @Test
@@ -146,6 +150,36 @@ class ItemControllerTest {
 
         mockMvc.perform(get("/items")
                         .header(USER_ID_FROM_REQUEST, 1))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(content().json("[]"));
+    }
+
+    @Test
+    void searchItemsByEmptyText() throws Exception {
+        when(itemService.searchItemsByText("", 0, 2)).thenReturn(Collections.emptyList());
+        List<ItemDto> response = new ArrayList<>(0);
+        mockMvc.perform(get("/items")
+                        .header(USER_ID_FROM_REQUEST, 1)
+                        .param("text", "")
+                        .param("from", "0")
+                        .param("size", "2"))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(content().json("[]"));
+    }
+
+    @Test
+    void searchItemsByText() throws Exception {
+        List<ItemDto> response = List.of(ItemMapper.mapToItemDto(item));
+        when(itemService.searchItemsByText("", 0, 2)).thenReturn(response);
+
+
+        mockMvc.perform(get("/items")
+                        .header(USER_ID_FROM_REQUEST, 1)
+                        .param("text", "Name")
+                        .param("from", "0")
+                        .param("size", "2"))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().json("[]"));
