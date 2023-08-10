@@ -35,9 +35,11 @@ import ru.practicum.shareit.user.repository.UserRepository;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.BooleanSupplier;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
@@ -317,4 +319,65 @@ class ItemServiceImplTest {
         });
         assertNotNull(thrown.getMessage());
     }
+    @Test
+    void isLastTest() {
+        boolean result = itemService.isLast(lastBooking);
+        assertFalse(result);
+
+        lastBooking.setStatus(Status.APPROVED);
+        result = itemService.isLast(lastBooking);
+        assertTrue(result);
+
+        lastBooking.setStart(LocalDateTime.now().plusMinutes(1));
+        result = itemService.isLast(lastBooking);
+        assertFalse(result);
+
+        lastBooking.setStart(LocalDateTime.now());
+        result = itemService.isLast(lastBooking);
+        assertTrue(result);
+
+        lastBooking.setStart(LocalDateTime.now().plus(1L, ChronoUnit.MILLIS));
+        result = itemService.isLast(lastBooking);
+        assertTrue(result);
+        System.out.println(LocalDateTime.now());
+        System.out.println(lastBooking.getStart());
+    }
 }
+/*
+ boolean isLast(Booking booking) {
+        return booking.getStatus() == Status.APPROVED
+                && (booking.getStart().isBefore(LocalDateTime.now())
+                || booking.getStart().isEqual(LocalDateTime.now())
+                || ChronoUnit.MILLIS.between(LocalDateTime.now(), booking.getStart()) < 100);
+    }
+
+    private Map<String, BookingLastNextDto> aroundTime(Item item, Map<Item, List<Booking>> bookings) {
+        List<Booking> bookingsByItem = Collections.emptyList();
+        BookingLastNextDto next;
+        Map<String, BookingLastNextDto> result = new HashMap<>(2);
+        result.put("last", null);
+        result.put("next", null);
+        if (bookings.containsKey(item)) {
+            bookingsByItem = bookings.get(item);
+            Iterator<Booking> iterator = bookingsByItem.iterator();
+            while (iterator.hasNext()) {
+                Booking current = iterator.next();
+                if (isLast(current)) {
+                    result.put("last", BookingMapper.mapToBookingLastNextDto(current));
+                    next = iterator.hasNext() ? BookingMapper.mapToBookingLastNextDto(iterator.next()) : null;
+                    result.put("next", next);
+                    return result;
+                }
+            }
+        }
+        return result;
+    }
+
+    private List<Comment> getComments(Item item, Map<Item, List<Comment>> comments) {
+        List<Comment> result = Collections.emptyList();
+        if (comments.containsKey(item)) {
+            result = comments.get(item);
+        }
+        return result;
+    }
+ */
