@@ -79,9 +79,11 @@ public class ItemRequestServiceImpl implements ItemRequestService {
         Pageable pageable = PageRequest.of(from, size);
         Page<ItemRequest> requests = itemRequestRepository.findAllByRequesterIdNotOrderByCreatedDesc(requesterId, pageable);
         List<ItemRequest> itemRequests = requests.getContent();
+
         return itemRequests
                 .stream()
-                .map(itemRequest -> ItemRequestMapper.mapToItemRequestAnswerDto(itemRequest, getAnswersToRequest(itemRequest)))
+                .map(itemRequest -> ItemRequestMapper.mapToItemRequestAnswerDto(itemRequest,
+                        getAnswersToRequestWithoutQueryDB(itemRequest, itemRequests)))
                 .collect(toList());
     }
 
