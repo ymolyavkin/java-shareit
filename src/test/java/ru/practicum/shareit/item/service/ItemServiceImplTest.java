@@ -312,6 +312,7 @@ class ItemServiceImplTest {
 
     @Test
     void isLastTest() {
+        lastBooking.setStart(LocalDateTime.now().minusHours(3));
         boolean result = itemService.isLast(lastBooking);
         assertTrue(result);
 
@@ -326,8 +327,6 @@ class ItemServiceImplTest {
         lastBooking.setStart(LocalDateTime.now().plus(1L, ChronoUnit.MILLIS));
         result = itemService.isLast(lastBooking);
         assertTrue(result);
-        System.out.println(LocalDateTime.now());
-        System.out.println(lastBooking.getStart());
     }
 
     @Test
