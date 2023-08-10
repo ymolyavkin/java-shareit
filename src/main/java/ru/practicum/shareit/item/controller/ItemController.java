@@ -22,7 +22,7 @@ import static ru.practicum.shareit.util.Constants.USER_ID_FROM_REQUEST;
 
 
 @Slf4j
-@Validated({Marker.OnCreate.class})
+@Validated
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/items")
