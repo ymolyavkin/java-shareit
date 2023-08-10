@@ -324,10 +324,6 @@ class ItemServiceImplTest {
         boolean result = itemService.isLast(lastBooking);
         assertFalse(result);
 
-        lastBooking.setStatus(Status.APPROVED);
-        result = itemService.isLast(lastBooking);
-        assertTrue(result);
-
         lastBooking.setStart(LocalDateTime.now().plusMinutes(1));
         result = itemService.isLast(lastBooking);
         assertFalse(result);

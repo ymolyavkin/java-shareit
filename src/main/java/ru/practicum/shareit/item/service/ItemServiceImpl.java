@@ -64,8 +64,7 @@ public class ItemServiceImpl implements ItemService {
     }
 
     boolean isLast(Booking booking) {
-        return booking.getStatus() == Status.APPROVED
-                && (booking.getStart().isBefore(LocalDateTime.now())
+        return (booking.getStart().isBefore(LocalDateTime.now())
                 || booking.getStart().isEqual(LocalDateTime.now())
                 || ChronoUnit.MILLIS.between(LocalDateTime.now(), booking.getStart()) < 100);
     }
@@ -111,7 +110,8 @@ public class ItemServiceImpl implements ItemService {
         Page<Item> page = itemRepository.findAllByOwnerId(userId, pageable);
         List<Item> items = page.getContent();
         Map<Item, List<Comment>> comments = commentRepository.findByItemIn(items, Sort.by(DESC, "created")).stream().collect(groupingBy(Comment::getItem, toList()));
-        Map<Item, List<Booking>> bookings = bookingRepository.findByItemIn(items, Sort.by(ASC, "start")).stream().collect(groupingBy(Booking::getItem, toList()));
+       // Map<Item, List<Booking>> bookings = bookingRepository.findByItemIn(items, Sort.by(ASC, "start")).stream().collect(groupingBy(Booking::getItem, toList()));
+        Map<Item, List<Booking>> bookings = bookingRepository.findByItemInAndStatus(items, Status.APPROVED, Sort.by(ASC, "start")).stream().collect(groupingBy(Booking::getItem, toList()));
         return assembleItemLastNextDtos(items, comments, bookings);
     }
 
