@@ -52,12 +52,12 @@ public class ItemController {
 
     @PatchMapping(value = "/{itemId}", consumes = "application/json")
     public ItemDto updateItem(@RequestHeader(value = USER_ID_FROM_REQUEST) Long userId,
-                              @RequestBody IncomingItemDto incomingItemDto,
+                              @Validated({Marker.OnUpdate.class}) @RequestBody IncomingItemDto incomingItemDto,
                               @PathVariable Long itemId) {
         log.info("Получен запрос на обновление вещи id = {} пользователя с id = {}", itemId, userId);
-        if (userId.equals(-1L)) {
+        /*if (userId.equals(-1L)) {
             throw new NoneXSharerUserIdException("Не указан владелец вещи");
-        }
+        }*/
         return itemService.updateItem(incomingItemDto, itemId, userId);
     }
 
