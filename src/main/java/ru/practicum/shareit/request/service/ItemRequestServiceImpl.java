@@ -61,7 +61,6 @@ public class ItemRequestServiceImpl implements ItemRequestService {
                 .collect(toList());
     }
 
-    //private List<ItemAnswerToRequestDto> getAnswersToRequestWithoutQueryDB(ItemRequest itemRequest, Map<Long, List<Item>> itemsByRequest) {
     private List<ItemAnswerToRequestDto> getAnswersToRequestWithoutQueryDB(ItemRequest itemRequest, Map<Long, List<Item>> itemsByRequest) {
         List<Item> items;
         if (itemsByRequest.size() > 0) {
