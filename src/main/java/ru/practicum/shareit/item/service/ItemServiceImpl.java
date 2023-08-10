@@ -100,8 +100,17 @@ public class ItemServiceImpl implements ItemService {
     }
 
     private List<ItemLastNextDto> assembleItemLastNextDtos(List<Item> items, Map<Item, List<Comment>> comments, Map<Item, List<Booking>> bookings) {
+        final BookingLastNextDto[] lastAndNext = new BookingLastNextDto[2];
 
-        return items.stream().map(item -> ItemMapper.mapToItemLastNextResponseDto(item, aroundTime(item, bookings).get("last"), aroundTime(item, bookings).get("next"), getComments(item, comments))).collect(toList());
+        return items
+                .stream()
+                .peek(item -> {
+                    Map<String, BookingLastNextDto> aroundBookings = aroundTime(item, bookings);
+                    lastAndNext[0] = aroundBookings.get("last");
+                    lastAndNext[1] = aroundBookings.get("next");
+                })
+                .map((item) -> ItemMapper.mapToItemLastNextResponseDto(item, lastAndNext[0], lastAndNext[1], getComments(item, comments)))
+                .collect(toList());
     }
 
     @Override
@@ -109,9 +118,12 @@ public class ItemServiceImpl implements ItemService {
         Pageable pageable = PageRequest.of(from, size);
         Page<Item> page = itemRepository.findAllByOwnerId(userId, pageable);
         List<Item> items = page.getContent();
-        Map<Item, List<Comment>> comments = commentRepository.findByItemIn(items, Sort.by(DESC, "created")).stream().collect(groupingBy(Comment::getItem, toList()));
-       // Map<Item, List<Booking>> bookings = bookingRepository.findByItemIn(items, Sort.by(ASC, "start")).stream().collect(groupingBy(Booking::getItem, toList()));
-        Map<Item, List<Booking>> bookings = bookingRepository.findByItemInAndStatus(items, Status.APPROVED, Sort.by(ASC, "start")).stream().collect(groupingBy(Booking::getItem, toList()));
+        Map<Item, List<Comment>> comments = commentRepository.findByItemIn(items, Sort.by(DESC, "created"))
+                .stream()
+                .collect(groupingBy(Comment::getItem, toList()));
+
+        Map<Item, List<Booking>> bookings = bookingRepository.findByItemInAndStatus(items, Status.APPROVED, Sort.by(ASC, "start"))
+                .stream().collect(groupingBy(Booking::getItem, toList()));
         return assembleItemLastNextDtos(items, comments, bookings);
     }
 
