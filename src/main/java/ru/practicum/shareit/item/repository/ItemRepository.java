@@ -6,7 +6,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Component;
-import ru.practicum.shareit.booking.model.Status;
 import ru.practicum.shareit.item.model.Item;
 import org.springframework.data.domain.Pageable;
 

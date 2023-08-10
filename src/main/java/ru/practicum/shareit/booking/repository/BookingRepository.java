@@ -67,5 +67,6 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
                                                                               Status status);
 
     List<Booking> findByItemIn(List<Item> items, Sort created);
+
     List<Booking> findByItemInAndStatus(List<Item> items, Status status, Sort created);
 }
