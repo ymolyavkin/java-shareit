@@ -55,9 +55,7 @@ public class ItemController {
                               @Validated({Marker.OnUpdate.class}) @RequestBody IncomingItemDto incomingItemDto,
                               @PathVariable Long itemId) {
         log.info("Получен запрос на обновление вещи id = {} пользователя с id = {}", itemId, userId);
-        /*if (userId.equals(-1L)) {
-            throw new NoneXSharerUserIdException("Не указан владелец вещи");
-        }*/
+
         return itemService.updateItem(incomingItemDto, itemId, userId);
     }
 
