@@ -50,19 +50,19 @@ public class ItemRequestServiceImpl implements ItemRequestService {
         Page<ItemRequest> requests = itemRequestRepository.findAllByRequesterIdOrderByCreatedDesc(requesterId, firstPageWithTwoElements);
 
         List<ItemRequest> itemRequests = requests.getContent();
-
-        return itemRequests
-                .stream()
-                .map(itemRequest -> ItemRequestMapper.mapToItemRequestAnswerDto(itemRequest, getAnswersToRequestWithoutQueryDB(itemRequest, itemRequests)))
-                .collect(toList());
-    }
-
-    private List<ItemAnswerToRequestDto> getAnswersToRequestWithoutQueryDB(ItemRequest itemRequest, List<ItemRequest> itemRequests) {
         List<Long> requestIdsList = itemRequests.stream().map(request -> request.getId()).collect(toList());
         Map<Long, List<Item>> itemsByRequest = itemRepository.findByRequestIdIn(requestIdsList, Sort.by(DESC, "id"))
                 .stream()
                 .collect(groupingBy(Item::getRequestId, toList()));
 
+        return itemRequests
+                .stream()
+                .map(itemRequest -> ItemRequestMapper.mapToItemRequestAnswerDto(itemRequest, getAnswersToRequestWithoutQueryDB(itemRequest, itemsByRequest)))
+                .collect(toList());
+    }
+
+    //private List<ItemAnswerToRequestDto> getAnswersToRequestWithoutQueryDB(ItemRequest itemRequest, Map<Long, List<Item>> itemsByRequest) {
+    private List<ItemAnswerToRequestDto> getAnswersToRequestWithoutQueryDB(ItemRequest itemRequest, Map<Long, List<Item>> itemsByRequest) {
         List<Item> items;
         if (itemsByRequest.size() > 0) {
             items = itemsByRequest.get(itemRequest.getId());
@@ -79,11 +79,16 @@ public class ItemRequestServiceImpl implements ItemRequestService {
         Pageable pageable = PageRequest.of(from, size);
         Page<ItemRequest> requests = itemRequestRepository.findAllByRequesterIdNotOrderByCreatedDesc(requesterId, pageable);
         List<ItemRequest> itemRequests = requests.getContent();
+        List<Long> requestIdsList = itemRequests.stream().map(request -> request.getId()).collect(toList());
+
+        Map<Long, List<Item>> itemsByRequest = itemRepository.findByRequestIdIn(requestIdsList, Sort.by(DESC, "id"))
+                .stream()
+                .collect(groupingBy(Item::getRequestId, toList()));
 
         return itemRequests
                 .stream()
                 .map(itemRequest -> ItemRequestMapper.mapToItemRequestAnswerDto(itemRequest,
-                        getAnswersToRequestWithoutQueryDB(itemRequest, itemRequests)))
+                        getAnswersToRequestWithoutQueryDB(itemRequest, itemsByRequest)))
                 .collect(toList());
     }
 
