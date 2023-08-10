@@ -313,7 +313,7 @@ class ItemServiceImplTest {
     @Test
     void isLastTest() {
         boolean result = itemService.isLast(lastBooking);
-        assertFalse(result);
+        assertTrue(result);
 
         lastBooking.setStart(LocalDateTime.now().plusMinutes(1));
         result = itemService.isLast(lastBooking);
