@@ -70,7 +70,7 @@ public class ItemServiceImpl implements ItemService {
                 || ChronoUnit.MILLIS.between(LocalDateTime.now(), booking.getStart()) < 100);
     }
 
-    private Map<String, BookingLastNextDto> aroundTime(Item item, Map<Item, List<Booking>> bookings) {
+    Map<String, BookingLastNextDto> aroundTime(Item item, Map<Item, List<Booking>> bookings) {
         List<Booking> bookingsByItem = Collections.emptyList();
         BookingLastNextDto next;
         Map<String, BookingLastNextDto> result = new HashMap<>(2);

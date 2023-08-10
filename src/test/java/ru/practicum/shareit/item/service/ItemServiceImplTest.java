@@ -12,6 +12,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import ru.practicum.shareit.booking.dto.BookingLastNextDto;
+import ru.practicum.shareit.booking.dto.BookingMapper;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.Status;
 import ru.practicum.shareit.booking.repository.BookingRepository;
@@ -36,9 +38,7 @@ import ru.practicum.shareit.user.repository.UserRepository;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.BooleanSupplier;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
@@ -319,6 +319,7 @@ class ItemServiceImplTest {
         });
         assertNotNull(thrown.getMessage());
     }
+
     @Test
     void isLastTest() {
         boolean result = itemService.isLast(lastBooking);
@@ -342,42 +343,30 @@ class ItemServiceImplTest {
         System.out.println(LocalDateTime.now());
         System.out.println(lastBooking.getStart());
     }
+
+    @Test
+    void aroundTime() {
+        LocalDateTime dateTime = LocalDateTime.now();
+        Booking booking1 = new Booking(3L, dateTime, dateTime.plusDays(1), item, userAuthor, Status.APPROVED);
+        Booking booking2 = new Booking(4L, dateTime.plusDays(2), dateTime.plusDays(5), item, userAuthor, Status.APPROVED);
+        Booking booking3 = new Booking(5L, dateTime, dateTime.plusDays(1), item, userAuthor, Status.APPROVED);
+        Booking booking4 = new Booking(6L, dateTime, dateTime.plusDays(7), item, userAuthor, Status.APPROVED);
+        Booking booking5 = new Booking(7L, dateTime.plusDays(9), dateTime.plusDays(3), item, userAuthor, Status.APPROVED);
+        List<Booking> bookings = List.of(booking1, booking2, booking3, booking4, booking5);
+        Map<Item, List<Booking>> bookingsMap = new HashMap<>();
+        bookingsMap.put(item, bookings);
+        Map<String, BookingLastNextDto> actual = itemService.aroundTime(item, bookingsMap);
+        Map<String, BookingLastNextDto> expected = new HashMap<>(2);
+        expected.put("last", BookingMapper.mapToBookingLastNextDto(booking1));
+        expected.put("next", BookingMapper.mapToBookingLastNextDto(booking1));
+
+        assertEquals(expected.keySet(), actual.keySet());
+        BookingLastNextDto expectedValue = expected.get("last");
+        BookingLastNextDto actualValue = expected.get("last");
+        assertEquals(expectedValue, actualValue);
+
+        BookingLastNextDto expectedValue2 = expected.get("next");
+        BookingLastNextDto actualValue2 = expected.get("next");
+        assertEquals(expectedValue2, actualValue2);
+    }
 }
-/*
- boolean isLast(Booking booking) {
-        return booking.getStatus() == Status.APPROVED
-                && (booking.getStart().isBefore(LocalDateTime.now())
-                || booking.getStart().isEqual(LocalDateTime.now())
-                || ChronoUnit.MILLIS.between(LocalDateTime.now(), booking.getStart()) < 100);
-    }
-
-    private Map<String, BookingLastNextDto> aroundTime(Item item, Map<Item, List<Booking>> bookings) {
-        List<Booking> bookingsByItem = Collections.emptyList();
-        BookingLastNextDto next;
-        Map<String, BookingLastNextDto> result = new HashMap<>(2);
-        result.put("last", null);
-        result.put("next", null);
-        if (bookings.containsKey(item)) {
-            bookingsByItem = bookings.get(item);
-            Iterator<Booking> iterator = bookingsByItem.iterator();
-            while (iterator.hasNext()) {
-                Booking current = iterator.next();
-                if (isLast(current)) {
-                    result.put("last", BookingMapper.mapToBookingLastNextDto(current));
-                    next = iterator.hasNext() ? BookingMapper.mapToBookingLastNextDto(iterator.next()) : null;
-                    result.put("next", next);
-                    return result;
-                }
-            }
-        }
-        return result;
-    }
-
-    private List<Comment> getComments(Item item, Map<Item, List<Comment>> comments) {
-        List<Comment> result = Collections.emptyList();
-        if (comments.containsKey(item)) {
-            result = comments.get(item);
-        }
-        return result;
-    }
- */
