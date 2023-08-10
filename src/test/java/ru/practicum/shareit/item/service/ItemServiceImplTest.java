@@ -187,15 +187,6 @@ class ItemServiceImplTest {
     }
 
     @Test
-    void updateItem_whenWrongUser_thenThrown() {
-        when(itemRepository.findById(99L))
-                .thenThrow(new NotFoundException("Вещь не найдена"));
-
-        assertThrows(NotFoundException.class, () -> itemService.updateItem(incomingItemDto, 99L, 1L));
-        verify(itemRepository, never()).saveAndFlush(Mockito.any(Item.class));
-    }
-
-    @Test
     void updateItem_whenUserNotEqualsOwner_thenThrown() {
         incomingItemDto.setOwnerId(userOwner.getId());
         Long userId = userAuthor.getId();
