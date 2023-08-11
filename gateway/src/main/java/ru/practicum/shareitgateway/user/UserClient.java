@@ -10,6 +10,7 @@ import ru.practicum.shareitgateway.client.BaseClient;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
+import ru.practicum.shareitgateway.user.dto.IncomingUserDto;
 
 @Service
 @Slf4j
@@ -25,28 +26,28 @@ public class UserClient extends BaseClient {
         );
     }
 
-    public ResponseEntity<Object> createUser(UserRequestDto userRequestDto) {
-        log.info("Create user  {}", userRequestDto);
-        return post("", userRequestDto);
+    public ResponseEntity<Object> addUser(IncomingUserDto incomingUserDto) {
+        log.info("Добавление пользователя");
+        return post("", incomingUserDto);
     }
 
     public ResponseEntity<Object> getUserById(Long userId) {
-        log.info("Get user with id = {}", userId);
+        log.info("Получить пользователя с id = {}", userId);
         return get("/" + userId);
     }
 
-    public ResponseEntity<Object> updateUserById(Long userId, UserRequestDto userRequestDto) {
-        log.info("Update user with id = {}", userId);
-        return patch("/" + userId, userRequestDto);
+    public ResponseEntity<Object> updateUserById(Long userId, IncomingUserDto incomingUserDto) {
+        log.info("Обновить пользователя с id = {}", userId);
+        return patch("/" + userId, incomingUserDto);
     }
 
-    public ResponseEntity<Object> getUsers() {
-        log.info("Get all users");
+    public ResponseEntity<Object> getAllUsers() {
+        log.info("Получить список всех пользователей");
         return get("");
     }
 
-    public ResponseEntity<Object> removeUserById(Long userId) {
-        log.info("Remove user with id = {}", userId);
+    public ResponseEntity<Object> deleteUserById(Long userId) {
+        log.info("Удалить пользователя с id = {}", userId);
         return delete("/" + userId);
     }
 }
