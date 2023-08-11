@@ -33,7 +33,7 @@ public class BookingClient extends BaseClient {
         return post("", bookerId, incomingBookingDto);
     }
 
-    public ResponseEntity<Object> getBookings(long userId, State state, Integer from, Integer size) {
+    public ResponseEntity<Object> getBookingsByBooker(long userId, State state, Integer from, Integer size) {
         Map<String, Object> parameters = Map.of(
                 "state", state.name(),
                 "from", from,
@@ -43,13 +43,13 @@ public class BookingClient extends BaseClient {
         return get("?state={state}&from={from}&size={size}", userId, parameters);
     }
 
-    public ResponseEntity<Object> getBooking(long userId, Long bookingId) {
+    public ResponseEntity<Object> getBookingById(long userId, Long bookingId) {
         log.info("Get booking for user with id = {} with booking id = {}", userId, bookingId);
         return get("/" + bookingId, userId);
     }
 
 
-    public ResponseEntity<Object> getBookingByOwner(long userId, State state, Integer from, Integer size) {
+    public ResponseEntity<Object> getBookingsByOwner(long userId, State state, Integer from, Integer size) {
         Map<String, Object> parameters = Map.of(
                 "state", state.name(),
                 "from", from,
