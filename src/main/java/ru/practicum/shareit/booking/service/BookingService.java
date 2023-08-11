@@ -12,7 +12,7 @@ public interface BookingService {
 
     BookingResponseDto getBookingById(Long id, Long userId);
 
-    List<BookingResponseDto> getBookingsByBooker(Long bookerId, StateRequest state);
+    List<BookingResponseDto> getBookingsByBooker(Long bookerId, StateRequest state, Integer from, Integer size);
 
     BookingResponseDto addBooking(IncomingBookingDto incomingBookingDto);
 
@@ -20,5 +20,5 @@ public interface BookingService {
 
     BookingResponseDto approvingBooking(Long bookingId, Long bookerId, Boolean approved);
 
-    List<BookingResponseDto> getBookingsByOwner(Long ownerId, StateRequest state);
+    List<BookingResponseDto> getBookingsByOwner(Long ownerId, StateRequest state, Integer from, Integer size);
 }

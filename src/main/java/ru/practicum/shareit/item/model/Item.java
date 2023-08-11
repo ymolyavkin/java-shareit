@@ -1,14 +1,13 @@
 package ru.practicum.shareit.item.model;
 
 import lombok.*;
-import ru.practicum.shareit.request.ItemRequest;
 import ru.practicum.shareit.user.model.User;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.util.Objects;
-import java.util.Set;
 
 @Builder
 @AllArgsConstructor
@@ -21,9 +20,11 @@ public class Item {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @Size(max = 255)
     @NotBlank(message = "Название вещи не может быть пустым.")
     @Column(name = "name")
     private String name;
+    @Size(max = 512)
     @NotBlank(message = "Описание вещи не может быть пустым.")
     @Column(name = "description")
     private String description;
@@ -34,9 +35,8 @@ public class Item {
     @JoinColumn(name = "owner_id")
     private User owner;
     @ToString.Exclude
-    @OneToMany(cascade = CascadeType.ALL)
     @Column(name = "request_id")
-    private Set<ItemRequest> request;
+    private Long requestId;
     @Column(name = "number_of_times_to_rent")
     private int numberOfTimesToRent;
 

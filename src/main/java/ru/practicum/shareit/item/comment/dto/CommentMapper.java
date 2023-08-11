@@ -2,7 +2,7 @@ package ru.practicum.shareit.item.comment.dto;
 
 import lombok.experimental.UtilityClass;
 import ru.practicum.shareit.item.comment.Comment;
-import ru.practicum.shareit.item.comment.IncomingCommentDto;
+
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.model.User;
 

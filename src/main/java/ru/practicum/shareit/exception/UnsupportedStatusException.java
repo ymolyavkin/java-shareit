@@ -5,3 +5,4 @@ public class UnsupportedStatusException extends RuntimeException {
         super(message);
     }
 }
+

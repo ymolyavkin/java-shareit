@@ -1,11 +1,14 @@
 package ru.practicum.shareit.booking.repository;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Component;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.Status;
+import ru.practicum.shareit.item.model.Item;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -17,6 +20,8 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
                                                                        Status status);
 
     List<Booking> findAllByBooker_Id(Long bookerId, Sort sort);
+
+    Page<Booking> findAllByBooker_Id(Long bookerId, Pageable pageable);
 
     List<Booking> findAllByBooker_IdAndStartBeforeAndEndAfter(Long bookerId, LocalDateTime dateTime,
                                                               LocalDateTime dateTime1, Sort sort);
@@ -53,11 +58,15 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
             nativeQuery = true)
     int findByItemIdAndBookerId(Long itemId, Long bookerId);
 
-    List<Booking> findByItem_IdInOrderByStartDesc(List<Long> ids);
+    Page<Booking> findByItem_IdInOrderByStartDesc(List<Long> ids, Pageable pageable);
 
     Optional<Booking> findFirstByItem_IdAndStartBeforeAndStatusOrderByStartDesc(Long itemId, LocalDateTime localDate,
                                                                                 Status status);
 
     Optional<Booking> findFirstByItem_IdAndStartAfterAndStatusOrderByStartAsc(Long itemId, LocalDateTime localDate,
                                                                               Status status);
+
+    List<Booking> findByItemIn(List<Item> items, Sort created);
+
+    List<Booking> findByItemInAndStatus(List<Item> items, Status status, Sort created);
 }

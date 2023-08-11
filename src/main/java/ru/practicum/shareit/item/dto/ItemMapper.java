@@ -24,6 +24,7 @@ public class ItemMapper {
                 .description(item.getDescription())
                 .isAvailable(item.getAvailable())
                 .ownerId(item.getOwnerId())
+                .requestId(item.getRequestId())
                 .numberOfTimesToRent(item.getNumberOfTimesToRent())
                 .build();
     }
@@ -34,13 +35,14 @@ public class ItemMapper {
         item.setDescription(incomingItemDto.getDescription());
         item.setAvailable(incomingItemDto.getAvailable());
         item.setOwner(owner);
+        item.setRequestId(incomingItemDto.getRequestId());
 
         return item;
     }
 
     public static ItemLastNextDto mapToItemLastNextDto(Item item, Booking lastBooking, Booking nextBooking, List<Comment> comments) {
-            BookingLastNextDto last = (lastBooking == null) ? null : new BookingLastNextDto(lastBooking.getId(), lastBooking.getBookerId());
-               BookingLastNextDto next = (nextBooking == null) ? null : new BookingLastNextDto(nextBooking.getId(), nextBooking.getBookerId());
+        BookingLastNextDto last = (lastBooking == null) ? null : new BookingLastNextDto(lastBooking.getId(), lastBooking.getBookerId());
+        BookingLastNextDto next = (nextBooking == null) ? null : new BookingLastNextDto(nextBooking.getId(), nextBooking.getBookerId());
         List<CommentDto> commentsOut = comments
                 .stream()
                 .map(CommentMapper::mapToCommentDto)
@@ -53,6 +55,7 @@ public class ItemMapper {
                 .isAvailable(item.getAvailable())
                 .lastBooking(last)
                 .nextBooking(next)
+                .requestId(item.getRequestId())
                 .comments(commentsOut)
                 .build();
     }
@@ -74,5 +77,3 @@ public class ItemMapper {
                 .build();
     }
 }
-
-

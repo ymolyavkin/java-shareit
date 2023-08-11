@@ -10,6 +10,6 @@ public class ItemDto {
     private String description;
     private boolean isAvailable;
     private long ownerId;
+    private Long requestId;
     private int numberOfTimesToRent;
 }
-

@@ -9,3 +9,4 @@ public class BookingLastNextDto {
     private final long id;
     private final Long bookerId;
 }
+

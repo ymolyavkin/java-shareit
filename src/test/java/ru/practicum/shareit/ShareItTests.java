@@ -8,13 +8,14 @@ import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.Status;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.model.Item;
-import ru.practicum.shareit.request.ItemRequest;
+import ru.practicum.shareit.request.model.ItemRequest;
 import ru.practicum.shareit.user.model.User;
 
 import java.time.LocalDateTime;
 
 @SpringBootTest
 class ShareItTests {
+
     @Test
     void contextLoads() {
     }
@@ -22,14 +23,8 @@ class ShareItTests {
     @BeforeEach
     void setUp() {
         User requestor = new User(1L, "Name Requestor", "email@yandex.ru");
-        ItemRequest request = new ItemRequest("description", requestor.getId(), LocalDateTime.now());
-        /*Item item = new Item();
-       item.setId(1L);
-        item.setName("Name");
-        item.setDescription("descr");
-        item.setAvailable(true);
-        item.setOwnerId(1L);
-        item.setRequestId(1);*/
+        ItemRequest request = new ItemRequest("description", requestor, LocalDateTime.now());
+
         Item item = Item.builder()
                 .id(1L)
                 .name("Name")
@@ -47,7 +42,7 @@ class ShareItTests {
                 .booker(booker)
                 .status(Status.WAITING)
                 .build();
-        // Long itemRequestId = item.getRequestId().getId();
+
         ItemDto itemDto = ItemDto.builder()
                 .id(0L)
                 .name("Name")
@@ -56,6 +51,7 @@ class ShareItTests {
                 .ownerId(0L)
                 .build();
     }
+
 
     @AfterEach
     void tearDown() {
