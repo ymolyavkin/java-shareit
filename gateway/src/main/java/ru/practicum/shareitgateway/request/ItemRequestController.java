@@ -2,12 +2,12 @@ package ru.practicum.shareitgateway.request;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareitgateway.exception.BadRequestException;
 import ru.practicum.shareitgateway.request.dto.IncomingItemRequestDto;
-import ru.practicum.shareitgateway.request.dto.ItemRequestResponseDto;
 import ru.practicum.shareitgateway.validator.Marker;
 
 import javax.validation.constraints.Min;
@@ -25,7 +25,7 @@ public class ItemRequestController {
     private final ItemRequestClient itemRequestClient;
 
     @PostMapping(consumes = "application/json")
-    public ItemRequestResponseDto addItemRequest(@RequestHeader(value = USER_ID_FROM_REQUEST) Long userId,
+    public ResponseEntity<Object> addItemRequest(@RequestHeader(value = USER_ID_FROM_REQUEST) Long userId,
                                                  @Validated({Marker.OnCreate.class})
                                                  @RequestBody IncomingItemRequestDto incomingItemRequestDto,
                                                  BindingResult errors) {
@@ -34,35 +34,33 @@ public class ItemRequestController {
         }
         log.info("Получен запрос на добавление запроса на вещь");
 
-        return itemRequestService.addItemRequest(incomingItemRequestDto, userId);
+        return itemRequestClient.addItemRequest(userId, incomingItemRequestDto);
     }
 
     @GetMapping
-    public List<ItemRequestWithAnswersDto> getItemRequestsByAuthor(
-            @RequestHeader(value = USER_ID_FROM_REQUEST) Long userId,
-            @RequestParam(name = "from", defaultValue = "0") int from,
-            @RequestParam(name = "size", defaultValue = "10") int size) {
+    public ResponseEntity<Object> getItemRequestsByAuthor(
+            @RequestHeader(value = USER_ID_FROM_REQUEST) Long userId) {
         log.info(REQUEST_GIVE_ALL_USER_QUERIES, userId);
 
-        return itemRequestService.getItemRequestsByAuthor(userId, from, size);
+        return itemRequestClient.getItemRequestsByAuthor(userId);
     }
 
     @GetMapping("/all")
-    public List<ItemRequestWithAnswersDto> getItemRequestsByOther(
+    public ResponseEntity<Object> getItemRequestsByOther(
             @RequestHeader(value = USER_ID_FROM_REQUEST) Long userId,
             @RequestParam(name = "from", defaultValue = "0") @Min(0) Integer from,
             @RequestParam(name = "size", defaultValue = "10") @Min(1) Integer size) {
-        log.info(REQUEST_GIVE_ALL_USER_QUERIES, userId);
+        log.info("Получить список запросов, созданных другими пользователями", userId);
 
-        return itemRequestService.getItemRequestsByOther(userId, from, size);
+        return itemRequestClient.getItemRequestsByOther(userId, from, size);
     }
 
     @GetMapping("/{requestId}")
-    public ItemRequestWithAnswersDto getItemRequestById(
+    public ResponseEntity<Object> getItemRequestById(
             @RequestHeader(value = USER_ID_FROM_REQUEST) Long userId,
             @PathVariable Long requestId) {
         log.info(REQUEST_GIVE_ALL_USER_QUERIES, userId);
 
-        return itemRequestService.getItemRequestById(userId, requestId);
+        return itemRequestClient.getItemRequestById(userId, requestId);
     }
 }
