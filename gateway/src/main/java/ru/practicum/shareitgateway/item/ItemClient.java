@@ -42,11 +42,11 @@ public class ItemClient extends BaseClient {
         return post("", userId, incomingItemDto);
     }
 
-    public ResponseEntity<Object> updateItem(long userId, long itemId, IncomingItemDto incomingItemDto) {
+    public ResponseEntity<Object> updateItem(IncomingItemDto incomingItemDto, long itemId, long userId) {
         return patch("/" + itemId, userId, incomingItemDto);
     }
 
-    public ResponseEntity<Object> searchItems(long userId, String text, int from, int size) {
+    public ResponseEntity<Object> searchItemsByText(long userId, String text, int from, int size) {
         Map<String, Object> parameters = Map.of(
                 "text", text,
                 "from", from,
