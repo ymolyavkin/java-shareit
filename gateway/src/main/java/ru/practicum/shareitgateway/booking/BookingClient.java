@@ -13,6 +13,7 @@ import ru.practicum.shareitgateway.booking.model.State;
 import ru.practicum.shareitgateway.client.BaseClient;
 
 import java.util.Map;
+
 @Slf4j
 @Service
 public class BookingClient extends BaseClient {
