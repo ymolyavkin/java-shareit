@@ -1,9 +1,9 @@
 package ru.practicum.shareitserver.validator;
 
 import lombok.experimental.UtilityClass;
-import ru.practicum.shareit.booking.dto.IncomingBookingDto;
-import ru.practicum.shareit.exception.BadRequestException;
-import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareitserver.booking.dto.IncomingBookingDto;
+import ru.practicum.shareitserver.exception.BadRequestException;
+import ru.practicum.shareitserver.item.model.Item;
 
 import java.time.LocalDateTime;
 

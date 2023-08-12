@@ -3,6 +3,7 @@ package ru.practicum.shareitgateway.booking.dto;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import ru.practicum.shareitgateway.booking.model.Status;
 import ru.practicum.shareitgateway.validator.Marker;
 
 import javax.validation.constraints.NotNull;

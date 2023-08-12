@@ -1,7 +1,6 @@
 package ru.practicum.shareitgateway.validator;
 
 import lombok.experimental.UtilityClass;
-import org.hibernate.cache.spi.support.AbstractReadWriteAccess;
 import ru.practicum.shareitgateway.booking.dto.IncomingBookingDto;
 import ru.practicum.shareitgateway.exception.BadRequestException;
 import ru.practicum.shareitgateway.item.model.Item;

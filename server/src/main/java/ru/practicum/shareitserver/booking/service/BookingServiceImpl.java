@@ -1,28 +1,36 @@
 package ru.practicum.shareitserver.booking.service;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.*;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.practicum.shareit.booking.model.Booking;
-import ru.practicum.shareit.booking.model.StateRequest;
-import ru.practicum.shareit.booking.model.Status;
-import ru.practicum.shareit.booking.dto.*;
+import ru.practicum.shareitserver.booking.dto.BookingMapper;
+import ru.practicum.shareitserver.booking.dto.BookingResponseDto;
+import ru.practicum.shareitserver.booking.dto.IncomingBookingDto;
+import ru.practicum.shareitserver.booking.model.Booking;
+import ru.practicum.shareitserver.booking.model.StateRequest;
+import ru.practicum.shareitserver.booking.model.Status;
 import ru.practicum.shareitserver.booking.repository.BookingRepository;
-import ru.practicum.shareit.exception.*;
-import ru.practicum.shareit.item.model.Item;
-import ru.practicum.shareit.item.repository.ItemRepository;
-import ru.practicum.shareit.user.model.User;
-import ru.practicum.shareit.user.repository.UserRepository;
-import ru.practicum.shareit.util.Time;
-import ru.practicum.shareit.validator.BookingValidation;
+import ru.practicum.shareitserver.exception.BadRequestException;
+import ru.practicum.shareitserver.exception.NotFoundException;
+import ru.practicum.shareitserver.exception.UnsupportedStatusException;
+import ru.practicum.shareitserver.item.model.Item;
+import ru.practicum.shareitserver.item.repository.ItemRepository;
+import ru.practicum.shareitserver.user.model.User;
+import ru.practicum.shareitserver.user.repository.UserRepository;
+import ru.practicum.shareitserver.util.Time;
+import ru.practicum.shareitserver.validator.BookingValidation;
 
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static ru.practicum.shareit.util.Constants.SORT_BY_START_DESC;
+import static ru.practicum.shareitserver.util.Constants.SORT_BY_START_DESC;
+
 
 @Service
 @RequiredArgsConstructor
@@ -41,7 +49,7 @@ public class BookingServiceImpl implements BookingService {
     public BookingResponseDto getBookingById(Long bookingId, Long userId) {
         Booking booking = bookingRepository.findById(bookingId)
                 .orElseThrow(() -> new NotFoundException(String.format("Бронирование с id %d не найдено", bookingId)));
-        Item item = itemRepository.findById(booking.getItemId())
+       Item item = itemRepository.findById(booking.getItemId())
                 .orElseThrow(() -> new NotFoundException(String.format("Вещь с id %d не найдена", booking.getItemId())));
         if (!booking.getBookerId().equals(userId) && !item.getOwnerId().equals(userId)) {
             throw new NotFoundException(String.format("Пользователь с id %d не не автор бронирования и не владелец вещи, данные о бронировании недоступны", userId));

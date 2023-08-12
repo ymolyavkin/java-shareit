@@ -3,9 +3,10 @@ package ru.practicum.shareitserver.booking.dto;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 import ru.practicum.shareitserver.booking.model.Booking;
-import ru.practicum.shareit.item.dto.ItemIdNameDto;
-import ru.practicum.shareit.item.model.Item;
-import ru.practicum.shareit.user.model.User;
+import ru.practicum.shareitserver.item.dto.ItemIdNameDto;
+import ru.practicum.shareitserver.item.model.Item;
+import ru.practicum.shareitserver.user.model.User;
+
 
 @Slf4j
 @UtilityClass

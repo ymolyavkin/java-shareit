@@ -1,10 +1,9 @@
 package ru.practicum.shareitserver.user.service;
 
-import ru.practicum.shareit.user.dto.IncomingUserDto;
-import ru.practicum.shareit.user.dto.UserDto;
-import ru.practicum.shareit.user.model.User;
-
 import org.springframework.transaction.annotation.Transactional;
+import ru.practicum.shareitserver.user.dto.IncomingUserDto;
+import ru.practicum.shareitserver.user.dto.UserDto;
+import ru.practicum.shareitserver.user.model.User;
 
 import java.util.List;
 

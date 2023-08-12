@@ -2,9 +2,8 @@ package ru.practicum.shareitserver.item.comment.dto;
 
 import lombok.experimental.UtilityClass;
 import ru.practicum.shareitserver.item.comment.Comment;
-
-import ru.practicum.shareit.item.model.Item;
-import ru.practicum.shareit.user.model.User;
+import ru.practicum.shareitserver.item.model.Item;
+import ru.practicum.shareitserver.user.model.User;
 
 import java.time.LocalDateTime;
 

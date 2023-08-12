@@ -1,33 +1,33 @@
 package ru.practicum.shareitserver.item.service;
 
 import lombok.RequiredArgsConstructor;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.practicum.shareit.booking.dto.BookingLastNextDto;
-import ru.practicum.shareit.booking.dto.BookingMapper;
-import ru.practicum.shareit.booking.model.Booking;
-import ru.practicum.shareit.booking.model.Status;
-import ru.practicum.shareit.exception.*;
-import ru.practicum.shareit.item.comment.Comment;
-import ru.practicum.shareit.item.comment.CommentRepository;
-
-import ru.practicum.shareit.item.comment.dto.CommentDto;
-import ru.practicum.shareit.item.comment.dto.CommentMapper;
-import ru.practicum.shareit.item.comment.dto.IncomingCommentDto;
-import ru.practicum.shareit.item.dto.IncomingItemDto;
-import ru.practicum.shareit.item.dto.ItemDto;
-import ru.practicum.shareit.item.dto.ItemLastNextDto;
-import ru.practicum.shareit.item.dto.ItemMapper;
-import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareitserver.booking.dto.BookingLastNextDto;
+import ru.practicum.shareitserver.booking.dto.BookingMapper;
+import ru.practicum.shareitserver.booking.model.Booking;
+import ru.practicum.shareitserver.booking.model.Status;
+import ru.practicum.shareitserver.booking.repository.BookingRepository;
+import ru.practicum.shareitserver.exception.CommentErrorException;
+import ru.practicum.shareitserver.exception.NotFoundException;
+import ru.practicum.shareitserver.exception.OwnerMismatchException;
+import ru.practicum.shareitserver.item.comment.Comment;
+import ru.practicum.shareitserver.item.comment.CommentRepository;
+import ru.practicum.shareitserver.item.comment.dto.CommentDto;
+import ru.practicum.shareitserver.item.comment.dto.CommentMapper;
+import ru.practicum.shareitserver.item.comment.dto.IncomingCommentDto;
+import ru.practicum.shareitserver.item.dto.IncomingItemDto;
+import ru.practicum.shareitserver.item.dto.ItemDto;
+import ru.practicum.shareitserver.item.dto.ItemLastNextDto;
+import ru.practicum.shareitserver.item.dto.ItemMapper;
+import ru.practicum.shareitserver.item.model.Item;
 import ru.practicum.shareitserver.item.repository.ItemRepository;
-import ru.practicum.shareit.user.model.User;
-import ru.practicum.shareit.user.repository.UserRepository;
-import ru.practicum.shareit.booking.repository.BookingRepository;
+import ru.practicum.shareitserver.user.model.User;
+import ru.practicum.shareitserver.user.repository.UserRepository;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
@@ -63,13 +63,13 @@ public class ItemServiceImpl implements ItemService {
         return ItemMapper.mapToItemLastNextDto(item, lastBooking, nextBooking, commentRepository.findByItem_Id(item.getId()));
     }
 
-    boolean isLast(Booking booking) {
+    public boolean isLast(Booking booking) {
         return (booking.getStart().isBefore(LocalDateTime.now())
                 || booking.getStart().isEqual(LocalDateTime.now())
                 || ChronoUnit.MILLIS.between(LocalDateTime.now(), booking.getStart()) < 100);
     }
 
-    Map<String, BookingLastNextDto> aroundTime(Item item, Map<Item, List<Booking>> bookings) {
+    public Map<String, BookingLastNextDto> aroundTime(Item item, Map<Item, List<Booking>> bookings) {
         List<Booking> bookingsByItem = Collections.emptyList();
         BookingLastNextDto next;
         Map<String, BookingLastNextDto> result = new HashMap<>(2);

@@ -4,7 +4,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
-import ru.practicum.shareit.validator.Marker;
+import ru.practicum.shareitserver.validator.Marker;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;

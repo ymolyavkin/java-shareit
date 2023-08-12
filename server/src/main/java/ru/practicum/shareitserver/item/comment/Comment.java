@@ -1,8 +1,8 @@
 package ru.practicum.shareitserver.item.comment;
 
 import lombok.*;
-import ru.practicum.shareit.item.model.Item;
-import ru.practicum.shareit.user.model.User;
+import ru.practicum.shareitserver.item.model.Item;
+import ru.practicum.shareitserver.user.model.User;
 
 import javax.persistence.*;
 import javax.validation.constraints.Size;

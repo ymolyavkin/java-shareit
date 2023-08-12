@@ -1,12 +1,11 @@
 package ru.practicum.shareitserver.booking.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-
 import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import ru.practicum.shareitserver.booking.model.Status;
-import ru.practicum.shareit.item.dto.ItemIdNameDto;
+import ru.practicum.shareitserver.item.dto.ItemIdNameDto;
 
 import java.time.LocalDateTime;
 

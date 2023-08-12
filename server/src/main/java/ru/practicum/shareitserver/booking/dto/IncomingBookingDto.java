@@ -4,7 +4,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import ru.practicum.shareitserver.booking.model.Status;
-import ru.practicum.shareit.validator.Marker;
+import ru.practicum.shareitserver.validator.Marker;
 
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;

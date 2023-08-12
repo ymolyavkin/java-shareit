@@ -1,7 +1,7 @@
 package ru.practicum.shareitgateway.item.model;
 
 import lombok.*;
-import ru.practicum.shareitgateway.user.User;
+import ru.practicum.shareitgateway.user.model.User;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;

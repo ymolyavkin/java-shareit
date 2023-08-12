@@ -1,7 +1,7 @@
 package ru.practicum.shareitserver.user.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import ru.practicum.shareit.user.model.User;
+import ru.practicum.shareitserver.user.model.User;
 
 import java.util.List;
 

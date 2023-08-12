@@ -6,9 +6,9 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Component;
-import ru.practicum.shareit.booking.model.Booking;
-import ru.practicum.shareit.booking.model.Status;
-import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareitserver.booking.model.Booking;
+import ru.practicum.shareitserver.booking.model.Status;
+import ru.practicum.shareitserver.item.model.Item;
 
 import java.time.LocalDateTime;
 import java.util.List;

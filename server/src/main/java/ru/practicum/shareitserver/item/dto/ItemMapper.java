@@ -2,13 +2,13 @@ package ru.practicum.shareitserver.item.dto;
 
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
-import ru.practicum.shareit.booking.dto.BookingLastNextDto;
-import ru.practicum.shareit.booking.model.Booking;
+import ru.practicum.shareitserver.booking.dto.BookingLastNextDto;
+import ru.practicum.shareitserver.booking.model.Booking;
 import ru.practicum.shareitserver.item.comment.Comment;
 import ru.practicum.shareitserver.item.comment.dto.CommentDto;
 import ru.practicum.shareitserver.item.comment.dto.CommentMapper;
 import ru.practicum.shareitserver.item.model.Item;
-import ru.practicum.shareit.user.model.User;
+import ru.practicum.shareitserver.user.model.User;
 
 import java.util.List;
 import java.util.stream.Collectors;

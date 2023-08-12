@@ -3,7 +3,7 @@ package ru.practicum.shareitserver.item.comment;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Component;
-import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareitserver.item.model.Item;
 
 import java.util.List;
 

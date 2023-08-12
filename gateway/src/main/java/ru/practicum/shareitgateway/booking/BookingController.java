@@ -7,7 +7,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.UnsatisfiedServletRequestParameterException;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareitgateway.booking.dto.IncomingBookingDto;
-import ru.practicum.shareitgateway.booking.dto.State;
+import ru.practicum.shareitgateway.booking.model.State;
 import ru.practicum.shareitgateway.validator.Marker;
 
 import javax.validation.constraints.Min;
