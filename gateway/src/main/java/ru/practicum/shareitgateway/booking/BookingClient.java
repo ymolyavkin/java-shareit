@@ -29,7 +29,7 @@ public class BookingClient extends BaseClient {
     }
 
     public ResponseEntity<Object> addBooking(long bookerId, IncomingBookingDto incomingBookingDto) {
-        log.info("Create booking for user with id = {} ", bookerId);
+        log.info("Добавить бронирование от пользователя с id = {} ", bookerId);
         return post("", bookerId, incomingBookingDto);
     }
 
@@ -39,12 +39,12 @@ public class BookingClient extends BaseClient {
                 "from", from,
                 "size", size
         );
-        log.info("Get all booking for user with id = {} ", userId);
+        log.info("Получить список всех бронирований пользователя с id = {} ", userId);
         return get("?state={state}&from={from}&size={size}", userId, parameters);
     }
 
     public ResponseEntity<Object> getBookingById(long userId, Long bookingId) {
-        log.info("Get booking for user with id = {} with booking id = {}", userId, bookingId);
+        log.info("Получить бронирование с id = {} автор бронирования id = {}", bookingId, userId);
         return get("/" + bookingId, userId);
     }
 
@@ -55,13 +55,13 @@ public class BookingClient extends BaseClient {
                 "from", from,
                 "size", size
         );
-        log.info("Get all booking for owner with id = {} ", userId);
+        log.info("Получить список бронирований пользователя с id = {} ", userId);
         return get("/owner?state={state}&from={from}&size={size}", userId, parameters);
     }
 
     public ResponseEntity<Object> approveBooking(long userId, Long bookingId, Boolean approved) {
         Map<String, Object> parameters = Map.of("approved", approved);
-        log.info("Get all booking for user with id = {} with booking id = {}", userId, bookingId);
+        log.info("Подтвердить пользователем с id = {}  бронирование c id = {}", userId, bookingId);
         return patch("/" + bookingId + "?approved={approved}", userId, parameters, null);
     }
 }
