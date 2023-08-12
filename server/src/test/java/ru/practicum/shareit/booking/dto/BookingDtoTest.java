@@ -14,6 +14,7 @@ import ru.practicum.shareitserver.booking.model.Status;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+
 @RunWith(SpringRunner.class)
 @JsonTest
 class BookingDtoTest {

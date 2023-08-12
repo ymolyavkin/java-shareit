@@ -1,9 +1,10 @@
 package ru.practicum.shareitserver.util;
 
 import lombok.experimental.UtilityClass;
+import org.springframework.data.domain.Sort;
 
 import java.time.LocalDateTime;
-import org.springframework.data.domain.Sort;
+
 @UtilityClass
 public class Constants {
     public static final String USER_ID_FROM_REQUEST = "x-sharer-user-id";
