@@ -33,7 +33,7 @@ public class ItemRequestServiceImpl implements ItemRequestService {
     private final ItemRepository itemRepository;
     private final UserRepository userRepository;
     private final ItemRequestRepository itemRequestRepository;
-
+    @Transactional
     public ItemRequestResponseDto addItemRequest(IncomingItemRequestDto incomingItemRequestDto, Long requesterId) {
         User requester = userRepository.findById(requesterId)
                 .orElseThrow(() -> new NotFoundException(String.format("Пользователь с id %d не найден", requesterId)));
