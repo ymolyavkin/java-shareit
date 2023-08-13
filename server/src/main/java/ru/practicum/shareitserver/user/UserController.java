@@ -2,20 +2,17 @@ package ru.practicum.shareitserver.user;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareitserver.user.dto.IncomingUserDto;
 import ru.practicum.shareitserver.user.dto.UserDto;
 import ru.practicum.shareitserver.user.model.User;
 import ru.practicum.shareitserver.user.service.UserService;
-import ru.practicum.shareitserver.validator.Marker;
 
 import java.util.List;
 
 @RestController
 @RequestMapping(value = "/users")
 @Slf4j
-@Validated
 @RequiredArgsConstructor
 public class UserController {
     private final UserService userService;
@@ -35,14 +32,14 @@ public class UserController {
     }
 
     @PostMapping(consumes = "application/json")
-    public User addUser(@Validated({Marker.OnCreate.class}) @RequestBody IncomingUserDto incomingUserDto) {
+    public User addUser(@RequestBody IncomingUserDto incomingUserDto) {
         log.info("Получен запрос на добавление пользователя");
 
         return userService.addUser(incomingUserDto);
     }
 
     @PatchMapping(value = "/{id}", consumes = "application/json")
-    public UserDto updateUser(@Validated({Marker.OnUpdate.class}) @RequestBody IncomingUserDto incomingUserDto,
+    public UserDto updateUser(@RequestBody IncomingUserDto incomingUserDto,
                               @PathVariable Long id) {
         log.info("Получен запрос на обновление пользователя с id = {}", id);
 
