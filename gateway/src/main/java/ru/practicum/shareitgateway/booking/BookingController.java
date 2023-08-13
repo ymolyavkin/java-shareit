@@ -65,8 +65,8 @@ public class BookingController {
     @GetMapping("/{bookingId}")
     public ResponseEntity<Object> getBookingById(@RequestHeader(value = USER_ID_FROM_REQUEST) Long userId,
                                                  @PathVariable Long bookingId) {
-        log.info("Получен запрос на данных о бронировании с id = {}", bookingId);
+        log.info("Получен запрос от пользователя с id = {} на получение данных о бронировании с id = {}", userId, bookingId);
 
-        return bookingClient.getBookingById(bookingId, userId);
+        return bookingClient.getBookingById(userId, bookingId);
     }
 }
