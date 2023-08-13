@@ -3,13 +3,13 @@ package ru.practicum.shareitgateway.validator;
 import lombok.experimental.UtilityClass;
 import ru.practicum.shareitgateway.booking.dto.IncomingBookingDto;
 import ru.practicum.shareitgateway.exception.BadRequestException;
-import ru.practicum.shareitgateway.item.model.Item;
+import ru.practicum.shareitgateway.item.dto.IncomingItemDto;
 
 import java.time.LocalDateTime;
 
 @UtilityClass
 public class BookingValidation {
-    public static void bookingIsValid(IncomingBookingDto incomingBookingDto, Item item) {
+    public static void bookingIsValid(IncomingBookingDto incomingBookingDto, IncomingItemDto item) {
         if (!item.getAvailable()) {
             throw new BadRequestException("Вещь недоступна для бронирования");
         }
