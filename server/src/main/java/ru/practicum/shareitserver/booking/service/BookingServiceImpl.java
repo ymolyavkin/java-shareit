@@ -31,7 +31,7 @@ import java.util.stream.Collectors;
 
 import static ru.practicum.shareitserver.util.Constants.SORT_BY_START_DESC;
 
-
+@Transactional(readOnly = true)
 @Service
 @RequiredArgsConstructor
 public class BookingServiceImpl implements BookingService {
@@ -44,12 +44,11 @@ public class BookingServiceImpl implements BookingService {
         return bookingRepository.findAll();
     }
 
-    @Transactional(readOnly = true)
     @Override
     public BookingResponseDto getBookingById(Long bookingId, Long userId) {
         Booking booking = bookingRepository.findById(bookingId)
                 .orElseThrow(() -> new NotFoundException(String.format("Бронирование с id %d не найдено", bookingId)));
-       Item item = itemRepository.findById(booking.getItemId())
+        Item item = itemRepository.findById(booking.getItemId())
                 .orElseThrow(() -> new NotFoundException(String.format("Вещь с id %d не найдена", booking.getItemId())));
         if (!booking.getBookerId().equals(userId) && !item.getOwnerId().equals(userId)) {
             throw new NotFoundException(String.format("Пользователь с id %d не не автор бронирования и не владелец вещи, данные о бронировании недоступны", userId));
@@ -62,7 +61,6 @@ public class BookingServiceImpl implements BookingService {
         return itemRepository.findItemIdsByOwnerId(ownerId);
     }
 
-    @Transactional(readOnly = true)
     @Override
     public List<BookingResponseDto> getBookingsByOwner(Long ownerId, StateRequest state, Integer from, Integer size) {
         LocalDateTime dateTimeNow = LocalDateTime.now();
@@ -121,7 +119,6 @@ public class BookingServiceImpl implements BookingService {
                 .collect(Collectors.toList());
     }
 
-    @Transactional(readOnly = true)
     @Override
     public List<BookingResponseDto> getBookingsByBooker(Long bookerId, StateRequest state, Integer from, Integer size) {
         LocalDateTime dateTimeNow = LocalDateTime.now();
@@ -194,6 +191,7 @@ public class BookingServiceImpl implements BookingService {
         return Time.isOverlapping(one.getStart(), one.getEnd(), two.getStart(), two.getEnd());
     }
 
+    @Transactional
     @Override
     public BookingResponseDto updateBooking(IncomingBookingDto incomingBookingDto, Long bookingId, Long bookerId) {
         Booking booking = bookingRepository.getReferenceById(bookingId);
@@ -208,6 +206,7 @@ public class BookingServiceImpl implements BookingService {
         return BookingMapper.mapToBookingResponseDto(booking, item);
     }
 
+    @Transactional
     @Override
     public BookingResponseDto approvingBooking(Long bookingId, Long ownerId, Boolean approved) {
         Booking booking = bookingRepository.findById(bookingId)

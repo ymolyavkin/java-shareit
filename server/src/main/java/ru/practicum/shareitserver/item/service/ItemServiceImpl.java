@@ -37,7 +37,7 @@ import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.toList;
 import static org.springframework.data.domain.Sort.Direction.ASC;
 import static org.springframework.data.domain.Sort.Direction.DESC;
-
+@Transactional(readOnly = true)
 @Service
 @RequiredArgsConstructor
 public class ItemServiceImpl implements ItemService {
@@ -46,7 +46,6 @@ public class ItemServiceImpl implements ItemService {
     private final BookingRepository bookingRepository;
     private final CommentRepository commentRepository;
 
-    @Transactional(readOnly = true)
     @Override
     public ItemLastNextDto getItemById(Long id, Long userId) {
         Item item = itemRepository.getReferenceById(id);
@@ -126,7 +125,7 @@ public class ItemServiceImpl implements ItemService {
                 .stream().collect(groupingBy(Booking::getItem, toList()));
         return assembleItemLastNextDtos(items, comments, bookings);
     }
-
+    @Transactional
     @Override
     public ItemDto addItem(IncomingItemDto incomingItemDto) {
         Long userId = incomingItemDto.getOwnerId();
@@ -136,6 +135,7 @@ public class ItemServiceImpl implements ItemService {
         return ItemMapper.mapToItemDto(item);
     }
 
+    @Transactional
     @Override
     public ItemDto updateItem(IncomingItemDto incomingItemDto, Long itemId, Long userId) {
         Item item = itemRepository.findById(itemId).orElseThrow(() -> new NotFoundException("Вещь с id = {} не найдена"));
@@ -164,6 +164,7 @@ public class ItemServiceImpl implements ItemService {
         return items.stream().map(ItemMapper::mapToItemDto).collect(toList());
     }
 
+    @Transactional
     @Override
     public CommentDto addComment(IncomingCommentDto incomingCommentDto, Long userId, Long itemId) {
         Comment comment = Comment.builder().text(incomingCommentDto.getText()).build();
