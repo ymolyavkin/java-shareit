@@ -1,13 +1,16 @@
 package ru.practicum.shareitgateway.user.dto;
+
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import ru.practicum.shareitgateway.validator.Marker;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
-import ru.practicum.shareitgateway.validator.Marker;
 
-@Data
+@Getter
+@NoArgsConstructor
 @AllArgsConstructor
 public class IncomingUserDto {
     @Size(max = 255, groups = {Marker.OnCreate.class, Marker.OnUpdate.class})

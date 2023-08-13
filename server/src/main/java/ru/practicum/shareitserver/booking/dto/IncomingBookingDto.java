@@ -1,8 +1,6 @@
 package ru.practicum.shareitserver.booking.dto;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import ru.practicum.shareitserver.booking.model.Status;
 import ru.practicum.shareitserver.validator.Marker;
 
@@ -11,7 +9,8 @@ import java.time.LocalDateTime;
 
 @Getter
 @Setter
-@RequiredArgsConstructor
+@NoArgsConstructor
+@AllArgsConstructor
 public class IncomingBookingDto {
     @NotNull(groups = Marker.OnCreate.class)
     private LocalDateTime start;
