@@ -13,6 +13,7 @@ import ru.practicum.shareitgateway.item.comment.dto.IncomingCommentDto;
 import ru.practicum.shareitgateway.item.dto.IncomingItemDto;
 
 import java.util.Map;
+
 @Slf4j
 @Service
 public class ItemClient extends BaseClient {
