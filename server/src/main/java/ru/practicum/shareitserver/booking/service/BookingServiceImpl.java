@@ -159,6 +159,7 @@ public class BookingServiceImpl implements BookingService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional
     @Override
     public BookingResponseDto addBooking(IncomingBookingDto incomingBookingDto) {
         Long bookerId = incomingBookingDto.getBookerId();

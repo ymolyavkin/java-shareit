@@ -8,7 +8,6 @@ import ru.practicum.shareitserver.booking.dto.BookingResponseDto;
 import ru.practicum.shareitserver.booking.dto.IncomingBookingDto;
 import ru.practicum.shareitserver.booking.model.StateRequest;
 import ru.practicum.shareitserver.booking.service.BookingService;
-import ru.practicum.shareitserver.exception.NoneXSharerUserIdException;
 
 import javax.validation.constraints.Min;
 import java.util.List;
@@ -29,7 +28,7 @@ public class BookingController {
             @RequestParam(defaultValue = "ALL") StateRequest state,
             @RequestParam(name = "from", defaultValue = "0") @Min(0) int from,
             @RequestParam(name = "size", defaultValue = "10") @Min(1) int size) {
-        log.info("Получен запрос на выдачу вещей, забронированных пользователем с id = {}", bookerId);
+        log.info("Server: Получен запрос на выдачу вещей, забронированных пользователем с id = {}", bookerId);
         return bookingService.getBookingsByBooker(bookerId, state, from, size);
     }
 
@@ -39,7 +38,7 @@ public class BookingController {
             @RequestParam(defaultValue = "ALL") StateRequest state,
             @RequestParam(name = "from", defaultValue = "0") @Min(0) int from,
             @RequestParam(name = "size", defaultValue = "10") @Min(1) int size) {
-        log.info("Получен запрос на выдачу вещей, принадлежащих пользователю с id = {}", ownerId);
+        log.info("Server: Получен запрос на выдачу вещей, принадлежащих пользователю с id = {}", ownerId);
         return bookingService.getBookingsByOwner(ownerId, state, from, size);
     }
 
@@ -47,10 +46,8 @@ public class BookingController {
     @PostMapping
     public BookingResponseDto addBooking(@RequestHeader(value = USER_ID_FROM_REQUEST) Long bookerId,
                                          @RequestBody IncomingBookingDto incomingBookingDto) {
-        log.info("Получен запрос на бронирование вещи пользователем с id = {}", bookerId);
-        if (bookerId.equals(-1L)) {
-            throw new NoneXSharerUserIdException("Не указан инициатор бронирования вещи");
-        }
+        log.info("Server: Получен запрос на бронирование вещи пользователем с id = {}", bookerId);
+
         incomingBookingDto.setBookerId(bookerId);
 
         return bookingService.addBooking(incomingBookingDto);
@@ -62,9 +59,9 @@ public class BookingController {
                                             @PathVariable Long bookingId,
                                             @RequestParam(required = false) Boolean approved) {
 
-        log.info("Получен запрос на обновление вещи пользователем с id = {}", ownerId);
+        log.info("Server: Получен запрос на обновление вещи пользователем с id = {}", ownerId);
         if (approved != null) {
-            log.info("Получен запрос на подтверждение бронирования id = {} пользователем с id = {}", bookingId, ownerId);
+            log.info("Server: Получен запрос на подтверждение бронирования id = {} пользователем с id = {}", bookingId, ownerId);
             return bookingService.approvingBooking(bookingId, ownerId, approved);
         }
         return bookingService.updateBooking(incomingBookingDto, bookingId, ownerId);
@@ -73,7 +70,7 @@ public class BookingController {
     @GetMapping("/{bookingId}")
     public BookingResponseDto getBookingById(@RequestHeader(value = USER_ID_FROM_REQUEST) Long userId,
                                              @PathVariable Long bookingId) {
-        log.info("Получен запрос на данных о бронировании с id = {}", bookingId);
+        log.info("Server: Получен запрос на данных о бронировании с id = {}", bookingId);
 
         return bookingService.getBookingById(bookingId, userId);
     }
