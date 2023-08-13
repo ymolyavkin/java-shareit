@@ -52,11 +52,10 @@ public class BookingController {
         return bookingClient.addBooking(bookerId, incomingBookingDto);
     }
 
-    @PatchMapping(value = "/{bookingId}", consumes = "application/json")
+    @PatchMapping(value = "/{bookingId}")
     public ResponseEntity<Object> approveBooking(@RequestHeader(value = USER_ID_FROM_REQUEST) Long ownerId,
                                                  @PathVariable Long bookingId,
                                                  @RequestParam(required = false) Boolean approved) {
-
 
         log.info("Получен запрос на подтверждение бронирования id = {} пользователем с id = {}", bookingId, ownerId);
 
