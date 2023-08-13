@@ -26,21 +26,25 @@ public class BookingController {
     @GetMapping
     public ResponseEntity<Object> getBookingsByBooker(
             @RequestHeader(value = USER_ID_FROM_REQUEST) Long bookerId,
-            @RequestParam(defaultValue = "ALL") State state,
+            @RequestParam(defaultValue = "ALL") String state,
             @RequestParam(name = "from", defaultValue = "0") @Min(0) int from,
             @RequestParam(name = "size", defaultValue = "10") @Min(1) int size) {
         log.info("Получен запрос на выдачу вещей, забронированных пользователем с id = {}", bookerId);
-        return bookingClient.getBookingsByBooker(bookerId, state, from, size);
+        State stateValue = State.fromString(state)
+                .orElseThrow(() -> new IllegalArgumentException("Unknown state: UNSUPPORTED_STATUS"));
+        return bookingClient.getBookingsByBooker(bookerId, stateValue, from, size);
     }
 
     @GetMapping("/owner")
     public ResponseEntity<Object> getBookingsByOwner(
             @RequestHeader(value = USER_ID_FROM_REQUEST) Long ownerId,
-            @RequestParam(defaultValue = "ALL") State state,
+            @RequestParam(defaultValue = "ALL") String state,
             @RequestParam(name = "from", defaultValue = "0") @Min(0) int from,
             @RequestParam(name = "size", defaultValue = "10") @Min(1) int size) {
         log.info("Получен запрос на выдачу вещей, принадлежащих пользователю с id = {}", ownerId);
-        return bookingClient.getBookingsByOwner(ownerId, state, from, size);
+        State stateValue = State.fromString(state)
+                .orElseThrow(() -> new IllegalArgumentException("Unknown state: UNSUPPORTED_STATUS"));
+        return bookingClient.getBookingsByOwner(ownerId, stateValue, from, size);
     }
 
     @ExceptionHandler(UnsatisfiedServletRequestParameterException.class)

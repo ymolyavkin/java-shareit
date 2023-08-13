@@ -31,7 +31,7 @@ public class ItemRequestClient extends BaseClient {
         return post("", userId, incomingItemRequestDto);
     }
 
-    public ResponseEntity<Object> getItemRequestById(Long requestId, long userId) {
+    public ResponseEntity<Object> getItemRequestById(long userId, Long requestId) {
         log.info("Получить данные о запросе с id = {}", requestId);
         return get("/" + requestId, userId);
     }
