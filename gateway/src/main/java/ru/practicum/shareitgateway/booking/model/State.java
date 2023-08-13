@@ -7,6 +7,7 @@ public enum State {
     CURRENT,
     FUTURE,
     WAITING,
+    PAST,
     REJECTED;
     public static Optional<State> fromString(String stringState) {
         for (State state : values()) {
