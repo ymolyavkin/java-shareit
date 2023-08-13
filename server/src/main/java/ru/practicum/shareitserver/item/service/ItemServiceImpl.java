@@ -37,6 +37,7 @@ import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.toList;
 import static org.springframework.data.domain.Sort.Direction.ASC;
 import static org.springframework.data.domain.Sort.Direction.DESC;
+
 @Transactional(readOnly = true)
 @Service
 @RequiredArgsConstructor
@@ -125,6 +126,7 @@ public class ItemServiceImpl implements ItemService {
                 .stream().collect(groupingBy(Booking::getItem, toList()));
         return assembleItemLastNextDtos(items, comments, bookings);
     }
+
     @Transactional
     @Override
     public ItemDto addItem(IncomingItemDto incomingItemDto) {
