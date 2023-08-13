@@ -1,5 +1,6 @@
 package ru.practicum.shareitgateway.item;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
@@ -12,7 +13,7 @@ import ru.practicum.shareitgateway.item.comment.dto.IncomingCommentDto;
 import ru.practicum.shareitgateway.item.dto.IncomingItemDto;
 
 import java.util.Map;
-
+@Slf4j
 @Service
 public class ItemClient extends BaseClient {
     private static final String API_PREFIX = "/items";
@@ -34,7 +35,8 @@ public class ItemClient extends BaseClient {
         return get("?from={from}&size={size}", userId, parameters);
     }
 
-    public ResponseEntity<Object> getItemById(long userId, long itemId) {
+    public ResponseEntity<Object> getItemById(long itemId, long userId) {
+        log.info("Получен запрос на выдачу вещи с id = {} пользователем с id = {}", itemId, userId);
         return get("/" + itemId, userId);
     }
 
