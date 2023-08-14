@@ -18,6 +18,5 @@ public class IncomingBookingDto {
     @NotNull(groups = Marker.OnCreate.class)
     private LocalDateTime end;
     private Long itemId;
-    private Long bookerId;
     private Status status = Status.WAITING;
 }
