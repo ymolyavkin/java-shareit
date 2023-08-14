@@ -2,6 +2,7 @@ package ru.practicum.shareitgateway.item;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.annotation.Validated;
@@ -11,6 +12,8 @@ import ru.practicum.shareitgateway.item.dto.IncomingItemDto;
 import ru.practicum.shareitgateway.validator.Marker;
 
 import javax.validation.constraints.Min;
+
+import java.util.Collections;
 
 import static ru.practicum.shareitgateway.util.Constants.USER_ID_FROM_REQUEST;
 
@@ -63,6 +66,9 @@ public class ItemController {
                                                     @RequestParam(name = "from", defaultValue = "0") @Min(0) Integer from,
                                                     @RequestParam(name = "size", defaultValue = "10") @Min(1) Integer size) {
         log.info("Получен запрос на поиск вещей по ключевому слову \'{}\'", text);
+        if (text.isBlank()) {
+            return new ResponseEntity<>(Collections.emptyList(), HttpStatus.resolve(200));
+        }
         return itemClient.searchItemsByText(userId, text, from, size);
     }
 
