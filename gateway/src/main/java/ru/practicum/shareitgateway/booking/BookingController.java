@@ -10,7 +10,9 @@ import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareitgateway.booking.dto.IncomingBookingDto;
 import ru.practicum.shareitgateway.booking.model.State;
 import ru.practicum.shareitgateway.validator.Marker;
+import ru.practicum.shareitgateway.validator.StartBeforeEndValidation;
 
+import javax.validation.Valid;
 import javax.validation.constraints.Min;
 
 import static ru.practicum.shareitgateway.util.Constants.USER_ID_FROM_REQUEST;
@@ -51,6 +53,8 @@ public class BookingController {
     @ExceptionHandler(UnsatisfiedServletRequestParameterException.class)
     @PostMapping
     public ResponseEntity<Object> addBooking(@RequestHeader(value = USER_ID_FROM_REQUEST) Long bookerId,
+                                             @Valid
+                                             @StartBeforeEndValidation(message = "Дата окончания не может быть раньше или совпадать с датой начала")
                                              @Validated(Marker.OnCreate.class) @RequestBody IncomingBookingDto incomingBookingDto) {
         log.info("Получен запрос на бронирование вещи пользователем с id = {}", bookerId);
 
