@@ -25,16 +25,16 @@ public class ItemController {
 
     @GetMapping
     public ResponseEntity<Object> getItemsByUser(@RequestHeader(value = USER_ID_FROM_REQUEST) Long userId,
-                                                    @RequestParam(name = "from", defaultValue = "0") @Min(0) Integer from,
-                                                    @RequestParam(name = "size", defaultValue = "10") @Min(1) Integer size) {
+                                                 @RequestParam(name = "from", defaultValue = "0") @Min(0) Integer from,
+                                                 @RequestParam(name = "size", defaultValue = "10") @Min(1) Integer size) {
         log.info("Получен запрос на выдачу вещей пользователя с id = {}", userId);
 
         return itemClient.getItemsByUser(userId, from, size);
     }
 
     @PostMapping
-  public ResponseEntity<Object> addItem(@RequestHeader(value = USER_ID_FROM_REQUEST) Long userId,
-                           @Validated({Marker.OnCreate.class}) @RequestBody IncomingItemDto incomingItemDto) {
+    public ResponseEntity<Object> addItem(@RequestHeader(value = USER_ID_FROM_REQUEST) Long userId,
+                                          @Validated({Marker.OnCreate.class}) @RequestBody IncomingItemDto incomingItemDto) {
         log.info("Получен запрос пользователя с id = {} на добавление вещи", userId);
 
         return itemClient.addItem(userId, incomingItemDto);
@@ -42,8 +42,8 @@ public class ItemController {
 
     @PatchMapping(value = "/{itemId}", consumes = "application/json")
     public ResponseEntity<Object> updateItem(@RequestHeader(value = USER_ID_FROM_REQUEST) Long userId,
-                              @Validated({Marker.OnUpdate.class}) @RequestBody IncomingItemDto incomingItemDto,
-                              @PathVariable Long itemId) {
+                                             @Validated({Marker.OnUpdate.class}) @RequestBody IncomingItemDto incomingItemDto,
+                                             @PathVariable Long itemId) {
         log.info("Получен запрос на обновление вещи id = {} пользователя с id = {}", itemId, userId);
 
         return itemClient.updateItem(incomingItemDto, itemId, userId);
@@ -51,7 +51,7 @@ public class ItemController {
 
     @GetMapping("/{itemId}")
     public ResponseEntity<Object> getItemById(@RequestHeader(value = USER_ID_FROM_REQUEST) Long userId,
-                                       @PathVariable Long itemId) {
+                                              @PathVariable Long itemId) {
         log.info("Получен запрос на выдачу вещи с id = {} пользователем с id = {}", itemId, userId);
 
         return itemClient.getItemById(itemId, userId);
@@ -60,16 +60,16 @@ public class ItemController {
     @GetMapping("/search")
     public ResponseEntity<Object> searchItemsByText(@RequestParam String text,
                                                     @RequestHeader(USER_ID_FROM_REQUEST) Long userId,
-                                     @RequestParam(name = "from", defaultValue = "0") @Min(0) Integer from,
-                                     @RequestParam(name = "size", defaultValue = "10") @Min(1) Integer size) {
+                                                    @RequestParam(name = "from", defaultValue = "0") @Min(0) Integer from,
+                                                    @RequestParam(name = "size", defaultValue = "10") @Min(1) Integer size) {
         log.info("Получен запрос на поиск вещей по ключевому слову \'{}\'", text);
-                return itemClient.searchItemsByText(userId, text, from, size);
+        return itemClient.searchItemsByText(userId, text, from, size);
     }
 
     @PostMapping(value = "/{itemId}/comment", consumes = "application/json")
     public ResponseEntity<Object> addComment(@RequestHeader(value = USER_ID_FROM_REQUEST) Long userId,
-                                 @Validated({Marker.OnCreate.class}) @RequestBody IncomingCommentDto incomingCommentDto,
-                                 @PathVariable Long itemId) {
+                                             @Validated({Marker.OnCreate.class}) @RequestBody IncomingCommentDto incomingCommentDto,
+                                             @PathVariable Long itemId) {
         log.info("Получен запрос пользователя с id = {} на добавление комментария к вещи с id = {}", userId, itemId);
 
         return itemClient.addComment(userId, itemId, incomingCommentDto);
