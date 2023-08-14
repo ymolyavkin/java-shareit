@@ -3,12 +3,13 @@ package ru.practicum.shareitgateway.user;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareitgateway.user.dto.IncomingUserDto;
 import ru.practicum.shareitgateway.validator.Marker;
 
-@RestController
+@Controller
 @RequestMapping(value = "/users")
 @Slf4j
 @Validated
@@ -48,9 +49,9 @@ public class UserController {
     }
 
     @DeleteMapping(value = "/{id}")
-    public void deleteUserById(@PathVariable("id") long id) {
+    public ResponseEntity<Object> deleteUserById(@PathVariable("id") long id) {
         log.info("Получен запрос на удаление пользователя с id = {}", id);
 
-        userClient.deleteUserById(id);
+        return userClient.deleteUserById(id);
     }
 }
