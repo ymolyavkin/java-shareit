@@ -12,7 +12,6 @@ import ru.practicum.shareitgateway.validator.Marker;
 @Controller
 @RequestMapping(value = "/users")
 @Slf4j
-@Validated
 @RequiredArgsConstructor
 public class UserController {
     private final UserClient userClient;
