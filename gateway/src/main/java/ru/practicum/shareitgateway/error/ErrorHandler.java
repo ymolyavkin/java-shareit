@@ -2,9 +2,9 @@ package ru.practicum.shareitgateway.error;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
 import ru.practicum.shareitgateway.exception.BadRequestException;
 import ru.practicum.shareitgateway.exception.CommentErrorException;
 import ru.practicum.shareitgateway.exception.NoneXSharerUserIdException;
@@ -14,7 +14,7 @@ import javax.validation.ValidationException;
 import java.util.Map;
 
 @Slf4j
-@ControllerAdvice
+@RestControllerAdvice
 public class ErrorHandler {
     @ExceptionHandler({ValidationException.class})
     @ResponseStatus(HttpStatus.BAD_REQUEST)
