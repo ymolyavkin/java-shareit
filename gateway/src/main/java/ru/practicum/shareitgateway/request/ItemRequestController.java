@@ -3,6 +3,7 @@ package ru.practicum.shareitgateway.request;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -19,7 +20,7 @@ import static ru.practicum.shareitgateway.util.Constants.USER_ID_FROM_REQUEST;
 @Slf4j
 @Validated
 @RequiredArgsConstructor
-@RestController
+@Controller
 @RequestMapping(path = "/requests")
 public class ItemRequestController {
     private final ItemRequestClient itemRequestClient;

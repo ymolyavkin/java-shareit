@@ -3,6 +3,7 @@ package ru.practicum.shareitgateway.booking;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.UnsatisfiedServletRequestParameterException;
 import org.springframework.web.bind.annotation.*;
@@ -18,7 +19,7 @@ import static ru.practicum.shareitgateway.util.Constants.USER_ID_FROM_REQUEST;
 @Slf4j
 @Validated
 @RequiredArgsConstructor
-@RestController
+@Controller
 @RequestMapping(path = "/bookings")
 public class BookingController {
     private final BookingClient bookingClient;
