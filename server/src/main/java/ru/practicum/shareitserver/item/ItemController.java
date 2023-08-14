@@ -12,7 +12,6 @@ import ru.practicum.shareitserver.item.dto.ItemDto;
 import ru.practicum.shareitserver.item.dto.ItemLastNextDto;
 import ru.practicum.shareitserver.item.service.ItemService;
 
-import javax.validation.constraints.Min;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,8 +27,8 @@ public class ItemController {
 
     @GetMapping
     public List<ItemLastNextDto> getItems(@RequestHeader(value = USER_ID_FROM_REQUEST) Long userId,
-                                          @RequestParam(name = "from", defaultValue = "0") @Min(0) Integer from,
-                                          @RequestParam(name = "size", defaultValue = "10") @Min(1) Integer size) {
+                                          @RequestParam(name = "from", defaultValue = "0") Integer from,
+                                          @RequestParam(name = "size", defaultValue = "10") Integer size) {
         log.info("Получен запрос на выдачу вещей пользователя с id = {}", userId);
 
         return itemService.getItemsLastNextBookingByUser(userId, from, size);
@@ -66,8 +65,8 @@ public class ItemController {
 
     @GetMapping("/search")
     public List<ItemDto> searchItems(@RequestParam String text,
-                                     @RequestParam(name = "from", defaultValue = "0") @Min(0) Integer from,
-                                     @RequestParam(name = "size", defaultValue = "10") @Min(1) Integer size) {
+                                     @RequestParam(name = "from", defaultValue = "0") Integer from,
+                                     @RequestParam(name = "size", defaultValue = "10") Integer size) {
         log.info("Получен запрос на поиск вещей по ключевому слову \'{}\'", text);
         if (text.isBlank()) {
             return new ArrayList<>(0);

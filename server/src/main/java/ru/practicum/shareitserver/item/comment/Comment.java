@@ -5,7 +5,6 @@ import ru.practicum.shareitserver.item.model.Item;
 import ru.practicum.shareitserver.user.model.User;
 
 import javax.persistence.*;
-import javax.validation.constraints.Size;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
@@ -20,8 +19,7 @@ public class Comment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Size(max = 512)
-    @Column(name = "text")
+        @Column(name = "text")
     private String text;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "item_id", nullable = false)

@@ -9,7 +9,6 @@ import ru.practicum.shareitserver.booking.dto.IncomingBookingDto;
 import ru.practicum.shareitserver.booking.model.StateRequest;
 import ru.practicum.shareitserver.booking.service.BookingService;
 
-import javax.validation.constraints.Min;
 import java.util.List;
 
 import static ru.practicum.shareitserver.util.Constants.USER_ID_FROM_REQUEST;
@@ -26,8 +25,8 @@ public class BookingController {
     public List<BookingResponseDto> getBookingsByBooker(
             @RequestHeader(value = USER_ID_FROM_REQUEST) Long bookerId,
             @RequestParam(defaultValue = "ALL") StateRequest state,
-            @RequestParam(name = "from", defaultValue = "0") @Min(0) int from,
-            @RequestParam(name = "size", defaultValue = "10") @Min(1) int size) {
+            @RequestParam(name = "from", defaultValue = "0") int from,
+            @RequestParam(name = "size", defaultValue = "10") int size) {
         log.info("Server: Получен запрос на выдачу вещей, забронированных пользователем с id = {}", bookerId);
         return bookingService.getBookingsByBooker(bookerId, state, from, size);
     }
@@ -36,8 +35,8 @@ public class BookingController {
     public List<BookingResponseDto> getBookingsByOwner(
             @RequestHeader(value = USER_ID_FROM_REQUEST) Long ownerId,
             @RequestParam(defaultValue = "ALL") StateRequest state,
-            @RequestParam(name = "from", defaultValue = "0") @Min(0) int from,
-            @RequestParam(name = "size", defaultValue = "10") @Min(1) int size) {
+            @RequestParam(name = "from", defaultValue = "0") int from,
+            @RequestParam(name = "size", defaultValue = "10") int size) {
         log.info("Server: Получен запрос на выдачу вещей, принадлежащих пользователю с id = {}", ownerId);
         return bookingService.getBookingsByOwner(ownerId, state, from, size);
     }

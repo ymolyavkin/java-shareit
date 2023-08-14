@@ -3,17 +3,13 @@ package ru.practicum.shareit.error;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
-import ru.practicum.shareitserver.exception.*;
 import ru.practicum.shareitserver.error.ErrorHandler;
+import ru.practicum.shareitserver.exception.*;
 
 import javax.persistence.EntityNotFoundException;
-import javax.validation.ConstraintViolationException;
-import javax.validation.ValidationException;
 import java.util.Map;
-import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.MockitoAnnotations.initMocks;
 
 class ErrorHandlerTest {
@@ -34,13 +30,6 @@ class ErrorHandlerTest {
         assertEquals("Статус ошибки 404 Not found", response.get("error"));
     }
 
-    @Test
-    void handleValidationTest() {
-        ValidationException validationException = new ValidationException("Ошибка валидации");
-        Map<String, String> response = errorHandler.handleValidation(validationException);
-
-        assertEquals("Ошибка валидации", response.get("error"));
-    }
 
     @Test
     void handleNoneXSharerUserIdTest() {
@@ -72,14 +61,6 @@ class ErrorHandlerTest {
         Map<String, String> response = errorHandler.handleCommentErrorException(commentErrorException);
 
         assertEquals("CommentErrorException", response.get("error"));
-    }
-
-    @Test
-    void handleConstraintViolationExceptionTest() {
-        ConstraintViolationException constraintViolationException = new ConstraintViolationException(Set.of());
-        Map<String, String> response = errorHandler.handleConstraintViolationException(constraintViolationException);
-
-        assertNotNull(response.get("error"));
     }
 
     @Test

@@ -5,7 +5,6 @@ import ru.practicum.shareitserver.item.model.Item;
 import ru.practicum.shareitserver.user.model.User;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
 @Builder
@@ -20,10 +19,8 @@ public class Booking {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @NotNull
     @Column(name = "start_time")
     private LocalDateTime start;
-    @NotNull
     @Column(name = "end_time")
     private LocalDateTime end;
     @ManyToOne(fetch = FetchType.LAZY)

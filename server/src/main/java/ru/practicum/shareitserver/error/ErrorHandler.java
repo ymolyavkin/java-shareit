@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import ru.practicum.shareitserver.exception.*;
 
 import javax.persistence.EntityNotFoundException;
-import javax.validation.ValidationException;
 import java.util.Map;
 
 @Slf4j
@@ -20,15 +19,6 @@ public class ErrorHandler {
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public Map<String, String> handleNotFound(final RuntimeException e) {
         log.debug("Получен статус 404 Not found {}", e.getMessage(), e);
-        return Map.of(
-                "error", e.getMessage()
-        );
-    }
-
-    @ExceptionHandler({ValidationException.class})
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public Map<String, String> handleValidation(final RuntimeException e) {
-        log.debug("Получен статус 400 BAD_REQUEST {}", e.getMessage(), e);
         return Map.of(
                 "error", e.getMessage()
         );

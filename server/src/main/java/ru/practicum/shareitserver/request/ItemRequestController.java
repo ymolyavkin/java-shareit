@@ -8,7 +8,6 @@ import ru.practicum.shareitserver.request.dto.ItemRequestResponseDto;
 import ru.practicum.shareitserver.request.dto.ItemRequestWithAnswersDto;
 import ru.practicum.shareitserver.request.service.ItemRequestService;
 
-import javax.validation.constraints.Min;
 import java.util.List;
 
 import static ru.practicum.shareitserver.util.Constants.REQUEST_GIVE_ALL_USER_QUERIES;
@@ -44,8 +43,8 @@ public class ItemRequestController {
     @GetMapping("/all")
     public List<ItemRequestWithAnswersDto> getItemRequestsByOther(
             @RequestHeader(value = USER_ID_FROM_REQUEST) Long userId,
-            @RequestParam(name = "from", defaultValue = "0") @Min(0) Integer from,
-            @RequestParam(name = "size", defaultValue = "10") @Min(1) Integer size) {
+            @RequestParam(name = "from", defaultValue = "0") Integer from,
+            @RequestParam(name = "size", defaultValue = "10") Integer size) {
         log.info(REQUEST_GIVE_ALL_USER_QUERIES, userId);
 
         return itemRequestService.getItemRequestsByOther(userId, from, size);
