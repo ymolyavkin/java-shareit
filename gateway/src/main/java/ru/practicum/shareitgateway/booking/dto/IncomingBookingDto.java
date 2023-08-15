@@ -16,10 +16,10 @@ import java.time.LocalDateTime;
 @StartBeforeEndValidation
 @RequiredArgsConstructor
 public class IncomingBookingDto {
-    @FutureOrPresent
+    @FutureOrPresent(groups = Marker.OnCreate.class)
     @NotNull(groups = Marker.OnCreate.class)
     private LocalDateTime start;
-    @Future
+    @Future(groups = Marker.OnCreate.class)
     @NotNull(groups = Marker.OnCreate.class)
     private LocalDateTime end;
     @NotNull(groups = Marker.OnCreate.class)
