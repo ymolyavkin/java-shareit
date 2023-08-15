@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import ru.practicum.shareitgateway.validator.Marker;
+import ru.practicum.shareitgateway.validator.StartBeforeEndValidation;
 
 import javax.validation.constraints.Future;
 import javax.validation.constraints.FutureOrPresent;
@@ -12,6 +13,7 @@ import java.time.LocalDateTime;
 
 @Getter
 @Setter
+@StartBeforeEndValidation
 @RequiredArgsConstructor
 public class IncomingBookingDto {
     @FutureOrPresent
