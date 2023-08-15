@@ -67,7 +67,7 @@ public class ItemController {
                                                     @RequestParam(name = "size", defaultValue = "10") @Min(1) Integer size) {
         log.info("Получен запрос на поиск вещей по ключевому слову \'{}\'", text);
         if (text.isBlank()) {
-            return new ResponseEntity<>(Collections.emptyList(), HttpStatus.resolve(200));
+            return ResponseEntity.ok(Collections.emptyList());
         }
         return itemClient.searchItemsByText(userId, text, from, size);
     }
