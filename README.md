@@ -1,3 +1,2 @@
 # java-shareit
-technical specifications for developing #13
-Template repository for Shareit project.
+Spring Boot приложение ShareIt - сервис для шеринга (от англ. share — «делиться»). Он обеспечивает пользователям возможность рассказывать, какими вещами они готовы поделиться, а также находить нужную вещь и брать её в аренду на какое-то время.
